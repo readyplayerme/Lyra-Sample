@@ -94,7 +94,17 @@ static const TMap<EAvatarMorphTarget, FString> MORPH_TARGETS_TO_STRING =
 	{ EAvatarMorphTarget::MouthSmile, "mouthSmile" },
 	{ EAvatarMorphTarget::EyesClosed, "eyesClosed" },
 	{ EAvatarMorphTarget::EyesLookUp, "eyesLookUp" },
-	{ EAvatarMorphTarget::EyesLookDown, "eyesLookDown" }
+	{ EAvatarMorphTarget::EyesLookDown, "eyesLookDown" },
+
+	{ EAvatarMorphTarget::EyeLookDownLeft, "eyeLookDownLeft" },
+	{ EAvatarMorphTarget::EyeLookInLeft, "eyeLookInLeft" },
+	{ EAvatarMorphTarget::EyeLookOutLeft, "eyeLookOutLeft" },
+	{ EAvatarMorphTarget::EyeLookUpLeft, "eyeLookUpLeft" },
+	{ EAvatarMorphTarget::EyeLookDownRight, "eyeLookDownRight" },
+	{ EAvatarMorphTarget::EyeLookInRight, "eyeLookInRight" },
+	{ EAvatarMorphTarget::EyeLookOutRight, "eyeLookOutRight" },
+	{ EAvatarMorphTarget::EyeLookUpRight, "eyeLookUpRight" },
+	{ EAvatarMorphTarget::TongueOut, "tongueOut" }
 };
 
 static const TMap<EAvatarTextureSizeLimit, FString> TEXTURE_SIZE_LIMIT_TO_STRING =
