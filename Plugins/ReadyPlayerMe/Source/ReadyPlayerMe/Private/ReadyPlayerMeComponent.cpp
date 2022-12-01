@@ -73,10 +73,6 @@ void UReadyPlayerMeComponent::LoadSkeletalMesh(UglTFRuntimeAsset* Asset)
 void UReadyPlayerMeComponent::OnSkeletalMeshLoaded(USkeletalMesh* SkeletalMesh)
 {
 	InitSkeletalMeshComponent();
-	for (auto& Info : SkeletalMesh->GetLODInfoArray())
-	{
-		Info.bAllowCPUAccess = false;
-	}
 	SkeletalMeshComponent->SetSkeletalMesh(SkeletalMesh);
 	(void)OnAvatarLoadCompleted.ExecuteIfBound();
 }

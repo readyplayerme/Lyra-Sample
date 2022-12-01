@@ -2,6 +2,8 @@
 
 
 #include "Utils/ReadyPlayerMeAvatarConfigProcessor.h"
+
+#include "ReadyPlayerMePluginInfo.h"
 #include "ReadyPlayerMeTypes.h"
 #include "AvatarConfig/ReadyPlayerMeAvatarConfig.h"
 #include "AvatarConfig/ReadyPlayerMeMorphTargetGroup.h"
@@ -148,6 +150,7 @@ FString FReadyPlayerMeAvatarConfigProcessor::Process(UReadyPlayerMeAvatarConfig*
 	{
 		return "";
 	}
+	const bool UseDraco = FReadyPlayerMePluginInfo::IsDracoPluginIncluded() && AvatarConfig->bUseDracoMeshCompression;
 	TArray<FString> Parameters;
 	Parameters.Add("pose=" + POSE_TO_STRING[AvatarConfig->Pose]);
 	Parameters.Add("meshLod=" + FString::FromInt(static_cast<int>(AvatarConfig->MeshLod)));
@@ -155,5 +158,6 @@ FString FReadyPlayerMeAvatarConfigProcessor::Process(UReadyPlayerMeAvatarConfig*
 	Parameters.Add("textureSizeLimit=" + TEXTURE_SIZE_LIMIT_TO_STRING[AvatarConfig->TextureSizeLimit]);
 	Parameters.Add(ProcessMorphTargets(AvatarConfig));
 	Parameters.Add("useHands=" + UKismetStringLibrary::Conv_BoolToString(AvatarConfig->bUseHands));
+	Parameters.Add("useDracoMeshCompression=" + UKismetStringLibrary::Conv_BoolToString(UseDraco));
 	return "?" + FString::Join(Parameters, TEXT("&"));
 }
