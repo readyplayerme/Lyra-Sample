@@ -1,3 +1,0 @@
-[submodule "Plugins/glTFRuntime"]
-	path = Plugins/glTFRuntime
-	url = https://github.com/rdeioris/glTFRuntime.git
