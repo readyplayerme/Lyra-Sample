@@ -7,3 +7,6 @@
 [submodule "ReadyPlayerMe"]
 	path = Plugins/ReadyPlayerMe
 	url = https://github.com/readyplayerme/rpm-unreal-sdk.git
+[submodule "RpmAvatarCreator"]
+	path = Plugins/RpmAvatarCreator
+	url = https://github.com/readyplayerme/rpm-unreal-avatar-creator.git
