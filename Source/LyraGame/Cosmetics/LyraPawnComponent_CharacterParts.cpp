@@ -6,6 +6,7 @@
 #include "Components/ChildActorComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayTagAssetInterface.h"
+#include "AbilitySystem/LyraTaggedActor.h"
 
 //////////////////////////////////////////////////////////////////////
 
@@ -180,6 +181,9 @@ bool FLyraCharacterPartList::SpawnActorForEntry(FLyraAppliedCharacterPartEntry& 
 					{
 						SpawnedRootComponent->AddTickPrerequisiteComponent(ComponentToAttachTo);
 					}
+					ALyraTaggedActor* LyraTaggedActor = Cast<ALyraTaggedActor>(SpawnedActor);
+					LyraTaggedActor->AvatarUrl = Entry.Part.AvatarUrl;
+					(void)LyraTaggedActor->OnLoadAvatarPart.Broadcast();
 				}
 
 				Entry.SpawnedComponent = PartComponent;

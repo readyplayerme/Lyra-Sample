@@ -69,9 +69,13 @@ struct FLyraCharacterPart
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ECharacterCustomizationCollisionMode CollisionMode = ECharacterCustomizationCollisionMode::NoCollision;
 
+	// URL of the avatar that would be loaded
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString AvatarUrl;
+
 	// Compares against another part, ignoring the collision mode
 	static bool AreEquivalentParts(const FLyraCharacterPart& A, const FLyraCharacterPart& B)
 	{
-		return (A.PartClass == B.PartClass) && (A.SocketName == B.SocketName);
+		return (A.PartClass == B.PartClass) && (A.SocketName == B.SocketName) && (A.AvatarUrl == B.AvatarUrl);
 	}
 };

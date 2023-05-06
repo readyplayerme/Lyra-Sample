@@ -9,6 +9,8 @@
 
 #include "LyraTaggedActor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLoadAvatarPart);
+
 // An actor that implements the gameplay tag asset interface
 UCLASS()
 class ALyraTaggedActor : public AActor, public IGameplayTagAssetInterface
@@ -18,6 +20,12 @@ class ALyraTaggedActor : public AActor, public IGameplayTagAssetInterface
 public:
 
 	ALyraTaggedActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Actor)
+	FString AvatarUrl;
+	
+	UPROPERTY(BlueprintAssignable, Category=Actor)
+	FLoadAvatarPart OnLoadAvatarPart;
 
 	//~IGameplayTagAssetInterface
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
