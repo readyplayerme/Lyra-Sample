@@ -294,6 +294,10 @@
 		{
 			"Name": "RpmAvatarCreator",
 			"Enabled": true
+		},
+		{
+			"Name": "ReadyPlayerMe",
+			"Enabled": true
 		}
 	],
 	"EpicSampleNameHash": "451731683"
