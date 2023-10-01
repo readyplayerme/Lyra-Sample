@@ -1,19 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraUICameraManagerComponent.h"
-#include "EngineUtils.h"
-#include "Algo/Transform.h"
-#include "DrawDebugHelpers.h"
-#include "Engine/Canvas.h"
-#include "GameFramework/PlayerController.h"
-#include "Engine/LocalPlayer.h"
-#include "Slate/SceneViewport.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
-#include "GameFramework/HUD.h"
-#include "Engine/Engine.h"
 
-#include "LyraCameraMode.h"
+#include "GameFramework/HUD.h"
+#include "GameFramework/PlayerController.h"
 #include "LyraPlayerCameraManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraUICameraManagerComponent)
+
+class AActor;
+class FDebugDisplayInfo;
 
 ULyraUICameraManagerComponent* ULyraUICameraManagerComponent::GetComponent(APlayerController* PC)
 {

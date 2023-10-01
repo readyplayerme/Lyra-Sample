@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
 
 #include "LyraDamagePopStyle.generated.h"
 
+class UObject;
 class UStaticMesh;
 
 UCLASS()

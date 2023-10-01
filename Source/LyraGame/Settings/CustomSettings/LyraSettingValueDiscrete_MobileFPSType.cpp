@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSettingValueDiscrete_MobileFPSType.h"
-#include "Player/LyraLocalPlayer.h"
-#include "Internationalization/Internationalization.h"
-#include "Internationalization/Culture.h"
-#include "Settings/LyraSettingsLocal.h"
+
 #include "Performance/LyraPerformanceSettings.h"
+#include "Settings/LyraSettingsLocal.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingValueDiscrete_MobileFPSType)
 
 #define LOCTEXT_NAMESPACE "LyraSettings"
 
@@ -98,3 +98,4 @@ void ULyraSettingValueDiscrete_MobileFPSType::SetValue(int32 NewLimitFPS, EGameS
 }
 
 #undef LOCTEXT_NAMESPACE
+

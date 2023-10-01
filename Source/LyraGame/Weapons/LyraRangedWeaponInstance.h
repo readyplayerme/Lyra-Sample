@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Curves/CurveFloat.h"
 
 #include "LyraWeaponInstance.h"

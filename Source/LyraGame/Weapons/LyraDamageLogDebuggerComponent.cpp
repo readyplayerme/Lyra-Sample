@@ -1,9 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraDamageLogDebuggerComponent.h"
+
+#include "Engine/World.h"
+#include "LyraLogChannels.h"
 #include "Messages/LyraVerbMessage.h"
 #include "NativeGameplayTags.h"
-#include "LyraLogChannels.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraDamageLogDebuggerComponent)
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Lyra_Damage_Message);
 
@@ -92,3 +96,4 @@ void ULyraDamageLogDebuggerComponent::OnDamageMessage(FGameplayTag Channel, cons
 		LogEntry.SumDamage += -Payload.Magnitude;
 	}
 }
+

@@ -3,6 +3,8 @@
 #include "LyraDebugCameraController.h"
 #include "LyraCheatManager.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraDebugCameraController)
+
 
 ALyraDebugCameraController::ALyraDebugCameraController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -20,3 +22,4 @@ void ALyraDebugCameraController::AddCheats(bool bForce)
 	Super::AddCheats(bForce);
 #endif // #else //#if USING_CHEAT_MANAGER
 }
+

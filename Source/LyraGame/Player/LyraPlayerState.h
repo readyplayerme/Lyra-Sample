@@ -2,21 +2,26 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "ModularPlayerState.h"
 #include "AbilitySystemInterface.h"
+#include "ModularPlayerState.h"
 #include "System/GameplayTagStack.h"
-#include "Messages/LyraVerbMessage.h"
 #include "Teams/LyraTeamAgentInterface.h"
 
 #include "LyraPlayerState.generated.h"
 
+struct FLyraVerbMessage;
 
+class AController;
 class ALyraPlayerController;
-class ULyraAbilitySystemComponent;
+class APlayerState;
+class FName;
 class UAbilitySystemComponent;
-class ULyraPawnData;
+class ULyraAbilitySystemComponent;
 class ULyraExperienceDefinition;
+class ULyraPawnData;
+class UObject;
+struct FFrame;
+struct FGameplayTag;
 
 /** Defines the types of client connected */
 UENUM()
@@ -121,6 +126,12 @@ public:
 	UFUNCTION(Client, Unreliable, BlueprintCallable, Category = "Lyra|PlayerState")
 	void ClientBroadcastMessage(const FLyraVerbMessage Message);
 
+	// Gets the replicated view rotation of this player, used for spectating
+	FRotator GetReplicatedViewRotation() const;
+
+	// Sets the replicated view rotation, only valid on the server
+	void SetReplicatedViewRotation(const FRotator& NewRotation);
+
 private:
 	void OnExperienceLoaded(const ULyraExperienceDefinition* CurrentExperience);
 
@@ -131,13 +142,20 @@ protected:
 protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_PawnData)
-	const ULyraPawnData* PawnData;
+	TObjectPtr<const ULyraPawnData> PawnData;
 
 private:
 
 	// The ability system component sub-object used by player characters.
 	UPROPERTY(VisibleAnywhere, Category = "Lyra|PlayerState")
-	ULyraAbilitySystemComponent* AbilitySystemComponent;
+	TObjectPtr<ULyraAbilitySystemComponent> AbilitySystemComponent;
+
+	// Health attribute set used by this actor.
+	UPROPERTY()
+	TObjectPtr<const class ULyraHealthSet> HealthSet;
+	// Combat attribute set used by this actor.
+	UPROPERTY()
+	TObjectPtr<const class ULyraCombatSet> CombatSet;
 
 	UPROPERTY(Replicated)
 	ELyraPlayerConnectionType MyPlayerConnectionType;
@@ -153,6 +171,9 @@ private:
 
 	UPROPERTY(Replicated)
 	FGameplayTagStackContainer StatTags;
+
+	UPROPERTY(Replicated)
+	FRotator ReplicatedViewRotation;
 
 private:
 	UFUNCTION()

@@ -2,19 +2,23 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
-#include "GameFeaturePluginOperationResult.h"
-#include "LoadingProcessInterface.h"
 #include "ControlFlowNode.h"
+#include "LoadingProcessInterface.h"
 
 #include "LyraFrontendStateComponent.generated.h"
+
+class FControlFlow;
+class FString;
+class FText;
+class UObject;
+struct FFrame;
 
 enum class ECommonUserOnlineContext : uint8;
 enum class ECommonUserPrivilege : uint8;
 class UCommonActivatableWidget;
-class ULyraExperienceDefinition;
 class UCommonUserInfo;
+class ULyraExperienceDefinition;
 
 UCLASS(Abstract)
 class ULyraFrontendStateComponent : public UGameStateComponent, public ILoadingProcessInterface
@@ -42,6 +46,7 @@ private:
 
 	void FlowStep_WaitForUserInitialization(FControlFlowNodeRef SubFlow);
 	void FlowStep_TryShowPressStartScreen(FControlFlowNodeRef SubFlow);
+	void FlowStep_TryJoinRequestedSession(FControlFlowNodeRef SubFlow);
 	void FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow);
 
 	bool bShouldShowLoadingScreen = true;
@@ -56,4 +61,6 @@ private:
 	
 	// If set, this is the in-progress press start screen task
 	FControlFlowNodePtr InProgressPressStartScreen;
+
+	FDelegateHandle OnJoinSessionCompleteEventHandle;
 };

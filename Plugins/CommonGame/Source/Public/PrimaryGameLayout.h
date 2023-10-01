@@ -2,17 +2,21 @@
 
 #pragma once
 
-#include "CommonUserWidget.h"
-#include "Widgets/CommonActivatableWidgetContainer.h"
-#include "GameplayTagContainer.h"
-#include "Engine/AssetManager.h"
+#include "CommonActivatableWidget.h"
 #include "CommonUIExtensions.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
+#include "GameplayTagContainer.h"
+#include "Widgets/CommonActivatableWidgetContainer.h" // IWYU pragma: keep
 
 #include "PrimaryGameLayout.generated.h"
 
-class UCommonActivatableWidget;
-class UCommonActivatableWidgetStack;
+class APlayerController;
+class UClass;
 class UCommonActivatableWidgetContainerBase;
+class ULocalPlayer;
+class UObject;
+struct FFrame;
 
 /**
  * The state of an async load operation for the UI.
@@ -129,5 +133,5 @@ private:
 
 	// The registered layers for the primary layout.
 	UPROPERTY(Transient, meta = (Categories = "UI.Layer"))
-	TMap<FGameplayTag, UCommonActivatableWidgetContainerBase*> Layers;
+	TMap<FGameplayTag, TObjectPtr<UCommonActivatableWidgetContainerBase>> Layers;
 };

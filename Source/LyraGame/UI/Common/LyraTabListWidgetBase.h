@@ -3,16 +3,14 @@
 #pragma once
 
 #include "CommonTabListWidgetBase.h"
-#include "CommonUserWidget.h"
-#include "CoreMinimal.h"
-#include "Styling/SlateBrush.h"
-#include "Templates/SubclassOf.h"
-#include "UObject/Interface.h"
-#include "UObject/ObjectMacros.h"
 
 #include "LyraTabListWidgetBase.generated.h"
 
 class UCommonButtonBase;
+class UCommonUserWidget;
+class UObject;
+class UWidget;
+struct FFrame;
 
 USTRUCT(BlueprintType)
 struct FLyraTabDescriptor
@@ -45,7 +43,7 @@ public:
 	TSubclassOf<UCommonUserWidget> TabContentType;
 
 	UPROPERTY(Transient)
-	UWidget* CreatedTabContentWidget;
+	TObjectPtr<UWidget> CreatedTabContentWidget;
 };
 
 UINTERFACE(BlueprintType)

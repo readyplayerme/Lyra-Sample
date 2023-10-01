@@ -1,7 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraGameplayAbility_Jump.h"
+
+#include "AbilitySystem/Abilities/LyraGameplayAbility.h"
 #include "Character/LyraCharacter.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameplayAbility_Jump)
+
+struct FGameplayTagContainer;
 
 
 ULyraGameplayAbility_Jump::ULyraGameplayAbility_Jump(const FObjectInitializer& ObjectInitializer)
@@ -62,3 +68,4 @@ void ULyraGameplayAbility_Jump::CharacterJumpStop()
 		}
 	}
 }
+

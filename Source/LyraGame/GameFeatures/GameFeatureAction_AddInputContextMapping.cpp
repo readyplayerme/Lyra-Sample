@@ -1,19 +1,35 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameFeatureAction_AddInputContextMapping.h"
-#include "GameFeaturesSubsystem.h"
-#include "GameFeaturesSubsystemSettings.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "Engine/GameInstance.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/LocalPlayer.h"
+#include "Engine/World.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameFeatures/GameFeatureAction_WorldActionBase.h"
 #include "InputMappingContext.h"
 #include "Character/LyraHeroComponent.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
+#include "System/LyraAssetManager.h"
+
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameFeatureAction_AddInputContextMapping)
 
 #define LOCTEXT_NAMESPACE "GameFeatures"
 
 //////////////////////////////////////////////////////////////////////
 // UGameFeatureAction_AddInputContextMapping
+
+void UGameFeatureAction_AddInputContextMapping::OnGameFeatureRegistering()
+{
+	Super::OnGameFeatureRegistering();
+
+	RegisterInputMappingContexts();
+}
 
 void UGameFeatureAction_AddInputContextMapping::OnGameFeatureActivating(FGameFeatureActivatingContext& Context)
 {
@@ -37,10 +53,125 @@ void UGameFeatureAction_AddInputContextMapping::OnGameFeatureDeactivating(FGameF
 	}
 }
 
-#if WITH_EDITOR
-EDataValidationResult UGameFeatureAction_AddInputContextMapping::IsDataValid(TArray<FText>& ValidationErrors)
+void UGameFeatureAction_AddInputContextMapping::OnGameFeatureUnregistering()
 {
-	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(ValidationErrors), EDataValidationResult::Valid);
+	Super::OnGameFeatureUnregistering();	
+	
+	UnregisterInputMappingContexts();
+}
+
+void UGameFeatureAction_AddInputContextMapping::RegisterInputMappingContexts()
+{
+	RegisterInputContextMappingsForGameInstanceHandle = FWorldDelegates::OnStartGameInstance.AddUObject(this, &UGameFeatureAction_AddInputContextMapping::RegisterInputContextMappingsForGameInstance);
+
+	const TIndirectArray<FWorldContext>& WorldContexts = GEngine->GetWorldContexts();
+	for (TIndirectArray<FWorldContext>::TConstIterator WorldContextIterator = WorldContexts.CreateConstIterator(); WorldContextIterator; ++WorldContextIterator)
+	{
+		RegisterInputContextMappingsForGameInstance(WorldContextIterator->OwningGameInstance);
+	}
+}
+
+void UGameFeatureAction_AddInputContextMapping::RegisterInputContextMappingsForGameInstance(UGameInstance* GameInstance)
+{
+	if (GameInstance != nullptr && !GameInstance->OnLocalPlayerAddedEvent.IsBoundToObject(this))
+	{
+		GameInstance->OnLocalPlayerAddedEvent.AddUObject(this, &UGameFeatureAction_AddInputContextMapping::RegisterInputMappingContextsForLocalPlayer);
+		GameInstance->OnLocalPlayerRemovedEvent.AddUObject(this, &UGameFeatureAction_AddInputContextMapping::UnregisterInputMappingContextsForLocalPlayer);
+		
+		for (TArray<ULocalPlayer*>::TConstIterator LocalPlayerIterator = GameInstance->GetLocalPlayerIterator(); LocalPlayerIterator; ++LocalPlayerIterator)
+		{
+			RegisterInputMappingContextsForLocalPlayer(*LocalPlayerIterator);
+		}
+	}
+}
+
+void UGameFeatureAction_AddInputContextMapping::RegisterInputMappingContextsForLocalPlayer(ULocalPlayer* LocalPlayer)
+{
+	if (ensure(LocalPlayer))
+	{
+		ULyraAssetManager& AssetManager = ULyraAssetManager::Get();
+		
+		if (UEnhancedInputLocalPlayerSubsystem* EISubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
+		{
+			if (UEnhancedInputUserSettings* Settings = EISubsystem->GetUserSettings())
+			{
+				for (const FInputMappingContextAndPriority& Entry : InputMappings)
+				{
+					// Skip entries that don't want to be registered
+					if (!Entry.bRegisterWithSettings)
+					{
+						continue;
+					}
+
+					// Register this IMC with the settings!
+					if (UInputMappingContext* IMC = AssetManager.GetAsset(Entry.InputMapping))
+					{
+						Settings->RegisterInputMappingContext(IMC);
+					}
+				}
+			}
+		}
+	}
+}
+
+void UGameFeatureAction_AddInputContextMapping::UnregisterInputMappingContexts()
+{
+	FWorldDelegates::OnStartGameInstance.Remove(RegisterInputContextMappingsForGameInstanceHandle);
+	RegisterInputContextMappingsForGameInstanceHandle.Reset();
+
+	const TIndirectArray<FWorldContext>& WorldContexts = GEngine->GetWorldContexts();
+	for (TIndirectArray<FWorldContext>::TConstIterator WorldContextIterator = WorldContexts.CreateConstIterator(); WorldContextIterator; ++WorldContextIterator)
+	{
+		UnregisterInputContextMappingsForGameInstance(WorldContextIterator->OwningGameInstance);
+	}
+}
+
+void UGameFeatureAction_AddInputContextMapping::UnregisterInputContextMappingsForGameInstance(UGameInstance* GameInstance)
+{
+	if (GameInstance != nullptr)
+	{
+		GameInstance->OnLocalPlayerAddedEvent.RemoveAll(this);
+		GameInstance->OnLocalPlayerRemovedEvent.RemoveAll(this);
+
+		for (TArray<ULocalPlayer*>::TConstIterator LocalPlayerIterator = GameInstance->GetLocalPlayerIterator(); LocalPlayerIterator; ++LocalPlayerIterator)
+		{
+			UnregisterInputMappingContextsForLocalPlayer(*LocalPlayerIterator);
+		}
+	}
+}
+
+void UGameFeatureAction_AddInputContextMapping::UnregisterInputMappingContextsForLocalPlayer(ULocalPlayer* LocalPlayer)
+{
+	if (ensure(LocalPlayer))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* EISubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
+		{
+			if (UEnhancedInputUserSettings* Settings = EISubsystem->GetUserSettings())
+			{
+				for (const FInputMappingContextAndPriority& Entry : InputMappings)
+				{
+					// Skip entries that don't want to be registered
+					if (!Entry.bRegisterWithSettings)
+					{
+						continue;
+					}
+
+					// Register this IMC with the settings!
+					if (UInputMappingContext* IMC = Entry.InputMapping.Get())
+					{
+						Settings->UnregisterInputMappingContext(IMC);
+					}
+				}
+			}
+		}
+	}
+}
+
+
+#if WITH_EDITOR
+EDataValidationResult UGameFeatureAction_AddInputContextMapping::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(Context), EDataValidationResult::Valid);
 
 	int32 Index = 0;
 
@@ -49,7 +180,7 @@ EDataValidationResult UGameFeatureAction_AddInputContextMapping::IsDataValid(TAr
 		if (Entry.InputMapping.IsNull())
 		{
 			Result = EDataValidationResult::Invalid;
-			ValidationErrors.Add(FText::Format(LOCTEXT("NullInputMapping", "Null InputMapping at index {0}."), Index));
+			Context.AddError(FText::Format(LOCTEXT("NullInputMapping", "Null InputMapping at index {0}."), Index));
 		}
 		++Index;
 	}

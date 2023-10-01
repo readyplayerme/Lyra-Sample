@@ -1,21 +1,28 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraCharacter.h"
-#include "LyraCharacterMovementComponent.h"
-#include "LyraLogChannels.h"
-#include "LyraGameplayTags.h"
+
+#include "AbilitySystem/LyraAbilitySystemComponent.h"
+#include "Camera/LyraCameraComponent.h"
+#include "Character/LyraHealthComponent.h"
 #include "Character/LyraPawnExtensionComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Components/InputComponent.h"
-#include "Camera/LyraCameraComponent.h"
-#include "AbilitySystem/LyraAbilitySystemComponent.h"
-#include "Character/LyraHealthComponent.h"
+#include "LyraCharacterMovementComponent.h"
+#include "LyraGameplayTags.h"
+#include "LyraLogChannels.h"
+#include "Net/UnrealNetwork.h"
 #include "Player/LyraPlayerController.h"
 #include "Player/LyraPlayerState.h"
 #include "System/LyraSignificanceManager.h"
-#include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCharacter)
+
+class AActor;
+class FLifetimeProperty;
+class IRepChangedPropertyTracker;
+class UInputComponent;
 
 static FName NAME_LyraCharacterCollisionProfile_Capsule(TEXT("LyraPawnCapsule"));
 static FName NAME_LyraCharacterCollisionProfile_Mesh(TEXT("LyraPawnMesh"));
@@ -179,6 +186,11 @@ ULyraAbilitySystemComponent* ALyraCharacter::GetLyraAbilitySystemComponent() con
 
 UAbilitySystemComponent* ALyraCharacter::GetAbilitySystemComponent() const
 {
+	if (PawnExtComponent == nullptr)
+	{
+		return nullptr;
+	}
+
 	return PawnExtComponent->GetLyraAbilitySystemComponent();
 }
 
@@ -260,9 +272,7 @@ void ALyraCharacter::InitializeGameplayTags()
 	// Clear tags that may be lingering on the ability system from the previous pawn.
 	if (ULyraAbilitySystemComponent* LyraASC = GetLyraAbilitySystemComponent())
 	{
-		const FLyraGameplayTags& GameplayTags = FLyraGameplayTags::Get();
-
-		for (const TPair<uint8, FGameplayTag>& TagMapping : GameplayTags.MovementModeTagMap)
+		for (const TPair<uint8, FGameplayTag>& TagMapping : LyraGameplayTags::MovementModeTagMap)
 		{
 			if (TagMapping.Value.IsValid())
 			{
@@ -270,7 +280,7 @@ void ALyraCharacter::InitializeGameplayTags()
 			}
 		}
 
-		for (const TPair<uint8, FGameplayTag>& TagMapping : GameplayTags.CustomMovementModeTagMap)
+		for (const TPair<uint8, FGameplayTag>& TagMapping : LyraGameplayTags::CustomMovementModeTagMap)
 		{
 			if (TagMapping.Value.IsValid())
 			{
@@ -396,16 +406,14 @@ void ALyraCharacter::SetMovementModeTag(EMovementMode MovementMode, uint8 Custom
 {
 	if (ULyraAbilitySystemComponent* LyraASC = GetLyraAbilitySystemComponent())
 	{
-		const FLyraGameplayTags& GameplayTags = FLyraGameplayTags::Get();
 		const FGameplayTag* MovementModeTag = nullptr;
-
 		if (MovementMode == MOVE_Custom)
 		{
-			MovementModeTag = GameplayTags.CustomMovementModeTagMap.Find(CustomMovementMode);
+			MovementModeTag = LyraGameplayTags::CustomMovementModeTagMap.Find(CustomMovementMode);
 		}
 		else
 		{
-			MovementModeTag = GameplayTags.MovementModeTagMap.Find(MovementMode);
+			MovementModeTag = LyraGameplayTags::MovementModeTagMap.Find(MovementMode);
 		}
 
 		if (MovementModeTag && MovementModeTag->IsValid())
@@ -433,7 +441,7 @@ void ALyraCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeigh
 {
 	if (ULyraAbilitySystemComponent* LyraASC = GetLyraAbilitySystemComponent())
 	{
-		LyraASC->SetLooseGameplayTagCount(FLyraGameplayTags::Get().Status_Crouching, 1);
+		LyraASC->SetLooseGameplayTagCount(LyraGameplayTags::Status_Crouching, 1);
 	}
 
 
@@ -444,7 +452,7 @@ void ALyraCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightA
 {
 	if (ULyraAbilitySystemComponent* LyraASC = GetLyraAbilitySystemComponent())
 	{
-		LyraASC->SetLooseGameplayTagCount(FLyraGameplayTags::Get().Status_Crouching, 0);
+		LyraASC->SetLooseGameplayTagCount(LyraGameplayTags::Status_Crouching, 0);
 	}
 
 	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
@@ -514,4 +522,161 @@ void ALyraCharacter::OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, 
 void ALyraCharacter::OnRep_MyTeamID(FGenericTeamId OldTeamID)
 {
 	ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
+}
+
+bool ALyraCharacter::UpdateSharedReplication()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		FSharedRepMovement SharedMovement;
+		if (SharedMovement.FillForCharacter(this))
+		{
+			// Only call FastSharedReplication if data has changed since the last frame.
+			// Skipping this call will cause replication to reuse the same bunch that we previously
+			// produced, but not send it to clients that already received. (But a new client who has not received
+			// it, will get it this frame)
+			if (!SharedMovement.Equals(LastSharedReplication, this))
+			{
+				LastSharedReplication = SharedMovement;
+				ReplicatedMovementMode = SharedMovement.RepMovementMode;
+
+				FastSharedReplication(SharedMovement);
+			}
+			return true;
+		}
+	}
+
+	// We cannot fastrep right now. Don't send anything.
+	return false;
+}
+
+void ALyraCharacter::FastSharedReplication_Implementation(const FSharedRepMovement& SharedRepMovement)
+{
+	if (GetWorld()->IsPlayingReplay())
+	{
+		return;
+	}
+
+	// Timestamp is checked to reject old moves.
+	if (GetLocalRole() == ROLE_SimulatedProxy)
+	{
+		// Timestamp
+		ReplicatedServerLastTransformUpdateTimeStamp = SharedRepMovement.RepTimeStamp;
+
+		// Movement mode
+		if (ReplicatedMovementMode != SharedRepMovement.RepMovementMode)
+		{
+			ReplicatedMovementMode = SharedRepMovement.RepMovementMode;
+			GetCharacterMovement()->bNetworkMovementModeChanged = true;
+			GetCharacterMovement()->bNetworkUpdateReceived = true;
+		}
+
+		// Location, Rotation, Velocity, etc.
+		FRepMovement& MutableRepMovement = GetReplicatedMovement_Mutable();
+		MutableRepMovement = SharedRepMovement.RepMovement;
+
+		// This also sets LastRepMovement
+		OnRep_ReplicatedMovement();
+
+		// Jump force
+		bProxyIsJumpForceApplied = SharedRepMovement.bProxyIsJumpForceApplied;
+
+		// Crouch
+		if (bIsCrouched != SharedRepMovement.bIsCrouched)
+		{
+			bIsCrouched = SharedRepMovement.bIsCrouched;
+			OnRep_IsCrouched();
+		}
+	}
+}
+
+FSharedRepMovement::FSharedRepMovement()
+{
+	RepMovement.LocationQuantizationLevel = EVectorQuantization::RoundTwoDecimals;
+}
+
+bool FSharedRepMovement::FillForCharacter(ACharacter* Character)
+{
+	if (USceneComponent* PawnRootComponent = Character->GetRootComponent())
+	{
+		UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement();
+
+		RepMovement.Location = FRepMovement::RebaseOntoZeroOrigin(PawnRootComponent->GetComponentLocation(), Character);
+		RepMovement.Rotation = PawnRootComponent->GetComponentRotation();
+		RepMovement.LinearVelocity = CharacterMovement->Velocity;
+		RepMovementMode = CharacterMovement->PackNetworkMovementMode();
+		bProxyIsJumpForceApplied = Character->bProxyIsJumpForceApplied || (Character->JumpForceTimeRemaining > 0.0f);
+		bIsCrouched = Character->bIsCrouched;
+
+		// Timestamp is sent as zero if unused
+		if ((CharacterMovement->NetworkSmoothingMode == ENetworkSmoothingMode::Linear) || CharacterMovement->bNetworkAlwaysReplicateTransformUpdateTimestamp)
+		{
+			RepTimeStamp = CharacterMovement->GetServerLastTransformUpdateTimeStamp();
+		}
+		else
+		{
+			RepTimeStamp = 0.f;
+		}
+
+		return true;
+	}
+	return false;
+}
+
+bool FSharedRepMovement::Equals(const FSharedRepMovement& Other, ACharacter* Character) const
+{
+	if (RepMovement.Location != Other.RepMovement.Location)
+	{
+		return false;
+	}
+
+	if (RepMovement.Rotation != Other.RepMovement.Rotation)
+	{
+		return false;
+	}
+
+	if (RepMovement.LinearVelocity != Other.RepMovement.LinearVelocity)
+	{
+		return false;
+	}
+
+	if (RepMovementMode != Other.RepMovementMode)
+	{
+		return false;
+	}
+
+	if (bProxyIsJumpForceApplied != Other.bProxyIsJumpForceApplied)
+	{
+		return false;
+	}
+
+	if (bIsCrouched != Other.bIsCrouched)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool FSharedRepMovement::NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
+{
+	bOutSuccess = true;
+	RepMovement.NetSerialize(Ar, Map, bOutSuccess);
+	Ar << RepMovementMode;
+	Ar << bProxyIsJumpForceApplied;
+	Ar << bIsCrouched;
+
+	// Timestamp, if non-zero.
+	uint8 bHasTimeStamp = (RepTimeStamp != 0.f);
+	Ar.SerializeBits(&bHasTimeStamp, 1);
+	if (bHasTimeStamp)
+	{
+		Ar << RepTimeStamp;
+	}
+	else
+	{
+		RepTimeStamp = 0.f;
+	}
+
+	return true;
 }

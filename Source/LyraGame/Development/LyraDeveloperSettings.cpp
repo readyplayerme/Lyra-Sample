@@ -5,6 +5,8 @@
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Framework/Notifications/NotificationManager.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraDeveloperSettings)
+
 #define LOCTEXT_NAMESPACE "LyraCheats"
 
 ULyraDeveloperSettings::ULyraDeveloperSettings()
@@ -58,3 +60,4 @@ void ULyraDeveloperSettings::OnPlayInEditorStarted() const
 #endif
 
 #undef LOCTEXT_NAMESPACE
+

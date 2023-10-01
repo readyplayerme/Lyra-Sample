@@ -1,7 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TopDownArenaAttributeSet.h"
+
 #include "Net/UnrealNetwork.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(TopDownArenaAttributeSet)
+
+class FLifetimeProperty;
 
 UTopDownArenaAttributeSet::UTopDownArenaAttributeSet()
 	: BombsRemaining(1.0f)
@@ -74,3 +79,4 @@ void UTopDownArenaAttributeSet::ClampAttribute(const FGameplayAttribute& Attribu
 		NewValue = FMath::Clamp(NewValue, 200.0f, 800.0f);
 	}
 }
+

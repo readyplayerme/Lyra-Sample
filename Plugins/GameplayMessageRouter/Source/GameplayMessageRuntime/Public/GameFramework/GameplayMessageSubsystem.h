@@ -2,14 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Subsystems/GameInstanceSubsystem.h"
-#include "Engine/World.h"
 #include "GameFramework/GameplayMessageTypes2.h"
 #include "GameplayTagContainer.h"
-#include "Logging/LogMacros.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "UObject/WeakObjectPtr.h"
 
 #include "GameplayMessageSubsystem.generated.h"
+
+class UGameplayMessageSubsystem;
+struct FFrame;
 
 GAMEPLAYMESSAGERUNTIME_API DECLARE_LOG_CATEGORY_EXTERN(LogGameplayMessageSubsystem, Log, All);
 

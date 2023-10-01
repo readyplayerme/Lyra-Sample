@@ -2,16 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "SlateFwd.h"
-#include "UObject/ObjectMacros.h"
-#include "Styling/SlateBrush.h"
 #include "Components/Widget.h"
 #include "GameplayTagContainer.h"
 
-class SHitMarkerConfirmationWidget;
-
 #include "HitMarkerConfirmationWidget.generated.h"
+
+class SHitMarkerConfirmationWidget;
+class SWidget;
+class UObject;
+struct FGameplayTag;
 
 UCLASS()
 class UHitMarkerConfirmationWidget : public UWidget

@@ -2,6 +2,11 @@
 
 #include "LyraUserFacingExperienceDefinition.h"
 #include "CommonSessionSubsystem.h"
+#include "Containers/UnrealString.h"
+#include "UObject/NameTypes.h"
+#include "Replays/LyraReplaySubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraUserFacingExperienceDefinition)
 
 UCommonSession_HostSessionRequest* ULyraUserFacingExperienceDefinition::CreateHostingRequest() const
 {
@@ -16,10 +21,14 @@ UCommonSession_HostSessionRequest* ULyraUserFacingExperienceDefinition::CreateHo
 	Result->ExtraArgs.Add(TEXT("Experience"), ExperienceName);
 	Result->MaxPlayerCount = MaxPlayerCount;
 
-	if (bRecordReplay)
+	if (ULyraReplaySubsystem::DoesPlatformSupportReplays())
 	{
-		Result->ExtraArgs.Add(TEXT("DemoRec"), FString());
+		if (bRecordReplay)
+		{
+			Result->ExtraArgs.Add(TEXT("DemoRec"), FString());
+		}
 	}
 
 	return Result;
 }
+

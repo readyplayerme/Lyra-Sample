@@ -2,6 +2,9 @@
 
 #include "AbilitySystem/LyraAbilityTagRelationshipMapping.h"
 
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAbilityTagRelationshipMapping)
+
 void ULyraAbilityTagRelationshipMapping::GetAbilityTagsToBlockAndCancel(const FGameplayTagContainer& AbilityTags, FGameplayTagContainer* OutTagsToBlock, FGameplayTagContainer* OutTagsToCancel) const
 {
 	// Simple iteration for now
@@ -57,3 +60,4 @@ bool ULyraAbilityTagRelationshipMapping::IsAbilityCancelledByTag(const FGameplay
 
 	return false;
 }
+

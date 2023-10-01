@@ -2,10 +2,15 @@
 
 
 #include "LyraContextEffectComponent.h"
-#include "LyraContextEffectsLibrary.h"
+
+#include "Engine/World.h"
 #include "LyraContextEffectsSubsystem.h"
-#include "NiagaraFunctionLibrary.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraContextEffectComponent)
+
+class UAnimSequenceBase;
+class USceneComponent;
 
 
 
@@ -167,3 +172,4 @@ void ULyraContextEffectComponent::UpdateLibraries(
 		}
 	}
 }
+

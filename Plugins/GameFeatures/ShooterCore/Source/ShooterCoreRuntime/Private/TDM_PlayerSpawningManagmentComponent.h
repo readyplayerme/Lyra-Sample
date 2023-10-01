@@ -2,9 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Player/LyraPlayerSpawningManagerComponent.h"
+
 #include "TDM_PlayerSpawningManagmentComponent.generated.h"
+
+class AActor;
+class AController;
+class ALyraPlayerStart;
+class UObject;
 
 /**
  * 

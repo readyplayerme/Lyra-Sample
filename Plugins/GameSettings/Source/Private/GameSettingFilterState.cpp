@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameSettingFilterState.h"
-#include "Misc/TextFilterExpressionEvaluator.h"
-#include "Misc/TextFilterUtils.h"
 #include "GameSetting.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingFilterState)
 
 #define LOCTEXT_NAMESPACE "GameSetting"
 
@@ -149,3 +149,4 @@ void FGameSettingEditableState::UnableToReset()
 }
 
 #undef LOCTEXT_NAMESPACE
+

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "GameplayEffectTypes.h"
 #include "LyraAnimInstance.generated.h"
@@ -29,7 +28,7 @@ public:
 protected:
 
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
 #endif // WITH_EDITOR
 
 	virtual void NativeInitializeAnimation() override;

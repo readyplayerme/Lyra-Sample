@@ -2,16 +2,17 @@
 
 #pragma once
 
-#include "CommonUserWidget.h"
-#include "Blueprint/IUserListEntry.h"
 #include "Widgets/GameSettingListEntry.h"
 
 #include "LyraSettingsListEntrySetting_KeyboardInput.generated.h"
 
-class ULyraSettingKeyboardInput;
-class UCommonButtonBase;
-class ULyraButtonBase;
+class UKeyAlreadyBoundWarning;
+
+class UGameSetting;
 class UGameSettingPressAnyKey;
+class ULyraButtonBase;
+class ULyraSettingKeyboardInput;
+class UObject;
 
 //////////////////////////////////////////////////////////////////////////
 // ULyraSettingsListEntrySetting_KeyboardInput
@@ -33,28 +34,42 @@ protected:
 	void HandlePrimaryKeyClicked();
 	void HandleSecondaryKeyClicked();
 	void HandleClearClicked();
+	void HandleResetToDefaultClicked();
 
 	void HandlePrimaryKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
 	void HandleSecondaryKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
+	void HandlePrimaryDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
+	void HandleSecondaryDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
 	void ChangeBinding(int32 BindSlot, FKey InKey);
 	void HandleKeySelectionCanceled(UGameSettingPressAnyKey* PressAnyKeyPanel);
+	void HandleKeySelectionCanceled(UKeyAlreadyBoundWarning* PressAnyKeyPanel);
 
 	void Refresh();
 
+private:
+	UPROPERTY(Transient)
+	FKey OriginalKeyToBind = EKeys::Invalid;
+
 protected:
 	UPROPERTY()
-	ULyraSettingKeyboardInput* KeyboardInputSetting;
+	TObjectPtr<ULyraSettingKeyboardInput> KeyboardInputSetting;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameSettingPressAnyKey> PressAnyKeyPanelClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UKeyAlreadyBoundWarning> KeyAlreadyBoundWarningPanelClass;
+
 private:	// Bound Widgets
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	ULyraButtonBase* Button_PrimaryKey;
+	TObjectPtr<ULyraButtonBase> Button_PrimaryKey;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	ULyraButtonBase* Button_SecondaryKey;
+	TObjectPtr<ULyraButtonBase> Button_SecondaryKey;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	ULyraButtonBase* Button_Clear;
+	TObjectPtr<ULyraButtonBase> Button_Clear;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
+	TObjectPtr<ULyraButtonBase> Button_ResetToDefault;
 };

@@ -2,12 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "Widgets/SWidget.h"
-#include "Widgets/SBoxPanel.h"
 #include "Components/PanelWidget.h"
-#include "Widgets/Layout/SGridPanel.h"
 #include "GameResponsivePanel.generated.h"
 
 class UGameResponsivePanelSlot;

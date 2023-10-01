@@ -17,7 +17,7 @@ struct FLyraAbilitySimpleFailureMessage
 
 public:
 	UPROPERTY(BlueprintReadWrite)
-	APlayerController* PlayerController = nullptr;
+	TObjectPtr<APlayerController> PlayerController = nullptr;
 
 	UPROPERTY(BlueprintReadWrite)
 	FGameplayTagContainer FailureTags;

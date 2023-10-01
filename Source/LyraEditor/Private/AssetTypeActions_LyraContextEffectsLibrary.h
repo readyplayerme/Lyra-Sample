@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-//#include "Toolkits/IToolkitHost.h"
 #include "AssetTypeActions_Base.h"
+#include "AssetTypeCategories.h"
+
+class UClass;
 
 class FAssetTypeActions_LyraContextEffectsLibrary : public FAssetTypeActions_Base
 {

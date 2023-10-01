@@ -1,14 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "Abilities/Tasks/AbilityTask.h"
-#include "AbilityTask_WaitForInteractableTargets.h"
+#include "Interaction/InteractionQuery.h"
+#include "Interaction/Tasks/AbilityTask_WaitForInteractableTargets.h"
+
 #include "AbilityTask_WaitForInteractableTargets_SingleLineTrace.generated.h"
 
-class AActor;
-class UPrimitiveComponent;
+struct FCollisionProfileName;
+
+class UGameplayAbility;
+class UObject;
+struct FFrame;
 
 UCLASS()
 class UAbilityTask_WaitForInteractableTargets_SingleLineTrace : public UAbilityTask_WaitForInteractableTargets

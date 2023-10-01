@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
+#include "Chaos/ChaosEngineInterface.h"
 #include "GameplayTagContainer.h"
 #include "Engine/EngineTypes.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "AnimNotify_LyraContextEffects.generated.h"
 
 /**
@@ -79,7 +78,7 @@ struct LYRAGAME_API FLyraContextEffectAnimNotifyPreviewSettings
 	TEnumAsByte<EPhysicalSurface> PreviewPhysicalSurface = EPhysicalSurface::SurfaceType_Default;
 
 	// Preview Library
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Preview, meta = (AllowedClasses = "LyraContextEffectsLibrary"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Preview, meta = (AllowedClasses = "/Script/LyraGame.LyraContextEffectsLibrary"))
 	FSoftObjectPath PreviewContextEffectsLibrary;
 
 	// Preview Context

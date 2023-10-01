@@ -2,10 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "Factories/Factory.h"
+
 #include "LyraContextEffectsLibraryFactory.generated.h"
+
+class FFeedbackContext;
+class UClass;
+class UObject;
 
 UCLASS(hidecategories = Object, MinimalAPI)
 class ULyraContextEffectsLibraryFactory : public UFactory

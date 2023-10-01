@@ -2,6 +2,9 @@
 
 #include "GameSettingValueScalar.h"
 
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingValueScalar)
+
 #define LOCTEXT_NAMESPACE "GameSetting"
 
 //--------------------------------------
@@ -24,3 +27,4 @@ double UGameSettingValueScalar::GetValueNormalized() const
 }
 
 #undef LOCTEXT_NAMESPACE
+

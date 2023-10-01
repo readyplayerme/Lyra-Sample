@@ -1,7 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraGameplayAbilityTargetData_SingleTargetHit.h"
+
 #include "LyraGameplayEffectContext.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameplayAbilityTargetData_SingleTargetHit)
+
+struct FGameplayEffectContextHandle;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -24,3 +29,4 @@ bool FLyraGameplayAbilityTargetData_SingleTargetHit::NetSerialize(FArchive& Ar, 
 
 	return true;
 }
+

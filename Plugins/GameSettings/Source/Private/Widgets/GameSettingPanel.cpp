@@ -1,23 +1,22 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Widgets/GameSettingPanel.h"
+
+#include "CommonInputSubsystem.h"
+#include "CommonInputTypeEnum.h"
+#include "GameSettingRegistry.h"
 #include "Widgets/GameSettingDetailView.h"
 #include "Widgets/GameSettingListView.h"
 
-#include "GameSetting.h"
-#include "GameSettingValue.h"
-#include "GameSettingCollection.h"
-#include "GameSettingRegistry.h"
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingPanel)
 
-#include "CommonRichTextBlock.h"
-#include "CommonTextBlock.h"
-#include "Containers/Ticker.h"
-#include "CommonInputSubsystem.h"
-#include "Stats/Stats.h"
+class SWidget;
+struct FFocusEvent;
+struct FGeometry;
 
 UGameSettingPanel::UGameSettingPanel()
 {
-	bIsFocusable = true;
+	SetIsFocusable(true);
 }
 
 void UGameSettingPanel::NativeOnInitialized()
@@ -170,7 +169,7 @@ void UGameSettingPanel::RefreshSettingsList()
 		if (Registry->IsFinishedInitializing())
 		{
 			VisibleSettings.Reset();
-			Registry->GetSettingsForFilter(FilterState, VisibleSettings);
+			Registry->GetSettingsForFilter(FilterState, MutableView(VisibleSettings));
 
 			ListView_Settings->SetListItems(VisibleSettings);
 
@@ -220,7 +219,7 @@ void UGameSettingPanel::RefreshSettingsList()
 
 void UGameSettingPanel::HandleSettingItemHoveredChanged(UObject* Item, bool bHovered)
 {
-	UGameSetting* Setting = bHovered ? Cast<UGameSetting>(Item) : LastHoveredOrSelectedSetting;
+	UGameSetting* Setting = bHovered ? Cast<UGameSetting>(Item) : ToRawPtr(LastHoveredOrSelectedSetting);
 	if (bHovered && Setting)
 	{
 		LastHoveredOrSelectedSetting = Setting;
@@ -277,3 +276,4 @@ UGameSetting* UGameSettingPanel::GetSelectedSetting() const
 {
 	return Cast<UGameSetting>(ListView_Settings->GetSelectedItem());
 }
+

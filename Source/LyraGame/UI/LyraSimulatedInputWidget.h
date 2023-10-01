@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonUserWidget.h"
 #include "LyraSimulatedInputWidget.generated.h"
 
@@ -32,6 +31,7 @@ public:
 
 	//~ Begin UUserWidget
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	virtual FReply NativeOnTouchEnded(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
 	//~ End UUserWidget interface
 	
@@ -72,13 +72,17 @@ protected:
 	/** Set the KeyToSimulate based on a query from enhanced input about what keys are mapped to the associated action */
 	void QueryKeyToSimulate();
 
-	/** The common visiblity border will allow you to specifiy UI for only specific platorms if desired */
+	/** Called whenever control mappings change, so we have a chance to adapt our own keys */
+	UFUNCTION()
+	void OnControlMappingsRebuilt();
+
+	/** The common visibility border will allow you to specify UI for only specific platforms if desired */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UCommonHardwareVisibilityBorder* CommonVisibilityBorder = nullptr;
+	TObjectPtr<UCommonHardwareVisibilityBorder> CommonVisibilityBorder = nullptr;
 	
 	/** The associated input action that we should simulate input for */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	const UInputAction* AssociatedAction = nullptr;
+	TObjectPtr<const UInputAction> AssociatedAction = nullptr;
 
 	/** The Key to simulate input for in the case where none are currently bound to the associated action */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)

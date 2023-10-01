@@ -1,22 +1,42 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPlayerController.h"
+#include "CommonInputTypeEnum.h"
+#include "Components/PrimitiveComponent.h"
 #include "LyraLogChannels.h"
-#include "GameModes/LyraGameMode.h"
 #include "LyraCheatManager.h"
 #include "LyraPlayerState.h"
 #include "Camera/LyraPlayerCameraManager.h"
 #include "UI/LyraHUD.h"
-#include "Character/LyraPawnData.h"
 #include "AbilitySystem/LyraAbilitySystemComponent.h"
 #include "EngineUtils.h"
 #include "LyraGameplayTags.h"
 #include "GameFramework/Pawn.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/GameInstance.h"
 #include "AbilitySystemGlobals.h"
 #include "CommonInputSubsystem.h"
 #include "LyraLocalPlayer.h"
+#include "GameModes/LyraGameState.h"
+#include "Settings/LyraSettingsLocal.h"
 #include "Settings/LyraSettingsShared.h"
+#include "Replays/LyraReplaySubsystem.h"
+#include "ReplaySubsystem.h"
 #include "Development/LyraDeveloperSettings.h"
+#include "GameMapsSettings.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPlayerController)
+
+namespace Lyra
+{
+	namespace Input
+	{
+		static int32 ShouldAlwaysPlayForceFeedback = 0;
+		static FAutoConsoleVariableRef CVarShouldAlwaysPlayForceFeedback(TEXT("LyraPC.ShouldAlwaysPlayForceFeedback"),
+			ShouldAlwaysPlayForceFeedback,
+			TEXT("Should force feedback effects be played, even if the last input device was not a gamepad?"));
+	}
+}
 
 ALyraPlayerController::ALyraPlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -44,6 +64,18 @@ void ALyraPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void ALyraPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// Disable replicating the PC target view as it doesn't work well for replays or client-side spectating.
+	// The engine TargetViewRotation is only set in APlayerController::TickActor if the server knows ahead of time that 
+	// a specific pawn is being spectated and it only replicates down for COND_OwnerOnly.
+	// In client-saved replays, COND_OwnerOnly is never true and the target pawn is not always known at the time of recording.
+	// To support client-saved replays, the replication of this was moved to ReplicatedViewRotation and updated in PlayerTick.
+	DISABLE_REPLICATED_PROPERTY(APlayerController, TargetViewRotation);
+}
+
 void ALyraPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
@@ -63,6 +95,33 @@ void ALyraPlayerController::PlayerTick(float DeltaTime)
 			CurrentPawn->AddMovementInput(MovementDirection, 1.0f);	
 		}
 	}
+
+	ALyraPlayerState* LyraPlayerState = GetLyraPlayerState();
+
+	if (PlayerCameraManager && LyraPlayerState)
+	{
+		APawn* TargetPawn = PlayerCameraManager->GetViewTargetPawn();
+
+		if (TargetPawn)
+		{
+			// Update view rotation on the server so it replicates
+			if (HasAuthority() || TargetPawn->IsLocallyControlled())
+			{
+				LyraPlayerState->SetReplicatedViewRotation(TargetPawn->GetViewRotation());
+			}
+
+			// Update the target view rotation if the pawn isn't locally controlled
+			if (!TargetPawn->IsLocallyControlled())
+			{
+				LyraPlayerState = TargetPawn->GetPlayerState<ALyraPlayerState>();
+				if (LyraPlayerState)
+				{
+					// Get it from the spectated pawn's player state, which may not be the same as the PC's playerstate
+					TargetViewRotation = LyraPlayerState->GetReplicatedViewRotation();
+				}
+			}
+		}
+	}
 }
 
 ALyraPlayerState* ALyraPlayerController::GetLyraPlayerState() const
@@ -79,6 +138,74 @@ ULyraAbilitySystemComponent* ALyraPlayerController::GetLyraAbilitySystemComponen
 ALyraHUD* ALyraPlayerController::GetLyraHUD() const
 {
 	return CastChecked<ALyraHUD>(GetHUD(), ECastCheckedType::NullAllowed);
+}
+
+bool ALyraPlayerController::TryToRecordClientReplay()
+{
+	// See if we should record a replay
+	if (ShouldRecordClientReplay())
+	{
+		if (ULyraReplaySubsystem* ReplaySubsystem = GetGameInstance()->GetSubsystem<ULyraReplaySubsystem>())
+		{
+			APlayerController* FirstLocalPlayerController = GetGameInstance()->GetFirstLocalPlayerController();
+			if (FirstLocalPlayerController == this)
+			{
+				// If this is the first player, update the spectator player for local replays and then record
+				if (ALyraGameState* GameState = Cast<ALyraGameState>(GetWorld()->GetGameState()))
+				{
+					GameState->SetRecorderPlayerState(PlayerState);
+
+					ReplaySubsystem->RecordClientReplay(this);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool ALyraPlayerController::ShouldRecordClientReplay()
+{
+	UWorld* World = GetWorld();
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance != nullptr &&
+		World != nullptr &&
+		!World->IsPlayingReplay() &&
+		!World->IsRecordingClientReplay() &&
+		NM_DedicatedServer != GetNetMode() &&
+		IsLocalPlayerController())
+	{
+		FString DefaultMap = UGameMapsSettings::GetGameDefaultMap();
+		FString CurrentMap = World->URL.Map;
+
+#if WITH_EDITOR
+		CurrentMap = UWorld::StripPIEPrefixFromPackageName(CurrentMap, World->StreamingLevelsPrefix);
+#endif
+		if (CurrentMap == DefaultMap)
+		{
+			// Never record demos on the default frontend map, this could be replaced with a better check for being in the main menu
+			return false;
+		}
+
+		if (UReplaySubsystem* ReplaySubsystem = GameInstance->GetSubsystem<UReplaySubsystem>())
+		{
+			if (ReplaySubsystem->IsRecording() || ReplaySubsystem->IsPlaying())
+			{
+				// Only one at a time
+				return false;
+			}
+		}
+
+		// If this is possible, now check the settings
+		if (const ULyraLocalPlayer* LyraLocalPlayer = Cast<ULyraLocalPlayer>(GetLocalPlayer()))
+		{
+			if (LyraLocalPlayer->GetLocalSettings()->ShouldAutoRecordReplays())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void ALyraPlayerController::OnPlayerStateChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam)
@@ -268,7 +395,7 @@ bool ALyraPlayerController::GetIsAutoRunning() const
 	bool bIsAutoRunning = false;
 	if (const ULyraAbilitySystemComponent* LyraASC = GetLyraAbilitySystemComponent())
 	{
-		bIsAutoRunning = LyraASC->GetTagCount(FLyraGameplayTags::Get().Status_AutoRunning) > 0;
+		bIsAutoRunning = LyraASC->GetTagCount(LyraGameplayTags::Status_AutoRunning) > 0;
 	}
 	return bIsAutoRunning;
 }
@@ -277,7 +404,7 @@ void ALyraPlayerController::OnStartAutoRun()
 {
 	if (ULyraAbilitySystemComponent* LyraASC = GetLyraAbilitySystemComponent())
 	{
-		LyraASC->SetLooseGameplayTagCount(FLyraGameplayTags::Get().Status_AutoRunning, 1);
+		LyraASC->SetLooseGameplayTagCount(LyraGameplayTags::Status_AutoRunning, 1);
 		K2_OnStartAutoRun();
 	}	
 }
@@ -286,7 +413,7 @@ void ALyraPlayerController::OnEndAutoRun()
 {
 	if (ULyraAbilitySystemComponent* LyraASC = GetLyraAbilitySystemComponent())
 	{
-		LyraASC->SetLooseGameplayTagCount(FLyraGameplayTags::Get().Status_AutoRunning, 0);
+		LyraASC->SetLooseGameplayTagCount(LyraGameplayTags::Status_AutoRunning, 0);
 		K2_OnEndAutoRun();
 	}
 }
@@ -298,7 +425,7 @@ void ALyraPlayerController::UpdateForceFeedback(IInputInterface* InputInterface,
 		if (const UCommonInputSubsystem* CommonInputSubsystem = UCommonInputSubsystem::Get(GetLocalPlayer()))
 		{
 			const ECommonInputType CurrentInputType = CommonInputSubsystem->GetCurrentInputType();
-			if (CurrentInputType == ECommonInputType::Gamepad || CurrentInputType == ECommonInputType::Touch)
+			if (Lyra::Input::ShouldAlwaysPlayForceFeedback || CurrentInputType == ECommonInputType::Gamepad || CurrentInputType == ECommonInputType::Touch)
 			{
 				InputInterface->SetForceFeedbackChannelValues(ControllerId, ForceFeedbackValues);
 				return;
@@ -402,7 +529,59 @@ void ALyraPlayerController::OnUnPossess()
 //////////////////////////////////////////////////////////////////////
 // ALyraReplayPlayerController
 
-void ALyraReplayPlayerController::SetPlayer(UPlayer* InPlayer)
+void ALyraReplayPlayerController::Tick(float DeltaSeconds)
 {
-	Super::SetPlayer(InPlayer);
+	Super::Tick(DeltaSeconds);
+
+	// The state may go invalid at any time due to scrubbing during a replay
+	if (!IsValid(FollowedPlayerState))
+	{
+		UWorld* World = GetWorld();
+
+		// Listen for changes for both recording and playback
+		if (ALyraGameState* GameState = Cast<ALyraGameState>(World->GetGameState()))
+		{
+			if (!GameState->OnRecorderPlayerStateChangedEvent.IsBoundToObject(this))
+			{
+				GameState->OnRecorderPlayerStateChangedEvent.AddUObject(this, &ThisClass::RecorderPlayerStateUpdated);
+			}
+			if (APlayerState* RecorderState = GameState->GetRecorderPlayerState())
+			{
+				RecorderPlayerStateUpdated(RecorderState);
+			}
+		}
+	}
 }
+
+void ALyraReplayPlayerController::SmoothTargetViewRotation(APawn* TargetPawn, float DeltaSeconds)
+{
+	// Default behavior is to interpolate to TargetViewRotation which is set from APlayerController::TickActor but it's not very smooth
+
+	Super::SmoothTargetViewRotation(TargetPawn, DeltaSeconds);
+}
+
+bool ALyraReplayPlayerController::ShouldRecordClientReplay()
+{
+	return false;
+}
+
+void ALyraReplayPlayerController::RecorderPlayerStateUpdated(APlayerState* NewRecorderPlayerState)
+{
+	if (NewRecorderPlayerState)
+	{
+		FollowedPlayerState = NewRecorderPlayerState;
+
+		// Bind to when pawn changes and call now
+		NewRecorderPlayerState->OnPawnSet.AddUniqueDynamic(this, &ALyraReplayPlayerController::OnPlayerStatePawnSet);
+		OnPlayerStatePawnSet(NewRecorderPlayerState, NewRecorderPlayerState->GetPawn(), nullptr);
+	}
+}
+
+void ALyraReplayPlayerController::OnPlayerStatePawnSet(APlayerState* ChangedPlayerState, APawn* NewPlayerPawn, APawn* OldPlayerPawn)
+{
+	if (ChangedPlayerState == FollowedPlayerState)
+	{
+		SetViewTarget(NewPlayerPawn);
+	}
+}
+

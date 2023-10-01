@@ -6,6 +6,9 @@
 
 #include "LyraGameplayAbilityTargetData_SingleTargetHit.generated.h"
 
+class FArchive;
+struct FGameplayEffectContextHandle;
+
 
 /** Game-specific additions to SingleTargetHit tracking */
 USTRUCT()

@@ -2,14 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Character/LyraCharacter.h"
+
 #include "LyraCharacterWithAbilities.generated.h"
+
+class UAbilitySystemComponent;
+class ULyraAbilitySystemComponent;
+class UObject;
 
 // ALyraCharacter typically gets the ability system component from the possessing player state
 // This represents a character with a self-contained ability system component.
 UCLASS(Blueprintable)
-class ALyraCharacterWithAbilities : public ALyraCharacter
+class LYRAGAME_API ALyraCharacterWithAbilities : public ALyraCharacter
 {
 	GENERATED_BODY()
 
@@ -24,5 +28,12 @@ private:
 
 	// The ability system component sub-object used by player characters.
 	UPROPERTY(VisibleAnywhere, Category = "Lyra|PlayerState")
-	ULyraAbilitySystemComponent* AbilitySystemComponent;
+	TObjectPtr<ULyraAbilitySystemComponent> AbilitySystemComponent;
+	
+	// Health attribute set used by this actor.
+	UPROPERTY()
+	TObjectPtr<const class ULyraHealthSet> HealthSet;
+	// Combat attribute set used by this actor.
+	UPROPERTY()
+	TObjectPtr<const class ULyraCombatSet> CombatSet;
 };

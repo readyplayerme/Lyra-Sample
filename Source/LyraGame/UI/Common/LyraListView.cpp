@@ -3,6 +3,8 @@
 #include "LyraListView.h"
 #include "LyraWidgetFactory.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraListView)
+
 #if WITH_EDITOR
 #include "Editor/WidgetCompilerLog.h"
 #endif

@@ -2,19 +2,25 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Net/Serialization/FastArraySerializer.h"
 #include "Components/PawnComponent.h"
-#include "LyraCharacterPartTypes.h"
-#include "GameplayTagContainer.h"
 #include "Cosmetics/LyraCosmeticAnimationTypes.h"
+#include "LyraCharacterPartTypes.h"
+#include "Net/Serialization/FastArraySerializer.h"
 
 #include "LyraPawnComponent_CharacterParts.generated.h"
 
-class USkeletalMeshComponent;
-class UChildActorComponent;
 class ULyraPawnComponent_CharacterParts;
+namespace EEndPlayReason { enum Type : int; }
+struct FGameplayTag;
 struct FLyraCharacterPartList;
+
+class AActor;
+class UChildActorComponent;
+class UObject;
+class USceneComponent;
+class USkeletalMeshComponent;
+struct FFrame;
+struct FNetDeltaSerializeInfo;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLyraSpawnedCharacterPartsChanged, ULyraPawnComponent_CharacterParts*, ComponentWithChangedParts);
 
@@ -62,11 +68,6 @@ struct FLyraCharacterPartList : public FFastArraySerializer
 	{
 	}
 
-	FLyraCharacterPartList(ULyraPawnComponent_CharacterParts* InOwnerComponent)
-		: OwnerComponent(InOwnerComponent)
-	{
-	}
-
 public:
 	//~FFastArraySerializer contract
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
@@ -84,6 +85,12 @@ public:
 	void ClearAllEntries(bool bBroadcastChangeDelegate);
 
 	FGameplayTagContainer CollectCombinedTags() const;
+
+	void SetOwnerComponent(ULyraPawnComponent_CharacterParts* InOwnerComponent)
+	{
+		OwnerComponent = InOwnerComponent;
+	}
+	
 private:
 	friend ULyraPawnComponent_CharacterParts;
 
@@ -96,8 +103,8 @@ private:
 	TArray<FLyraAppliedCharacterPartEntry> Entries;
 
 	// The component that contains this list
-	UPROPERTY()
-	ULyraPawnComponent_CharacterParts* OwnerComponent;
+	UPROPERTY(NotReplicated)
+	TObjectPtr<ULyraPawnComponent_CharacterParts> OwnerComponent;
 
 	// Upcounter for handles
 	int32 PartHandleCounter = 0;
@@ -123,6 +130,7 @@ public:
 	//~UActorComponent interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void OnRegister() override;
 	//~End of UActorComponent interface
 
 	// Adds a character part to the actor that owns this customization component, should be called on the authority only
@@ -161,7 +169,7 @@ public:
 
 private:
 	// List of character parts
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, Transient)
 	FLyraCharacterPartList CharacterPartList;
 
 	// Rules for how to pick a body style mesh for animation to play on, based on character part cosmetics tags

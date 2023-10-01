@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Input/CommonBoundActionButton.h"
+
 #include "LyraBoundActionButton.generated.h"
+
+class UCommonButtonStyle;
+class UObject;
 
 /**
  * 

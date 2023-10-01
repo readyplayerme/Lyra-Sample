@@ -3,15 +3,19 @@
 #pragma once
 
 #include "Components/ListView.h"
-#include "GameSettingListEntry.h"
 
 #include "GameSettingListView.generated.h"
+
+class STableViewBase;
 
 class UGameSettingCollection;
 class ULocalPlayer;
 class UGameSettingVisualData;
 
-UCLASS()
+/**
+ * List of game settings.  Every entry widget needs to extend from GameSettingListEntryBase.
+ */
+UCLASS(meta = (EntryClass = GameSettingListEntryBase))
 class GAMESETTINGS_API UGameSettingListView : public UListView
 {
 	GENERATED_BODY()
@@ -31,7 +35,7 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere)
-	UGameSettingVisualData* VisualData;
+	TObjectPtr<UGameSettingVisualData> VisualData;
 
 private:
 	TMap<FName, FText> NameOverrides;

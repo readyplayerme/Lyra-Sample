@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ModularPlayerController.h"
 
 #include "CommonPlayerController.generated.h"
+
+class APawn;
+class UObject;
 
 UCLASS(config=Game)
 class COMMONGAME_API ACommonPlayerController : public AModularPlayerController

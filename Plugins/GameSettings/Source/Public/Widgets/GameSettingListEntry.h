@@ -2,37 +2,37 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "CommonUserWidget.h"
-#include "Blueprint/IUserListEntry.h"
-#include "Engine/DataTable.h"
-#include "GameSetting.h"
 
 #include "GameSettingListEntry.generated.h"
 
-class UCommonRichTextBlock;
-class UCommonTextBlock;
-class UCommonRotator;
-class UCommonButtonBase;
+class FGameSettingEditableState;
+enum class EGameSettingChangeReason : uint8;
+
 class UAnalogSlider;
-class USlider;
-class UGameSettingControllerInput;
+class UCommonButtonBase;
+class UCommonTextBlock;
+class UGameSetting;
+class UGameSettingAction;
+class UGameSettingCollectionPage;
+class UGameSettingRotator;
 class UGameSettingValueDiscrete;
 class UGameSettingValueScalar;
-class UGameSettingKeyboardInput;
-class UGameSettingAction;
-class UGameSettingRotator;
-class UGameSettingPressAnyKey;
-class UGameSettingCollectionPage;
-class UMenuAnchor;
+class UObject;
+class UPanelWidget;
+class UUserWidget;
+class UWidget;
+struct FFocusEvent;
+struct FFrame;
+struct FGeometry;
 
 //////////////////////////////////////////////////////////////////////////
 // UAthenaChallengeListEntry
 //////////////////////////////////////////////////////////////////////////
 
 UCLASS(Abstract, NotBlueprintable, meta = (Category = "Settings", DisableNativeTick))
-class GAMESETTINGS_API UGameSettingListEntryBase : public UCommonUserWidget, public IUserListEntry
+class GAMESETTINGS_API UGameSettingListEntryBase : public UCommonUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 
@@ -57,7 +57,7 @@ protected:
 	bool bSuspendChangeUpdates = false;
 
 	UPROPERTY()
-	UGameSetting* Setting;
+	TObjectPtr<UGameSetting> Setting;
 
 	FText DisplayNameOverride = FText::GetEmpty();
 
@@ -65,7 +65,7 @@ private:
 	void HandleSettingChanged(UGameSetting* InSetting, EGameSettingChangeReason Reason);
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, BlueprintProtected = true, AllowPrivateAccess = true))
-	UUserWidget* Background;
+	TObjectPtr<UUserWidget> Background;
 };
 
 
@@ -83,7 +83,7 @@ public:
 	
 private:	// Bound Widgets
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UCommonTextBlock* Text_SettingName;
+	TObjectPtr<UCommonTextBlock> Text_SettingName;
 };
 
 
@@ -114,20 +114,20 @@ protected:
 
 protected:
 	UPROPERTY()
-	UGameSettingValueDiscrete* DiscreteSetting;
+	TObjectPtr<UGameSettingValueDiscrete> DiscreteSetting;
 
 private:	// Bound Widgets
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UPanelWidget* Panel_Value;
+	TObjectPtr<UPanelWidget> Panel_Value;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UGameSettingRotator* Rotator_SettingValue;
+	TObjectPtr<UGameSettingRotator> Rotator_SettingValue;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UCommonButtonBase* Button_Decrease;
+	TObjectPtr<UCommonButtonBase> Button_Decrease;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UCommonButtonBase* Button_Increase;
+	TObjectPtr<UCommonButtonBase> Button_Increase;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -163,17 +163,17 @@ protected:
 
 protected:
 	UPROPERTY()
-	UGameSettingValueScalar* ScalarSetting;
+	TObjectPtr<UGameSettingValueScalar> ScalarSetting;
 
 private:	// Bound Widgets
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UPanelWidget* Panel_Value;
+	TObjectPtr<UPanelWidget> Panel_Value;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UAnalogSlider* Slider_SettingValue;
+	TObjectPtr<UAnalogSlider> Slider_SettingValue;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UCommonTextBlock* Text_SettingValue;
+	TObjectPtr<UCommonTextBlock> Text_SettingValue;
 };
 
 
@@ -201,12 +201,12 @@ protected:
 
 protected:
 	UPROPERTY()
-	UGameSettingAction* ActionSetting;
+	TObjectPtr<UGameSettingAction> ActionSetting;
 
 private:	// Bound Widgets
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UCommonButtonBase* Button_Action;
+	TObjectPtr<UCommonButtonBase> Button_Action;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -233,10 +233,10 @@ protected:
 
 protected:
 	UPROPERTY()
-	UGameSettingCollectionPage* CollectionSetting;
+	TObjectPtr<UGameSettingCollectionPage> CollectionSetting;
 
 private:	// Bound Widgets
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	UCommonButtonBase* Button_Navigate;
+	TObjectPtr<UCommonButtonBase> Button_Navigate;
 };

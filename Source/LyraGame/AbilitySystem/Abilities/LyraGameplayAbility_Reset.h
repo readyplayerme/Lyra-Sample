@@ -2,9 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/LyraGameplayAbility.h"
+
 #include "LyraGameplayAbility_Reset.generated.h"
+
+class AActor;
+class UObject;
+struct FGameplayAbilityActorInfo;
+struct FGameplayEventData;
 
 /**
  * ULyraGameplayAbility_Reset
@@ -22,8 +27,6 @@ public:
 
 protected:
 	
-	void DoneAddingNativeTags();
-
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 };
 
@@ -35,5 +38,5 @@ struct FLyraPlayerResetMessage
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly)
-	AActor* OwnerPlayerState = nullptr;
+	TObjectPtr<AActor> OwnerPlayerState = nullptr;
 };

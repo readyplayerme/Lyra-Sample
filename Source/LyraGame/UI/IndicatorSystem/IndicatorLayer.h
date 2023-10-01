@@ -2,15 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "Widgets/SWidget.h"
-#include "Components/PanelWidget.h"
-#include "GameplayTagContainer.h"
+#include "Components/Widget.h"
 
 #include "IndicatorLayer.generated.h"
 
 class SActorCanvas;
+class SWidget;
+class UObject;
 
 UCLASS()
 class UIndicatorLayer : public UWidget

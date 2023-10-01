@@ -1,48 +1,45 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "IPickupable.h"
-#include "DrawDebugHelpers.h"
-#include "Abilities/GameplayAbilityTypes.h"
+
 #include "GameFramework/Actor.h"
-#include "Components/ActorComponent.h"
-#include "UObject/ScriptInterface.h"
-#include "Abilities/GameplayAbility.h"
 #include "LyraInventoryManagerComponent.h"
+#include "UObject/ScriptInterface.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(IPickupable)
+
+class UActorComponent;
 
 UPickupableStatics::UPickupableStatics()
 	: Super(FObjectInitializer::Get())
 {
 }
 
-TScriptInterface<IPickupable> UPickupableStatics::GetIPickupableFromActorInfo(UGameplayAbility* Ability)
+TScriptInterface<IPickupable> UPickupableStatics::GetFirstPickupableFromActor(AActor* Actor)
 {
-	const FGameplayAbilityActorInfo* ActorInfo = Ability->GetCurrentActorInfo();
-	AActor* Avatar = ActorInfo->AvatarActor.Get();
-
 	// If the actor is directly pickupable, return that.
-	TScriptInterface<IPickupable> PickupableActor(Avatar);
+	TScriptInterface<IPickupable> PickupableActor(Actor);
 	if (PickupableActor)
 	{
 		return PickupableActor;
 	}
 
 	// If the actor isn't pickupable, it might have a component that has a pickupable interface.
-	TArray<UActorComponent*> PickupableComponents = Avatar ? Avatar->GetComponentsByInterface(UPickupable::StaticClass()) : TArray<UActorComponent*>();
+	TArray<UActorComponent*> PickupableComponents = Actor ? Actor->GetComponentsByInterface(UPickupable::StaticClass()) : TArray<UActorComponent*>();
 	if (PickupableComponents.Num() > 0)
 	{
-		ensureMsgf(PickupableComponents.Num() == 1, TEXT("We don't support multiple pickupable components yet."));
-
+		// Get first pickupable, if the user needs more sophisticated pickup distinction, will need to be solved elsewhere.
 		return TScriptInterface<IPickupable>(PickupableComponents[0]);
 	}
 
 	return TScriptInterface<IPickupable>();
 }
 
-void UPickupableStatics::AddPickupInventory(ULyraInventoryManagerComponent* InventoryComponent, TScriptInterface<IPickupable> Pickupable)
+void UPickupableStatics::AddPickupToInventory(ULyraInventoryManagerComponent* InventoryComponent, TScriptInterface<IPickupable> Pickup)
 {
-	if (InventoryComponent && Pickupable)
+	if (InventoryComponent && Pickup)
 	{
-		const FInventoryPickup& PickupInventory = Pickupable->GetPickupInventory();
+		const FInventoryPickup& PickupInventory = Pickup->GetPickupInventory();
 
 		for (const FPickupTemplate& Template : PickupInventory.Templates)
 		{

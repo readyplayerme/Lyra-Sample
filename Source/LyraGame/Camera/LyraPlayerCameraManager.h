@@ -2,9 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Camera/PlayerCameraManager.h"
+
 #include "LyraPlayerCameraManager.generated.h"
+
+class FDebugDisplayInfo;
+class UCanvas;
+class UObject;
 
 
 #define LYRA_CAMERA_DEFAULT_FOV			(80.0f)
@@ -38,5 +42,5 @@ protected:
 private:
 	/** The UI Camera Component, controls the camera when UI is doing something important that gameplay doesn't get priority over. */
 	UPROPERTY(Transient)
-	ULyraUICameraManagerComponent* UICamera;
+	TObjectPtr<ULyraUICameraManagerComponent> UICamera;
 };

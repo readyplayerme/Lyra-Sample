@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFeatureAction_WorldActionBase.h"
+#include "UObject/SoftObjectPtr.h"
 #include "GameFeatureAction_AddInputBinding.generated.h"
 
 class AActor;
@@ -30,7 +30,7 @@ public:
 
 	//~ Begin UObject interface
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
 #endif
 	//~ End UObject interface
 

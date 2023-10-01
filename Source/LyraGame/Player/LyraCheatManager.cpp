@@ -1,10 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraCheatManager.h"
+#include "GameFramework/Pawn.h"
 #include "LyraPlayerController.h"
 #include "LyraDebugCameraController.h"
 #include "Engine/Engine.h"
-#include "Engine/World.h"
+#include "Engine/GameViewportClient.h"
 #include "Engine/Console.h"
 #include "GameFramework/HUD.h"
 #include "System/LyraAssetManager.h"
@@ -12,11 +13,12 @@
 #include "LyraGameplayTags.h"
 #include "AbilitySystem/LyraAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "GameplayEffect.h"
 #include "Character/LyraHealthComponent.h"
 #include "Character/LyraPawnExtensionComponent.h"
 #include "System/LyraSystemStatics.h"
 #include "Development/LyraDeveloperSettings.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCheatManager)
 
 DEFINE_LOG_CATEGORY(LogLyraCheat);
 
@@ -238,7 +240,7 @@ void ULyraCheatManager::CancelActivatedAbilities()
 
 void ULyraCheatManager::AddTagToSelf(FString TagName)
 {
-	FGameplayTag Tag = FLyraGameplayTags::FindTagByString(TagName, true);
+	FGameplayTag Tag = LyraGameplayTags::FindTagByString(TagName, true);
 	if (Tag.IsValid())
 	{
 		if (ULyraAbilitySystemComponent* LyraASC = GetPlayerAbilitySystemComponent())
@@ -254,7 +256,7 @@ void ULyraCheatManager::AddTagToSelf(FString TagName)
 
 void ULyraCheatManager::RemoveTagFromSelf(FString TagName)
 {
-	FGameplayTag Tag = FLyraGameplayTags::FindTagByString(TagName, true);
+	FGameplayTag Tag = LyraGameplayTags::FindTagByString(TagName, true);
 	if (Tag.IsValid())
 	{
 		if (ULyraAbilitySystemComponent* LyraASC = GetPlayerAbilitySystemComponent())
@@ -306,7 +308,7 @@ void ULyraCheatManager::ApplySetByCallerDamage(ULyraAbilitySystemComponent* Lyra
 
 	if (SpecHandle.IsValid())
 	{
-		SpecHandle.Data->SetSetByCallerMagnitude(FLyraGameplayTags::Get().SetByCaller_Damage, DamageAmount);
+		SpecHandle.Data->SetSetByCallerMagnitude(LyraGameplayTags::SetByCaller_Damage, DamageAmount);
 		LyraASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
 }
@@ -342,7 +344,7 @@ void ULyraCheatManager::ApplySetByCallerHeal(ULyraAbilitySystemComponent* LyraAS
 
 	if (SpecHandle.IsValid())
 	{
-		SpecHandle.Data->SetSetByCallerMagnitude(FLyraGameplayTags::Get().SetByCaller_Heal, HealAmount);
+		SpecHandle.Data->SetSetByCallerMagnitude(LyraGameplayTags::SetByCaller_Heal, HealAmount);
 		LyraASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
 }
@@ -360,9 +362,9 @@ void ULyraCheatManager::DamageSelfDestruct()
 {
 	if (ALyraPlayerController* LyraPC = Cast<ALyraPlayerController>(GetOuterAPlayerController()))
 	{
-		if (const ULyraPawnExtensionComponent* PawnExtComp = ULyraPawnExtensionComponent::FindPawnExtensionComponent(LyraPC->GetPawn()))
+ 		if (const ULyraPawnExtensionComponent* PawnExtComp = ULyraPawnExtensionComponent::FindPawnExtensionComponent(LyraPC->GetPawn()))
 		{
-			if (PawnExtComp->IsPawnReadyToInitialize())
+			if (PawnExtComp->HasReachedInitState(LyraGameplayTags::InitState_GameplayReady))
 			{
 				if (ULyraHealthComponent* HealthComponent = ULyraHealthComponent::FindHealthComponent(LyraPC->GetPawn()))
 				{
@@ -386,7 +388,7 @@ void ULyraCheatManager::God()
 
 		if (ULyraAbilitySystemComponent* LyraASC = LyraPC->GetLyraAbilitySystemComponent())
 		{
-			const FGameplayTag Tag = FLyraGameplayTags::Get().Cheat_GodMode;
+			const FGameplayTag Tag = LyraGameplayTags::Cheat_GodMode;
 			const bool bHasTag = LyraASC->HasMatchingGameplayTag(Tag);
 
 			if (bHasTag)
@@ -405,7 +407,7 @@ void ULyraCheatManager::UnlimitedHealth(int32 Enabled)
 {
 	if (ULyraAbilitySystemComponent* LyraASC = GetPlayerAbilitySystemComponent())
 	{
-		const FGameplayTag Tag = FLyraGameplayTags::Get().Cheat_UnlimitedHealth;
+		const FGameplayTag Tag = LyraGameplayTags::Cheat_UnlimitedHealth;
 		const bool bHasTag = LyraASC->HasMatchingGameplayTag(Tag);
 
 		if ((Enabled == -1) || ((Enabled > 0) && !bHasTag) || ((Enabled == 0) && bHasTag))
@@ -421,3 +423,4 @@ void ULyraCheatManager::UnlimitedHealth(int32 Enabled)
 		}
 	}
 }
+

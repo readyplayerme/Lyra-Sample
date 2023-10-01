@@ -1,17 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraTeamCreationComponent.h"
-#include "Net/UnrealNetwork.h"
-#include "GameModes/LyraExperienceDefinition.h"
 #include "GameModes/LyraExperienceManagerComponent.h"
 #include "LyraTeamPublicInfo.h"
 #include "LyraTeamPrivateInfo.h"
-#include "GameFramework/PlayerState.h"
 #include "Player/LyraPlayerState.h"
-#include "GameFramework/PlayerController.h"
-#include "GameFramework/GameModeBase.h"
 #include "Engine/World.h"
 #include "GameModes/LyraGameMode.h"
+
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTeamCreationComponent)
 
 ULyraTeamCreationComponent::ULyraTeamCreationComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -21,9 +22,9 @@ ULyraTeamCreationComponent::ULyraTeamCreationComponent(const FObjectInitializer&
 }
 
 #if WITH_EDITOR
-EDataValidationResult ULyraTeamCreationComponent::IsDataValid(TArray<FText>& ValidationErrors)
+EDataValidationResult ULyraTeamCreationComponent::IsDataValid(FDataValidationContext& Context) const
 {
-	EDataValidationResult Result = Super::IsDataValid(ValidationErrors);
+	EDataValidationResult Result = Super::IsDataValid(Context);
 
 	//@TODO: TEAMS: Validate that all display assets have the same properties set!
 
@@ -80,7 +81,7 @@ void ULyraTeamCreationComponent::ServerAssignPlayersToTeams()
 	ALyraGameMode* GameMode = Cast<ALyraGameMode>(GameState->AuthorityGameMode);
 	check(GameMode);
 
-	GameMode->OnGameModeCombinedPostLogin().AddUObject(this, &ThisClass::OnPostLogin);
+	GameMode->OnGameModePlayerInitialized.AddUObject(this, &ThisClass::OnPlayerInitialized);
 }
 
 void ULyraTeamCreationComponent::ServerChooseTeamForPlayer(ALyraPlayerState* PS)
@@ -96,7 +97,7 @@ void ULyraTeamCreationComponent::ServerChooseTeamForPlayer(ALyraPlayerState* PS)
 	}
 }
 
-void ULyraTeamCreationComponent::OnPostLogin(AGameModeBase* GameMode, AController* NewPlayer)
+void ULyraTeamCreationComponent::OnPlayerInitialized(AGameModeBase* GameMode, AController* NewPlayer)
 {
 	check(NewPlayer);
 	check(NewPlayer->PlayerState);
@@ -186,3 +187,4 @@ int32 ULyraTeamCreationComponent::GetLeastPopulatedTeamID() const
 	return INDEX_NONE;
 }
 #endif	// WITH_SERVER_CODE
+

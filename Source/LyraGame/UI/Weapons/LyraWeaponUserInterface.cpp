@@ -1,10 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraWeaponUserInterface.h"
-#include "Net/UnrealNetwork.h"
-#include "Weapons/LyraWeaponInstance.h"
+
 #include "Equipment/LyraEquipmentManagerComponent.h"
 #include "GameFramework/Pawn.h"
+#include "Weapons/LyraWeaponInstance.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraWeaponUserInterface)
+
+struct FGeometry;
 
 ULyraWeaponUserInterface::ULyraWeaponUserInterface(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -47,3 +51,4 @@ void ULyraWeaponUserInterface::RebuildWidgetFromWeapon()
 {
 	
 }
+

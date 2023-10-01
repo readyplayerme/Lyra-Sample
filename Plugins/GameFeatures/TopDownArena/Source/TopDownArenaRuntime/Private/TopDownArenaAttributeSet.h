@@ -2,10 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Attributes/LyraAttributeSet.h"
-#include "NativeGameplayTags.h"
+#include "AbilitySystemComponent.h"
+
 #include "TopDownArenaAttributeSet.generated.h"
+
+class UObject;
+struct FFrame;
 
 /**
  * UTopDownArenaAttributeSet

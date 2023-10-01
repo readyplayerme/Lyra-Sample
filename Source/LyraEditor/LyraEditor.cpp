@@ -1,23 +1,29 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraEditor.h"
-#include "Modules/ModuleManager.h"
-#include "Modules/ModuleInterface.h"
-#include "GameplayAbilitiesModule.h"
-#include "GameplayAbilitiesEditorModule.h"
+
 #include "AbilitySystemGlobals.h"
+#include "DataValidationModule.h"
+#include "Development/LyraDeveloperSettings.h"
+#include "Editor/UnrealEdEngine.h"
+#include "Engine/GameInstance.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "GameEditorStyle.h"
+#include "GameModes/LyraExperienceManager.h"
+#include "GameplayAbilitiesEditorModule.h"
 #include "GameplayCueInterface.h"
 #include "GameplayCueNotify_Burst.h"
 #include "GameplayCueNotify_BurstLatent.h"
 #include "GameplayCueNotify_Looping.h"
-#include "Editor.h"
-#include "UnrealEdGlobals.h"
-#include "ToolMenus.h"
-#include "Editor/UnrealEdEngine.h"
 #include "Private/AssetTypeActions_LyraContextEffectsLibrary.h"
+#include "ToolMenu.h"
+#include "ToolMenus.h"
+#include "UObject/UObjectIterator.h"
+#include "UnrealEdGlobals.h"
 #include "Validation/EditorValidator.h"
-#include "GameEditorStyle.h"
-#include "GameModes/LyraExperienceManager.h"
+
+class SWidget;
 
 #define LOCTEXT_NAMESPACE "LyraEditor"
 
@@ -94,39 +100,43 @@ static bool HasPlayWorldAndRunning()
 	return HasPlayWorld() && !GUnrealEd->PlayWorld->bDebugPauseExecution;
 }
 
-static void AddPlayer_Clicked()
+static void OpenCommonMap_Clicked(const FString MapPath)
 {
-	if (ensure(GEditor->PlayWorld))
+	if (ensure(MapPath.Len()))
 	{
-		if (UGameInstance* GameInstance = GEditor->PlayWorld->GetGameInstance())
-		{
-			if (GameInstance->GetNumLocalPlayers() == 1)
-			{
-				GameInstance->DebugCreatePlayer(1);
-			}
-			else
-			{
-				GameInstance->DebugRemovePlayer(1);
-			}
-		}
+		GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(MapPath);
 	}
 }
 
-static TSharedRef<SWidget> AddLocalPlayer()
+static bool CanShowCommonMaps()
+{
+	return HasNoPlayWorld() && !GetDefault<ULyraDeveloperSettings>()->CommonEditorMaps.IsEmpty();
+}
+
+static TSharedRef<SWidget> GetCommonMapsDropdown()
 {
 	FMenuBuilder MenuBuilder(true, nullptr);
-
-	MenuBuilder.AddMenuEntry(
-		LOCTEXT("SplitscreenButton", "Splitscreen"),
-		LOCTEXT("SplitscreenDescription", "Adds/Removes a Splitscreen Player to the current PIE session"),
-		FSlateIcon(),
-		FUIAction(
-			FExecuteAction::CreateStatic(&AddPlayer_Clicked),
-			FCanExecuteAction::CreateStatic(&HasPlayWorld),
-			FIsActionChecked(),
-			FIsActionButtonVisible::CreateStatic(&HasPlayWorld)
-		)
-	);
+	
+	for (const FSoftObjectPath& Path : GetDefault<ULyraDeveloperSettings>()->CommonEditorMaps)
+	{
+		if (!Path.IsValid())
+		{
+			continue;
+		}
+		
+		const FText DisplayName = FText::FromString(Path.GetAssetName());
+		MenuBuilder.AddMenuEntry(
+			DisplayName,
+			LOCTEXT("CommonPathDescription", "Opens this map in the editor"),
+			FSlateIcon(),
+			FUIAction(
+				FExecuteAction::CreateStatic(&OpenCommonMap_Clicked, Path.ToString()),
+				FCanExecuteAction::CreateStatic(&HasNoPlayWorld),
+				FIsActionChecked(),
+				FIsActionButtonVisible::CreateStatic(&HasNoPlayWorld)
+			)
+		);
+	}
 
 	return MenuBuilder.MakeWidget();
 }
@@ -140,21 +150,23 @@ static void RegisterGameEditorMenus()
 {
 	UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.LevelEditorToolBar.PlayToolBar");
 	FToolMenuSection& Section = Menu->AddSection("PlayGameExtensions", TAttribute<FText>(), FToolMenuInsert("Play", EToolMenuInsertType::After));
-	
-	FToolMenuEntry BlueprintEntry = FToolMenuEntry::InitComboButton(
-		"OpenGameMenu",
-		FUIAction(
-			FExecuteAction(),
-			FCanExecuteAction::CreateStatic(&HasPlayWorld),
-			FIsActionChecked(),
-			FIsActionButtonVisible::CreateStatic(&HasPlayWorld)),
-		FOnGetContent::CreateStatic(&AddLocalPlayer),
-		LOCTEXT("GameOptions_Label", "Game Options"),
-		LOCTEXT("GameOptions_ToolTip", "Game Options"),
-		FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.OpenLevelBlueprint")
-	);
-	BlueprintEntry.StyleNameOverride = "CalloutToolbar";
-	Section.AddEntry(BlueprintEntry);
+
+	// Uncomment this to add a custom toolbar that is displayed during PIE
+	// Useful for making easy access to changing game state artificially, adding cheats, etc
+	// FToolMenuEntry BlueprintEntry = FToolMenuEntry::InitComboButton(
+	// 	"OpenGameMenu",
+	// 	FUIAction(
+	// 		FExecuteAction(),
+	// 		FCanExecuteAction::CreateStatic(&HasPlayWorld),
+	// 		FIsActionChecked(),
+	// 		FIsActionButtonVisible::CreateStatic(&HasPlayWorld)),
+	// 	FOnGetContent::CreateStatic(&YourCustomMenu),
+	// 	LOCTEXT("GameOptions_Label", "Game Options"),
+	// 	LOCTEXT("GameOptions_ToolTip", "Game Options"),
+	// 	FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.OpenLevelBlueprint")
+	// );
+	// BlueprintEntry.StyleNameOverride = "CalloutToolbar";
+	// Section.AddEntry(BlueprintEntry);
 
 	FToolMenuEntry CheckContentEntry = FToolMenuEntry::InitToolBarButton(
 		"CheckContent",
@@ -163,12 +175,27 @@ static void RegisterGameEditorMenus()
 			FCanExecuteAction::CreateStatic(&HasNoPlayWorld),
 			FIsActionChecked(),
 			FIsActionButtonVisible::CreateStatic(&HasNoPlayWorld)),
-		LOCTEXT( "CheckContentButton", "Check Content" ),
-		LOCTEXT( "CheckContentDescription", "Runs the Content Validation job on all checked out assets to look for warnings and errors" ),
+		LOCTEXT("CheckContentButton", "Check Content"),
+		LOCTEXT("CheckContentDescription", "Runs the Content Validation job on all checked out assets to look for warnings and errors"),
 		FSlateIcon(FGameEditorStyle::GetStyleSetName(), "GameEditor.CheckContent")
 	);
 	CheckContentEntry.StyleNameOverride = "CalloutToolbar";
 	Section.AddEntry(CheckContentEntry);
+
+	FToolMenuEntry CommonMapEntry = FToolMenuEntry::InitComboButton(
+		"CommonMapOptions",
+		FUIAction(
+			FExecuteAction(),
+			FCanExecuteAction::CreateStatic(&HasNoPlayWorld),
+			FIsActionChecked(),
+			FIsActionButtonVisible::CreateStatic(&CanShowCommonMaps)),
+		FOnGetContent::CreateStatic(&GetCommonMapsDropdown),
+		LOCTEXT("CommonMaps_Label", "Common Maps"),
+		LOCTEXT("CommonMaps_ToolTip", "Some commonly desired maps while using the editor"),
+		FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Level")
+	);
+	CommonMapEntry.StyleNameOverride = "CalloutToolbar";
+	Section.AddEntry(CommonMapEntry);
 }
 
 /**
@@ -190,7 +217,7 @@ class FLyraEditorModule : public FDefaultGameModuleImpl
 
 			if (FSlateApplication::IsInitialized())
 			{
-				UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateStatic(&RegisterGameEditorMenus));
+				ToolMenusHandle = UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateStatic(&RegisterGameEditorMenus));
 			}
 
 			FEditorDelegates::BeginPIE.AddRaw(this, &ThisClass::OnBeginPIE);
@@ -198,9 +225,12 @@ class FLyraEditorModule : public FDefaultGameModuleImpl
 		}
 
 		// Register the Context Effects Library asset type actions.
-		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
-
-		AssetTools.RegisterAssetTypeActions(MakeShareable(new FAssetTypeActions_LyraContextEffectsLibrary));
+		{
+			IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+			TSharedRef<FAssetTypeActions_LyraContextEffectsLibrary> AssetAction = MakeShared<FAssetTypeActions_LyraContextEffectsLibrary>();
+			LyraContextEffectsLibraryAssetAction = AssetAction;
+			AssetTools.RegisterAssetTypeActions(AssetAction);
+		}
 	}
 
 	void OnBeginPIE(bool bIsSimulating)
@@ -216,7 +246,28 @@ class FLyraEditorModule : public FDefaultGameModuleImpl
 
 	virtual void ShutdownModule() override
 	{
+		// Unregister the Context Effects Library asset type actions.
+		{
+			FAssetToolsModule* AssetToolsModule = FModuleManager::GetModulePtr<FAssetToolsModule>("AssetTools");
+			TSharedPtr<IAssetTypeActions> AssetAction = LyraContextEffectsLibraryAssetAction.Pin();
+			if (AssetToolsModule && AssetAction)
+			{
+				AssetToolsModule->Get().UnregisterAssetTypeActions(AssetAction.ToSharedRef());
+			}
+		}
+
+		FEditorDelegates::BeginPIE.RemoveAll(this);
+		FEditorDelegates::EndPIE.RemoveAll(this);
+
+		// Undo UToolMenus
+		if (UObjectInitialized() && ToolMenusHandle.IsValid())
+		{
+			UToolMenus::UnRegisterStartupCallback(ToolMenusHandle);
+		}
+
+		UnbindGameplayAbilitiesEditorDelegates();
 		FModuleManager::Get().OnModulesChanged().RemoveAll(this);
+		FGameEditorStyle::Shutdown();
 	}
 
 protected:
@@ -230,6 +281,17 @@ protected:
 		GameplayAbilitiesEditorModule.GetGameplayCueNotifyPathDelegate().BindStatic(&GetGameplayCuePath);
 	}
 
+	static void UnbindGameplayAbilitiesEditorDelegates()
+	{
+		if (IGameplayAbilitiesEditorModule::IsAvailable())
+		{
+			IGameplayAbilitiesEditorModule& GameplayAbilitiesEditorModule = IGameplayAbilitiesEditorModule::Get();
+			GameplayAbilitiesEditorModule.GetGameplayCueNotifyClassesDelegate().Unbind();
+			GameplayAbilitiesEditorModule.GetGameplayCueInterfaceClassesDelegate().Unbind();
+			GameplayAbilitiesEditorModule.GetGameplayCueNotifyPathDelegate().Unbind();
+		}
+	}
+
 	void ModulesChangedCallback(FName ModuleThatChanged, EModuleChangeReason ReasonForChange)
 	{
 		if ((ReasonForChange == EModuleChangeReason::ModuleLoaded) && (ModuleThatChanged.ToString() == TEXT("GameplayAbilitiesEditor")))
@@ -237,6 +299,10 @@ protected:
 			BindGameplayAbilitiesEditorDelegates();
 		}
 	}
+
+private:
+	TWeakPtr<IAssetTypeActions> LyraContextEffectsLibraryAssetAction;
+	FDelegateHandle ToolMenusHandle;
 };
 
 IMPLEMENT_MODULE(FLyraEditorModule, LyraEditor);

@@ -1,14 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "AbilityTask_GrantNearbyInteraction.h"
-#include "GameFramework/Actor.h"
-#include "Physics/LyraCollisionChannels.h"
-#include "Interaction/IInteractableTarget.h"
-#include "Interaction/InteractionStatics.h"
-#include "Interaction/InteractionQuery.h"
+
 #include "AbilitySystemComponent.h"
-#include "TimerManager.h"
+#include "Engine/World.h"
 #include "GameFramework/Controller.h"
+#include "Interaction/IInteractableTarget.h"
+#include "Interaction/InteractionOption.h"
+#include "Interaction/InteractionQuery.h"
+#include "Interaction/InteractionStatics.h"
+#include "Physics/LyraCollisionChannels.h"
+#include "TimerManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AbilityTask_GrantNearbyInteraction)
 
 UAbilityTask_GrantNearbyInteraction::UAbilityTask_GrantNearbyInteraction(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -33,10 +37,12 @@ void UAbilityTask_GrantNearbyInteraction::Activate()
 
 void UAbilityTask_GrantNearbyInteraction::OnDestroy(bool AbilityEnded)
 {
-	Super::OnDestroy(AbilityEnded);
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(QueryTimerHandle);
+	}
 
-	UWorld* World = GetWorld();
-	World->GetTimerManager().ClearTimer(QueryTimerHandle);
+	Super::OnDestroy(AbilityEnded);
 }
 
 void UAbilityTask_GrantNearbyInteraction::QueryInteractables()
@@ -85,3 +91,4 @@ void UAbilityTask_GrantNearbyInteraction::QueryInteractables()
 		}
 	}
 }
+

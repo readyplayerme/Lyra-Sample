@@ -3,8 +3,11 @@
 #include "LyraGameViewportClient.h"
 
 #include "CommonUISettings.h"
-#include "NativeGameplayTags.h"
 #include "ICommonUIModule.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameViewportClient)
+
+class UGameInstance;
 
 namespace GameViewportTags
 {

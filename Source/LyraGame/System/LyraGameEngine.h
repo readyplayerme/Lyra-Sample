@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/GameEngine.h"
+
 #include "LyraGameEngine.generated.h"
+
+class IEngineLoop;
+class UObject;
 
 
 UCLASS()

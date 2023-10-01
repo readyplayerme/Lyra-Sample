@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Components/GameStateComponent.h"
-#include "GameFramework/OnlineReplStructs.h"
 
 #include "LyraPlayerSpawningManagerComponent.generated.h"
 

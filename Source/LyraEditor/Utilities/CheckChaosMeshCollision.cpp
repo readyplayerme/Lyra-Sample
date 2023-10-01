@@ -1,13 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LyraEditor.h"
-
-#include "AssetRegistryModule.h"
-#include "HAL/IConsoleManager.h"
-
-#include "Engine/StaticMesh.h"
 #include "Chaos/TriangleMeshImplicitObject.h"
+#include "Engine/StaticMesh.h"
 #include "PhysicsEngine/BodySetup.h"
+#include "UObject/UObjectIterator.h"
+
+class FOutputDevice;
+class UWorld;
 
 namespace LyraEditorUtilities
 {

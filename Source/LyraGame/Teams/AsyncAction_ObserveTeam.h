@@ -2,20 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/WeakInterfacePtr.h"
-#include "Kismet/BlueprintAsyncActionBase.h"
 #include "Engine/CancellableAsyncAction.h"
-#include "Engine/EngineTypes.h"
-#include "Teams/LyraTeamAgentInterface.h"
+#include "UObject/ScriptInterface.h"
+#include "UObject/WeakInterfacePtr.h"
 
 #include "AsyncAction_ObserveTeam.generated.h"
 
-class AGameStateBase;
-class UGameInstance;
-class AController;
-class ALyraPlayerState;
+class ILyraTeamAgentInterface;
+struct FFrame;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTeamObservedAsyncDelegate, bool, bTeamSet, int32, TeamId);
 

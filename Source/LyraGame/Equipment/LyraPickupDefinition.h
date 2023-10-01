@@ -2,14 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+
 #include "LyraPickupDefinition.generated.h"
 
 class ULyraInventoryItemDefinition;
-class UStaticMesh;
-class USoundBase;
 class UNiagaraSystem;
+class UObject;
+class USoundBase;
+class UStaticMesh;
 
 /**
  * 
@@ -27,7 +28,7 @@ public:
 
 	//Visual representation of the pickup
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Pickup|Mesh")
-	UStaticMesh* DisplayMesh;
+	TObjectPtr<UStaticMesh> DisplayMesh;
 
 	//Cool down time between pickups in seconds
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Pickup")
@@ -35,19 +36,19 @@ public:
 
 	//Sound to play when picked up
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Pickup")
-	USoundBase* PickedUpSound;
+	TObjectPtr<USoundBase> PickedUpSound;
 
 	//Sound to play when pickup is respawned
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Pickup")
-	USoundBase* RespawnedSound;
+	TObjectPtr<USoundBase> RespawnedSound;
 
 	//Particle FX to play when picked up
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Pickup")
-	UNiagaraSystem* PickedUpEffect;
+	TObjectPtr<UNiagaraSystem> PickedUpEffect;
 
 	//Particle FX to play when pickup is respawned
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Pickup")
-	UNiagaraSystem* RespawnedEffect;
+	TObjectPtr<UNiagaraSystem> RespawnedEffect;
 };
 
 

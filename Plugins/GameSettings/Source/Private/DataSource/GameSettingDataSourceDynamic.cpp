@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "DataSource/GameSettingDataSourceDynamic.h"
+
 #include "Engine/LocalPlayer.h"
 
 //--------------------------------------

@@ -69,7 +69,6 @@ struct FLyraCharacterPart
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ECharacterCustomizationCollisionMode CollisionMode = ECharacterCustomizationCollisionMode::NoCollision;
 
-	// URL of the avatar that would be loaded
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString AvatarUrl;
 

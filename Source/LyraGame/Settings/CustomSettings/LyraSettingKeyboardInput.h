@@ -2,40 +2,17 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameSettingValue.h"
 #include "EnhancedActionKeyMapping.h"
+#include "GameSettingValue.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 #include "LyraSettingKeyboardInput.generated.h"
+
+class UObject;
 
 //--------------------------------------
 // ULyraSettingKeyboardInput
 //--------------------------------------
-
-class UPlayerMappableInputConfig;
-
-struct FKeyboardOption
-{
-	FKeyboardOption() = default;
-	
-	FEnhancedActionKeyMapping InputMapping {};
-	
-	const UPlayerMappableInputConfig* OwningConfig = nullptr;
-
-	void ResetToDefault();
-
-	/** Store the currently set FKey that this is bound to */
-	void SetInitialValue(FKey InKey);
-
-	/** Get the most recently stored initial value */
-	FKey GetInitialStoredValue() const { return InitialMapping; };
-
-private:
-
-	/** The key that this option is bound to initially, used in case the user wants to cancel their mapping */
-	FKey InitialMapping;
-};
 
 UCLASS()
 class ULyraSettingKeyboardInput : public UGameSettingValue
@@ -45,10 +22,13 @@ class ULyraSettingKeyboardInput : public UGameSettingValue
 public:
 	ULyraSettingKeyboardInput();
 
-	/** Initalize this setting widget based off the given mapping */
-	void SetInputData(FEnhancedActionKeyMapping& BaseMapping, const UPlayerMappableInputConfig* InOwningConfig, int32 InKeyBindSlot);
+	void InitializeInputData(const UEnhancedPlayerMappableKeyProfile* KeyProfile, const FKeyMappingRow& MappingData, const FPlayerMappableKeyQueryOptions& QueryOptions);
 
+	FText GetKeyTextFromSlot(const EPlayerMappableKeySlot InSlot) const;
+
+	UE_DEPRECATED(5.3, "GetPrimaryKeyText has been deprecated, please use GetKeyTextFromSlot instead")
 	FText GetPrimaryKeyText() const;
+	UE_DEPRECATED(5.3, "GetSecondaryKeyText has been deprecated, please use GetKeyTextFromSlot instead")
 	FText GetSecondaryKeyText() const;
 	
 	virtual void StoreInitial() override;
@@ -56,8 +36,17 @@ public:
 	virtual void RestoreToInitial() override;
 
 	bool ChangeBinding(int32 InKeyBindSlot, FKey NewKey);
+	void GetAllMappedActionsFromKey(int32 InKeyBindSlot, FKey Key, TArray<FName>& OutActionNames) const;
+
+	/** Returns true if mappings on this setting have been customized */
+	bool IsMappingCustomized() const;
 	
-	FText GetSettingDisplayName() const { return FirstMappableOption.InputMapping.PlayerMappableOptions.DisplayName; }
+	FText GetSettingDisplayName() const;
+	FText GetSettingDisplayCategory() const;
+
+	const FKeyMappingRow* FindKeyMappingRow() const;
+	UEnhancedPlayerMappableKeyProfile* FindMappableKeyProfile() const;
+	UEnhancedInputUserSettings* GetUserSettings() const;
 	
 protected:
 	/** ULyraSetting */
@@ -65,6 +54,15 @@ protected:
 
 protected:
 
-	FKeyboardOption FirstMappableOption;
-	FKeyboardOption SecondaryMappableOption;
+	/** The name of this action's mappings */
+	FName ActionMappingName;
+
+	/** The query options to filter down keys on this setting for */
+	FPlayerMappableKeyQueryOptions QueryOptions;
+
+	/** The profile identifier that this key setting is from */
+	FGameplayTag ProfileIdentifier;
+
+	/** Store the initial key mappings that are set on this for each slot */
+	TMap<EPlayerMappableKeySlot, FKey> InitialKeyMappings;
 };

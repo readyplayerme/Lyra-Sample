@@ -1,9 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraDevelopmentStatics.h"
+#include "AssetRegistry/ARFilter.h"
+#include "AssetRegistry/AssetData.h"
 #include "Development/LyraDeveloperSettings.h"
+#include "Engine/Blueprint.h"
 #include "Engine/Engine.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "Engine/World.h"
+#include "Misc/PackageName.h"
+#include "Modules/ModuleManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraDevelopmentStatics)
 
 bool ULyraDevelopmentStatics::ShouldSkipDirectlyToGameplay()
 {
@@ -86,7 +94,7 @@ TArray<FAssetData> ULyraDevelopmentStatics::GetAllBlueprints()
 
 	TArray<FAssetData> BlueprintList;
 	FARFilter Filter;
-	Filter.ClassNames.Add(UBlueprint::StaticClass()->GetFName());
+	Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
 	Filter.bRecursivePaths = true;
 	AssetRegistryModule.Get().GetAssets(Filter, BlueprintList);
 
@@ -101,7 +109,7 @@ UClass* ULyraDevelopmentStatics::FindBlueprintClass(const FString& TargetNameRaw
 	TArray<FAssetData> BlueprintList = ULyraDevelopmentStatics::GetAllBlueprints();
 	for (const FAssetData& AssetData : BlueprintList)
 	{
-		if ((AssetData.AssetName.ToString() == TargetName) || (AssetData.ObjectPath.ToString() == TargetName))
+		if ((AssetData.AssetName.ToString() == TargetName) || (AssetData.GetObjectPathString() == TargetName))
 		{
 			if (UBlueprint* BP = Cast<UBlueprint>(AssetData.GetAsset()))
 			{
@@ -158,14 +166,7 @@ UClass* ULyraDevelopmentStatics::FindClassByShortName(const FString& SearchToken
 	UClass* ResultClass = nullptr;
 	if (bIsValidClassName)
 	{
-		if (FPackageName::IsShortPackageName(TargetName))
-		{
-			ResultClass = FindObject<UClass>(ANY_PACKAGE, *TargetName);
-		}
-		else
-		{
-			ResultClass = FindObject<UClass>(nullptr, *TargetName);
-		}
+		ResultClass = UClass::TryFindTypeSlow<UClass>(TargetName);
 	}
 
 	// If we still haven't found anything yet, try the asset registry for blueprints that match the requirements
@@ -196,3 +197,4 @@ UClass* ULyraDevelopmentStatics::FindClassByShortName(const FString& SearchToken
 
 	return ResultClass;
 }
+

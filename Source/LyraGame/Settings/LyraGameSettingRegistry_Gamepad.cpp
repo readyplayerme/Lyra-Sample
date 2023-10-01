@@ -1,23 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "CommonInputSubsystem.h"
-#include "LyraGameSettingRegistry.h"
-#include "Player/LyraLocalPlayer.h"
-
-#include "GameSetting.h"
-#include "GameSettingValueDiscreteDynamic.h"
-#include "GameSettingValueScalar.h"
-#include "GameSettingValueScalarDynamic.h"
+#include "CommonInputBaseTypes.h"
+#include "DataSource/GameSettingDataSource.h"
 #include "GameSettingCollection.h"
-#include "GameSettingAction.h"
+#include "GameSettingValueDiscreteDynamic.h"
+#include "GameSettingValueScalarDynamic.h"
+#include "LyraGameSettingRegistry.h"
 #include "LyraSettingsLocal.h"
 #include "LyraSettingsShared.h"
-#include "EditCondition/WhenCondition.h"
-#include "EditCondition/WhenPlayingAsPrimaryPlayer.h"
-#include "EditCondition/WhenPlatformHasTrait.h"
 #include "NativeGameplayTags.h"
-#include "CustomSettings/LyraSettingKeyboardInput.h"
-#include "PlayerMappableInputConfig.h"
+#include "Player/LyraLocalPlayer.h"
 
 #define LOCTEXT_NAMESPACE "Lyra"
 

@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "ModularPlayerState.h"
-#include "AbilitySystemInterface.h"
-#include "System/GameplayTagStack.h"
 #include "GameFramework/PlayerStart.h"
+#include "GameplayTagContainer.h"
+
 #include "LyraPlayerStart.generated.h"
+
+class AController;
+class UObject;
 
 enum class ELyraPlayerStartLocationOccupancy
 {

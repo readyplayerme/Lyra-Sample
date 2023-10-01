@@ -1,12 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TDM_PlayerSpawningManagmentComponent.h"
-#include "Character/LyraPawn.h"
-#include "Teams/LyraTeamSubsystem.h"
-#include "GameModes/LyraGameState.h"
-#include "GameFramework/PlayerState.h"
-#include "Player/LyraPlayerStart.h"
+
 #include "Engine/World.h"
+#include "GameFramework/PlayerState.h"
+#include "GameModes/LyraGameState.h"
+#include "Player/LyraPlayerStart.h"
+#include "Teams/LyraTeamSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(TDM_PlayerSpawningManagmentComponent)
+
+class AActor;
 
 UTDM_PlayerSpawningManagmentComponent::UTDM_PlayerSpawningManagmentComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -16,6 +20,11 @@ UTDM_PlayerSpawningManagmentComponent::UTDM_PlayerSpawningManagmentComponent(con
 AActor* UTDM_PlayerSpawningManagmentComponent::OnChoosePlayerStart(AController* Player, TArray<ALyraPlayerStart*>& PlayerStarts)
 {
 	ULyraTeamSubsystem* TeamSubsystem = GetWorld()->GetSubsystem<ULyraTeamSubsystem>();
+	if (!ensure(TeamSubsystem))
+	{
+		return nullptr;
+	}
+
 	const int32 PlayerTeamId = TeamSubsystem->FindTeamFromObject(Player);
 
 	// We should have a TeamId by now, but early login stuff before post login can try to do stuff, ignore it.

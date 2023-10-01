@@ -3,7 +3,10 @@
 #pragma once
 
 #include "GameFramework/GameState.h"
+
 #include "ModularGameState.generated.h"
+
+class UObject;
 
 /** Pair this with a ModularGameModeBase */
 UCLASS(Blueprintable)

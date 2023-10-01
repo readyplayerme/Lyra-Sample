@@ -1,12 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPlayerBotController.h"
-#include "GameModes/LyraGameMode.h"
-#include "Engine/World.h"
-#include "AbilitySystemGlobals.h"
+
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
+#include "Engine/World.h"
 #include "GameFramework/PlayerState.h"
+#include "GameModes/LyraGameMode.h"
 #include "LyraLogChannels.h"
+#include "Perception/AIPerceptionComponent.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPlayerBotController)
+
+class UObject;
 
 ALyraPlayerBotController::ALyraPlayerBotController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -173,3 +179,4 @@ void ALyraPlayerBotController::OnUnPossess()
 
 	Super::OnUnPossess();
 }
+

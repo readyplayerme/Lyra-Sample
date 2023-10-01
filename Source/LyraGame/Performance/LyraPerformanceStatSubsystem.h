@@ -4,11 +4,15 @@
 
 #include "ChartCreation.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "LyraPerformanceStatTypes.h"
 
 #include "LyraPerformanceStatSubsystem.generated.h"
 
+enum class ELyraDisplayablePerformanceStat : uint8;
+
+class FSubsystemCollectionBase;
 class ULyraPerformanceStatSubsystem;
+class UObject;
+struct FFrame;
 
 //////////////////////////////////////////////////////////////////////
 

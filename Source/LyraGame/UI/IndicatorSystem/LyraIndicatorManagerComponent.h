@@ -3,11 +3,13 @@
 #pragma once
 
 #include "Components/ControllerComponent.h"
-#include "Delegates/DelegateCombinations.h"
 
 #include "LyraIndicatorManagerComponent.generated.h"
 
+class AController;
 class UIndicatorDescriptor;
+class UObject;
+struct FFrame;
 
 /**
  * @class ULyraIndicatorManagerComponent
@@ -36,5 +38,5 @@ public:
 
 private:
 	UPROPERTY()
-	TArray<UIndicatorDescriptor*> Indicators;
+	TArray<TObjectPtr<UIndicatorDescriptor>> Indicators;
 };

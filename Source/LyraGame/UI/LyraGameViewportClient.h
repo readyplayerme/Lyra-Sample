@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonGameViewportClient.h"
 
 #include "LyraGameViewportClient.generated.h"
+
+class UGameInstance;
+class UObject;
 
 UCLASS(BlueprintType)
 class ULyraGameViewportClient : public UCommonGameViewportClient

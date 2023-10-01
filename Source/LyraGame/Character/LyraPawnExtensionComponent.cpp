@@ -1,12 +1,23 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPawnExtensionComponent.h"
-#include "LyraLogChannels.h"
-#include "Net/UnrealNetwork.h"
-#include "GameFramework/Pawn.h"
-#include "GameFramework/Controller.h"
-#include "LyraPawnData.h"
+
 #include "AbilitySystem/LyraAbilitySystemComponent.h"
+#include "Components/GameFrameworkComponentDelegates.h"
+#include "Components/GameFrameworkComponentManager.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/Pawn.h"
+#include "LyraGameplayTags.h"
+#include "LyraLogChannels.h"
+#include "LyraPawnData.h"
+#include "Net/UnrealNetwork.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPawnExtensionComponent)
+
+class FLifetimeProperty;
+class UActorComponent;
+
+const FName ULyraPawnExtensionComponent::NAME_ActorFeatureName("PawnExtension");
 
 ULyraPawnExtensionComponent::ULyraPawnExtensionComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -18,7 +29,6 @@ ULyraPawnExtensionComponent::ULyraPawnExtensionComponent(const FObjectInitialize
 
 	PawnData = nullptr;
 	AbilitySystemComponent = nullptr;
-	bPawnReadyToInitialize = false;
 }
 
 void ULyraPawnExtensionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -38,13 +48,34 @@ void ULyraPawnExtensionComponent::OnRegister()
 	TArray<UActorComponent*> PawnExtensionComponents;
 	Pawn->GetComponents(ULyraPawnExtensionComponent::StaticClass(), PawnExtensionComponents);
 	ensureAlwaysMsgf((PawnExtensionComponents.Num() == 1), TEXT("Only one LyraPawnExtensionComponent should exist on [%s]."), *GetNameSafe(GetOwner()));
+
+	// Register with the init state system early, this will only work if this is a game world
+	RegisterInitStateFeature();
+}
+
+void ULyraPawnExtensionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Listen for changes to all features
+	BindOnActorInitStateChanged(NAME_None, FGameplayTag(), false);
+	
+	// Notifies state manager that we have spawned, then try rest of default initialization
+	ensure(TryToChangeInitState(LyraGameplayTags::InitState_Spawned));
+	CheckDefaultInitialization();
+}
+
+void ULyraPawnExtensionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UninitializeAbilitySystem();
+	UnregisterInitStateFeature();
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ULyraPawnExtensionComponent::SetPawnData(const ULyraPawnData* InPawnData)
 {
 	check(InPawnData);
-
-	bPawnReadyToInitialize = false;
 
 	APawn* Pawn = GetPawnChecked<APawn>();
 
@@ -63,12 +94,12 @@ void ULyraPawnExtensionComponent::SetPawnData(const ULyraPawnData* InPawnData)
 
 	Pawn->ForceNetUpdate();
 
-	CheckPawnReadyToInitialize();
+	CheckDefaultInitialization();
 }
 
 void ULyraPawnExtensionComponent::OnRep_PawnData()
 {
-	CheckPawnReadyToInitialize();
+	CheckDefaultInitialization();
 }
 
 void ULyraPawnExtensionComponent::InitializeAbilitySystem(ULyraAbilitySystemComponent* InASC, AActor* InOwnerActor)
@@ -128,7 +159,10 @@ void ULyraPawnExtensionComponent::UninitializeAbilitySystem()
 	// Uninitialize the ASC if we're still the avatar actor (otherwise another pawn already did it when they became the avatar actor)
 	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
 	{
-		AbilitySystemComponent->CancelAbilities(nullptr, nullptr);
+		FGameplayTagContainer AbilityTypesToIgnore;
+		AbilityTypesToIgnore.AddTag(LyraGameplayTags::Ability_Behavior_SurvivesDeath);
+
+		AbilitySystemComponent->CancelAbilities(nullptr, &AbilityTypesToIgnore);
 		AbilitySystemComponent->ClearAbilityInput();
 		AbilitySystemComponent->RemoveAllGameplayCues();
 
@@ -163,75 +197,95 @@ void ULyraPawnExtensionComponent::HandleControllerChanged()
 		}
 	}
 
-	CheckPawnReadyToInitialize();
+	CheckDefaultInitialization();
 }
 
 void ULyraPawnExtensionComponent::HandlePlayerStateReplicated()
 {
-	CheckPawnReadyToInitialize();
+	CheckDefaultInitialization();
 }
 
 void ULyraPawnExtensionComponent::SetupPlayerInputComponent()
 {
-	CheckPawnReadyToInitialize();
+	CheckDefaultInitialization();
 }
 
-bool ULyraPawnExtensionComponent::CheckPawnReadyToInitialize()
+void ULyraPawnExtensionComponent::CheckDefaultInitialization()
 {
-	if (bPawnReadyToInitialize)
+	// Before checking our progress, try progressing any other features we might depend on
+	CheckDefaultInitializationForImplementers();
+
+	static const TArray<FGameplayTag> StateChain = { LyraGameplayTags::InitState_Spawned, LyraGameplayTags::InitState_DataAvailable, LyraGameplayTags::InitState_DataInitialized, LyraGameplayTags::InitState_GameplayReady };
+
+	// This will try to progress from spawned (which is only set in BeginPlay) through the data initialization stages until it gets to gameplay ready
+	ContinueInitStateChain(StateChain);
+}
+
+bool ULyraPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const
+{
+	check(Manager);
+
+	APawn* Pawn = GetPawn<APawn>();
+	if (!CurrentState.IsValid() && DesiredState == LyraGameplayTags::InitState_Spawned)
+	{
+		// As long as we are on a valid pawn, we count as spawned
+		if (Pawn)
+		{
+			return true;
+		}
+	}
+	if (CurrentState == LyraGameplayTags::InitState_Spawned && DesiredState == LyraGameplayTags::InitState_DataAvailable)
+	{
+		// Pawn data is required.
+		if (!PawnData)
+		{
+			return false;
+		}
+
+		const bool bHasAuthority = Pawn->HasAuthority();
+		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
+
+		if (bHasAuthority || bIsLocallyControlled)
+		{
+			// Check for being possessed by a controller.
+			if (!GetController<AController>())
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+	else if (CurrentState == LyraGameplayTags::InitState_DataAvailable && DesiredState == LyraGameplayTags::InitState_DataInitialized)
+	{
+		// Transition to initialize if all features have their data available
+		return Manager->HaveAllFeaturesReachedInitState(Pawn, LyraGameplayTags::InitState_DataAvailable);
+	}
+	else if (CurrentState == LyraGameplayTags::InitState_DataInitialized && DesiredState == LyraGameplayTags::InitState_GameplayReady)
 	{
 		return true;
 	}
 
-	// Pawn data is required.
-	if (!PawnData)
-	{
-		return false;
-	}
-
-	APawn* Pawn = GetPawnChecked<APawn>();
-
-	const bool bHasAuthority = Pawn->HasAuthority();
-	const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
-
-	if (bHasAuthority || bIsLocallyControlled)
-	{
-		// Check for being possessed by a controller.
-		if (!GetController<AController>())
-		{
-			return false;
-		}
-	}
-
-	// Allow pawn components to have requirements.
-	TArray<UActorComponent*> InteractableComponents = Pawn->GetComponentsByInterface(ULyraReadyInterface::StaticClass());
-	for (UActorComponent* InteractableComponent : InteractableComponents)
-	{
-		const ILyraReadyInterface* Ready = CastChecked<ILyraReadyInterface>(InteractableComponent);
-		if (!Ready->IsPawnComponentReadyToInitialize())
-		{
-			return false;
-		}
-	}
-
-	// Pawn is ready to initialize.
-	bPawnReadyToInitialize = true;
-	OnPawnReadyToInitialize.Broadcast();
-	BP_OnPawnReadyToInitialize.Broadcast();
-
-	return true;
+	return false;
 }
 
-void ULyraPawnExtensionComponent::OnPawnReadyToInitialize_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate)
+void ULyraPawnExtensionComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
-	if (!OnPawnReadyToInitialize.IsBoundToObject(Delegate.GetUObject()))
+	if (DesiredState == LyraGameplayTags::InitState_DataInitialized)
 	{
-		OnPawnReadyToInitialize.Add(Delegate);
+		// This is currently all handled by other components listening to this state change
 	}
+}
 
-	if (bPawnReadyToInitialize)
+void ULyraPawnExtensionComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
+{
+	// If another feature is now in DataAvailable, see if we should transition to DataInitialized
+	if (Params.FeatureName != NAME_ActorFeatureName)
 	{
-		Delegate.Execute();
+		if (Params.FeatureState == LyraGameplayTags::InitState_DataAvailable)
+		{
+			CheckDefaultInitialization();
+		}
 	}
 }
 
@@ -255,3 +309,4 @@ void ULyraPawnExtensionComponent::OnAbilitySystemUninitialized_Register(FSimpleM
 		OnAbilitySystemUninitialized.Add(Delegate);
 	}
 }
+

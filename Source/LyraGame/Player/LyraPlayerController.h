@@ -2,18 +2,25 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
-#include "CommonPlayerController.h"
 #include "Camera/LyraCameraAssistInterface.h"
+#include "CommonPlayerController.h"
 #include "Teams/LyraTeamAgentInterface.h"
+
 #include "LyraPlayerController.generated.h"
 
-class ULyraSettingsShared;
-class ALyraPlayerState;
-class ULyraAbilitySystemComponent;
+struct FGenericTeamId;
+
 class ALyraHUD;
+class ALyraPlayerState;
 class APawn;
+class APlayerState;
+class FPrimitiveComponentId;
+class IInputInterface;
+class ULyraAbilitySystemComponent;
+class ULyraSettingsShared;
+class UObject;
+class UPlayer;
+struct FFrame;
 
 /**
  * ALyraPlayerController
@@ -21,7 +28,7 @@ class APawn;
  *	The base player controller class used by this project.
  */
 UCLASS(Config = Game, Meta = (ShortTooltip = "The base player controller class used by this project."))
-class ALyraPlayerController : public ACommonPlayerController, public ILyraCameraAssistInterface, public ILyraTeamAgentInterface
+class LYRAGAME_API ALyraPlayerController : public ACommonPlayerController, public ILyraCameraAssistInterface, public ILyraTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -38,6 +45,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Lyra|PlayerController")
 	ALyraHUD* GetLyraHUD() const;
 
+	// Call from game state logic to start recording an automatic client replay if ShouldRecordClientReplay returns true
+	UFUNCTION(BlueprintCallable, Category = "Lyra|PlayerController")
+	bool TryToRecordClientReplay();
+
+	// Call to see if we should record a replay, subclasses could change this
+	virtual bool ShouldRecordClientReplay();
+
 	// Run a cheat command on the server.
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCheat(const FString& Msg);
@@ -50,24 +64,31 @@ public:
 	virtual void PreInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	//~End of AActor interface
 
 	//~AController interface
+	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
+	virtual void InitPlayerState() override;
+	virtual void CleanupPlayerState() override;
+	virtual void OnRep_PlayerState() override;
 	//~End of AController interface
 
 	//~APlayerController interface
 	virtual void ReceivedPlayer() override;
 	virtual void PlayerTick(float DeltaTime) override;
+	virtual void SetPlayer(UPlayer* InPlayer) override;
+	virtual void AddCheats(bool bForce) override;
+	virtual void UpdateForceFeedback(IInputInterface* InputInterface, const int32 ControllerId) override;
+	virtual void UpdateHiddenComponents(const FVector& ViewLocation, TSet<FPrimitiveComponentId>& OutHiddenComponents) override;
+	virtual void PreProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	//~End of APlayerController interface
 
 	//~ILyraCameraAssistInterface interface
 	virtual void OnCameraPenetratingTarget() override;
 	//~End of ILyraCameraAssistInterface interface
-
-	//~ACommonPlayerController interface
-	virtual void OnPossess(APawn* InPawn) override;
-	//~End of ACommonPlayerController interface
 	
 	//~ILyraTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
@@ -86,7 +107,7 @@ private:
 	FOnLyraTeamIndexChangedDelegate OnTeamChangedDelegate;
 
 	UPROPERTY()
-	APlayerState* LastSeenPlayerState;
+	TObjectPtr<APlayerState> LastSeenPlayerState;
 
 private:
 	UFUNCTION()
@@ -100,21 +121,9 @@ private:
 	void BroadcastOnPlayerStateChanged();
 
 protected:
-	//~AController interface
-	virtual void InitPlayerState() override;
-	virtual void CleanupPlayerState() override;
-	virtual void OnRep_PlayerState() override;
-	//~End of AController interface
 
 	//~APlayerController interface
-	virtual void SetPlayer(UPlayer* InPlayer) override;
-	virtual void AddCheats(bool bForce) override;
 
-	virtual void UpdateForceFeedback(IInputInterface* InputInterface, const int32 ControllerId) override;
-	virtual void UpdateHiddenComponents(const FVector& ViewLocation, TSet<FPrimitiveComponentId>& OutHiddenComponents) override;
-
-	virtual void PreProcessInput(const float DeltaTime, const bool bGamePaused) override;
-	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	//~End of APlayerController interface
 
 	void OnSettingsChanged(ULyraSettingsShared* Settings);
@@ -138,5 +147,18 @@ class ALyraReplayPlayerController : public ALyraPlayerController
 {
 	GENERATED_BODY()
 
-	virtual void SetPlayer(UPlayer* InPlayer) override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void SmoothTargetViewRotation(APawn* TargetPawn, float DeltaSeconds) override;
+	virtual bool ShouldRecordClientReplay() override;
+
+	// Callback for when the game state's RecorderPlayerState gets replicated during replay playback
+	void RecorderPlayerStateUpdated(APlayerState* NewRecorderPlayerState);
+
+	// Callback for when the followed player state changes pawn
+	UFUNCTION()
+	void OnPlayerStatePawnSet(APlayerState* ChangedPlayerState, APawn* NewPlayerPawn, APawn* OldPlayerPawn);
+
+	// The player state we are currently following */
+	UPROPERTY(Transient)
+	TObjectPtr<APlayerState> FollowedPlayerState;
 };

@@ -1,7 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraAttributeSet.h"
+
 #include "AbilitySystem/LyraAbilitySystemComponent.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAttributeSet)
+
+class UWorld;
 
 
 ULyraAttributeSet::ULyraAttributeSet()
@@ -20,3 +25,4 @@ ULyraAbilitySystemComponent* ULyraAttributeSet::GetLyraAbilitySystemComponent() 
 {
 	return Cast<ULyraAbilitySystemComponent>(GetOwningAbilitySystemComponent());
 }
+

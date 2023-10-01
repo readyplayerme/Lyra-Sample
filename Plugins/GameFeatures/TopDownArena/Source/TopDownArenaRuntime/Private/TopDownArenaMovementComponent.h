@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Character/LyraCharacterMovementComponent.h"
+
 #include "TopDownArenaMovementComponent.generated.h"
+
+class UObject;
 
 UCLASS()
 class UTopDownArenaMovementComponent : public ULyraCharacterMovementComponent

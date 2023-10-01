@@ -2,6 +2,10 @@
 
 #include "LyraWidgetFactory_Class.h"
 
+#include "Blueprint/UserWidget.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraWidgetFactory_Class)
+
 TSubclassOf<UUserWidget> ULyraWidgetFactory_Class::FindWidgetClassForData_Implementation(const UObject* Data) const
 {
 	// Starting with the current class, work backwards to see if there are any construction rules for this class.

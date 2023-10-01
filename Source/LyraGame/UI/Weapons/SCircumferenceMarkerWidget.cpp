@@ -1,8 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "SCircumferenceMarkerWidget.h"
+#include "UI/Weapons/SCircumferenceMarkerWidget.h"
+
 #include "Engine/UserInterfaceSettings.h"
-#include "Kismet/GameplayStatics.h"
+#include "Styling/SlateBrush.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(SCircumferenceMarkerWidget)
+
+class FPaintArgs;
+class FSlateRect;
 
 SCircumferenceMarkerWidget::SCircumferenceMarkerWidget()
 {
@@ -90,3 +96,4 @@ void SCircumferenceMarkerWidget::SetMarkerList(TArray<FCircumferenceMarkerEntry>
 {
 	MarkerList = NewMarkerList;
 }
+

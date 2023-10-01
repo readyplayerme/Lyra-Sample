@@ -2,19 +2,27 @@
 
 
 #include "LyraWeaponSpawner.h"
-#include "Net/UnrealNetwork.h"
-#include "Components/StaticMeshComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Equipment/LyraEquipmentDefinition.h"
-#include "Equipment/LyraEquipmentManagerComponent.h"
-#include "Equipment/LyraPickupDefinition.h"
+
 #include "AbilitySystemBlueprintLibrary.h"
-#include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
-#include "Inventory/LyraInventoryItemDefinition.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/World.h"
+#include "Equipment/LyraPickupDefinition.h"
+#include "GameFramework/Pawn.h"
 #include "Inventory/InventoryFragment_SetStats.h"
-#include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "LyraLogChannels.h"
+#include "Net/UnrealNetwork.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+#include "TimerManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraWeaponSpawner)
+
+class FLifetimeProperty;
+class UNiagaraSystem;
+class USoundBase;
+struct FHitResult;
 
 // Sets default values
 ALyraWeaponSpawner::ALyraWeaponSpawner()
@@ -48,9 +56,12 @@ void ALyraWeaponSpawner::BeginPlay()
 	{
 		CoolDownTime = WeaponDefinition->SpawnCoolDownSeconds;	
 	}
-	else
+	else if (const UWorld* World = GetWorld())
 	{
-		UE_LOG(LogLyra, Error, TEXT("'%s' does not have a valid weapon definition! Make sure to set this data on the instance!"), *GetNameSafe(this));
+		if (!World->IsPlayingReplay())
+		{
+			UE_LOG(LogLyra, Error, TEXT("'%s' does not have a valid weapon definition! Make sure to set this data on the instance!"), *GetNameSafe(this));	
+		}
 	}
 }
 

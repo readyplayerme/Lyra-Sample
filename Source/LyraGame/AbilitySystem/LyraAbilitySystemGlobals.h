@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "AbilitySystemGlobals.h"
+
 #include "LyraAbilitySystemGlobals.generated.h"
 
-class UAbilitySystemComponent;
+class UObject;
+struct FGameplayEffectContext;
 
 UCLASS(Config=Game)
 class ULyraAbilitySystemGlobals : public UAbilitySystemGlobals

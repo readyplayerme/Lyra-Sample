@@ -1,10 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPlayerCameraManager.h"
-#include "LyraCameraComponent.h"
+
+#include "Async/TaskGraphInterfaces.h"
 #include "Engine/Canvas.h"
-#include "LyraUICameraManagerComponent.h"
+#include "Engine/Engine.h"
+#include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
+#include "LyraCameraComponent.h"
+#include "LyraUICameraManagerComponent.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPlayerCameraManager)
+
+class FDebugDisplayInfo;
 
 static FName UICameraComponentName(TEXT("UICamera"));
 
@@ -55,3 +63,4 @@ void ALyraPlayerCameraManager::DisplayDebug(UCanvas* Canvas, const FDebugDisplay
 		CameraComponent->DrawDebug(Canvas);
 	}
 }
+

@@ -1,31 +1,19 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ContentValidationCommandlet.h"
-#include "HAL/PlatformProcess.h"
-#include "HAL/PlatformFileManager.h"
-#include "HAL/FileManager.h"
-#include "Interfaces/IPluginManager.h"
-#include "Misc/ConfigCacheIni.h"
-#include "Misc/FileHelper.h"
-#include "Misc/Paths.h"
-#include "UObject/UObjectIterator.h"
-#include "UObject/UObjectHash.h"
-#include "UObject/Package.h"
-#include "AssetData.h"
-#include "AssetRegistryModule.h"
-#include "ARFilter.h"
-#include "SourceControlHelpers.h"
-#include "ISourceControlModule.h"
-#include "ISourceControlState.h"
-#include "ISourceControlProvider.h"
-#include "SourceControlOperations.h"
-#include "SourceControlHelpers.h"
-#include "ShaderCompiler.h"
-#include "Engine/BlueprintCore.h"
-#include "Blueprint/BlueprintSupport.h"
-#include "DataValidationModule.h"
 
+#include "AssetRegistry/ARFilter.h"
+#include "AssetRegistry/AssetData.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "DataValidationModule.h"
+#include "Interfaces/IPluginManager.h"
+#include "Misc/CommandLine.h"
+#include "Misc/ConfigCacheIni.h"
+#include "ShaderCompiler.h"
+#include "SourceControlHelpers.h"
 #include "Validation/EditorValidator.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ContentValidationCommandlet)
 
 DEFINE_LOG_CATEGORY_STATIC(LogLyraContentValidation, Log, Log);
 
@@ -343,7 +331,15 @@ void UContentValidationCommandlet::GetAllPackagesOfType(const FString& OfTypeStr
 
 	for (const FString& Type : Types)
 	{
-		Filter.ClassNames.Add(FName(*Type));
+		FTopLevelAssetPath TypePathName = UClass::TryConvertShortTypeNameToPathName<UStruct>(Type, ELogVerbosity::Error, TEXT("UContentValidationCommandlet"));
+		if (TypePathName.IsNull())
+		{
+			UE_LOG(LogLyraContentValidation, Error, TEXT("Failed to convert short class name \"%s\" to path name. Please use class path names."), *Type);
+		}
+		else
+		{
+			Filter.ClassPaths.Add(TypePathName);
+		}
 	}
 
 	TArray<FAssetData> AssetsOfType;
@@ -430,3 +426,4 @@ FString UContentValidationCommandlet::GetLocalPathFromDepotPath(const FString& D
 
 	return ReturnString;
 }
+

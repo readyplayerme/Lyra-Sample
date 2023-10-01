@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/LyraGameplayAbility.h"
 #include "LyraGamePhaseAbility.generated.h"
 
@@ -23,7 +22,7 @@ public:
 	const FGameplayTag& GetGamePhaseTag() const { return GamePhaseTag; }
 
 #if WITH_EDITOR
-	EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
 #endif
 
 protected:

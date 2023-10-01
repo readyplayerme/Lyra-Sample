@@ -3,11 +3,14 @@
 #pragma once
 
 #include "Messages/GameplayMessageProcessor.h"
-#include "GameplayTagContainer.h"
+
 #include "AssistProcessor.generated.h"
 
-struct FLyraVerbMessage;
 class APlayerState;
+class UObject;
+struct FGameplayTag;
+struct FLyraVerbMessage;
+template <typename T> struct TObjectPtr;
 
 // Tracks the damage done to a player by other players
 USTRUCT()

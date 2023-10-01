@@ -4,11 +4,11 @@
 #include "GameFramework/PlayerStart.h"
 #include "EngineUtils.h"
 #include "Misc/UObjectToken.h"
-#include "Logging/TokenizedMessage.h"
 #include "Logging/MessageLog.h"
-#include "LyraExperienceDefinition.h"
 #include "LyraLogChannels.h"
 #include "Engine/AssetManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraWorldSettings)
 
 ALyraWorldSettings::ALyraWorldSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -1,9 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraTeamInfoBase.h"
-#include "Net/UnrealNetwork.h"
-#include "LyraTeamSubsystem.h"
+
 #include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
+#include "Teams/LyraTeamSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTeamInfoBase)
+
+class FLifetimeProperty;
 
 ALyraTeamInfoBase::ALyraTeamInfoBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -35,7 +40,11 @@ void ALyraTeamInfoBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (TeamId != INDEX_NONE)
 	{
 		ULyraTeamSubsystem* TeamSubsystem = GetWorld()->GetSubsystem<ULyraTeamSubsystem>();
-		TeamSubsystem->UnregisterTeamInfo(this);
+		if (TeamSubsystem)
+		{
+			// EndPlay can happen at weird times where the subsystem has already been destroyed
+			TeamSubsystem->UnregisterTeamInfo(this);
+		}
 	}
 
 	Super::EndPlay(EndPlayReason);
@@ -51,7 +60,10 @@ void ALyraTeamInfoBase::TryRegisterWithTeamSubsystem()
 	if (TeamId != INDEX_NONE)
 	{
 		ULyraTeamSubsystem* TeamSubsystem = GetWorld()->GetSubsystem<ULyraTeamSubsystem>();
-		RegisterWithTeamSubsystem(TeamSubsystem);
+		if (ensure(TeamSubsystem))
+		{
+			RegisterWithTeamSubsystem(TeamSubsystem);
+		}
 	}
 }
 
@@ -70,3 +82,4 @@ void ALyraTeamInfoBase::OnRep_TeamId()
 {
 	TryRegisterWithTeamSubsystem();
 }
+

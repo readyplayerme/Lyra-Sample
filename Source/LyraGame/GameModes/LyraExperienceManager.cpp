@@ -1,10 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraExperienceManager.h"
-#include "Engine/AssetManager.h"
-#include "LyraExperienceDefinition.h"
 #include "GameModes/LyraExperienceManager.h"
 #include "Engine/Engine.h"
+#include "Subsystems/SubsystemCollection.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraExperienceManager)
 
 #if WITH_EDITOR
 

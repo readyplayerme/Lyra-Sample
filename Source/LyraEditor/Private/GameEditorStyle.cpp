@@ -1,9 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameEditorStyle.h"
-#include "Styling/SlateTypes.h"
+
+#include "Brushes/SlateImageBrush.h"
+#include "Misc/Paths.h"
+#include "Styling/SlateStyle.h"
 #include "Styling/SlateStyleRegistry.h"
-#include "Engine/Texture2D.h"
 
 TSharedPtr< FSlateStyleSet > FGameEditorStyle::StyleInstance = nullptr;
 

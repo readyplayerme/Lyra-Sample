@@ -3,7 +3,12 @@
 #pragma once
 
 #include "GameFramework/PlayerState.h"
+
 #include "ModularPlayerState.generated.h"
+
+namespace EEndPlayReason { enum Type : int; }
+
+class UObject;
 
 /** Minimal class that supports extension by game feature plugins */
 UCLASS(Blueprintable)

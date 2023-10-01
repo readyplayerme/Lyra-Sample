@@ -2,13 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "CommonActivatableWidget.h"
-#include "GameplayTagContainer.h"
 #include "GameFeatureAction_WorldActionBase.h"
 #include "UObject/ObjectKey.h"
 
 #include "GameFeatureAction_SplitscreenConfig.generated.h"
+
+class UObject;
+struct FGameFeatureDeactivatingContext;
+struct FGameFeatureStateChangeContext;
+struct FWorldContext;
 
 //////////////////////////////////////////////////////////////////////
 // UGameFeatureAction_SplitscreenConfig

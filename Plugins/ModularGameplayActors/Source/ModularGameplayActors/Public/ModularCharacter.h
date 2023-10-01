@@ -3,7 +3,10 @@
 #pragma once
 
 #include "GameFramework/Character.h"
+
 #include "ModularCharacter.generated.h"
+
+class UObject;
 
 /** Minimal class that supports extension by game feature plugins */
 UCLASS(Blueprintable)

@@ -1,13 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameUIPolicy.h"
-#include "CommonActivatableWidget.h"
-#include "Engine/LocalPlayer.h"
+#include "Engine/GameInstance.h"
+#include "Framework/Application/SlateApplication.h"
 #include "GameUIManagerSubsystem.h"
 #include "CommonLocalPlayer.h"
 #include "PrimaryGameLayout.h"
 #include "Engine/Engine.h"
 #include "LogCommonGame.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameUIPolicy)
 
 // Static
 UGameUIPolicy* UGameUIPolicy::GetGameUIPolicy(const UObject* WorldContextObject)
@@ -132,7 +134,7 @@ void UGameUIPolicy::RemoveLayoutFromViewport(UCommonLocalPlayer* LocalPlayer, UP
 	{
 		UE_LOG(LogCommonGame, Log, TEXT("[%s] is removing player [%s]'s root layout [%s] from the viewport"), *GetName(), *GetNameSafe(LocalPlayer), *GetNameSafe(Layout));
 
-		Layout->RemoveFromViewport();
+		Layout->RemoveFromParent();
 		if (LayoutSlateWidget.IsValid())
 		{
 			UE_LOG(LogCommonGame, Log, TEXT("Player [%s]'s root layout [%s] has been removed from the viewport, but other references to its underlying Slate widget still exist. Noting in case we leak it."), *GetNameSafe(LocalPlayer), *GetNameSafe(Layout));

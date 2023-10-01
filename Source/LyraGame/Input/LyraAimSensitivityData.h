@@ -2,11 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "Settings/LyraSettingsShared.h"
 
 #include "LyraAimSensitivityData.generated.h"
+
+enum class ELyraGamepadSensitivity : uint8;
+
+class UObject;
 
 /** Defines a set of gamepad sensitivity to a float value. */
 UCLASS(BlueprintType, Const, Meta = (DisplayName = "Lyra Aim Sensitivity Data", ShortTooltip = "Data asset used to define a map of Gamepad Sensitivty to a float value."))

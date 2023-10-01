@@ -3,6 +3,7 @@
 #include "LyraGameplayAbility.h"
 #include "LyraLogChannels.h"
 #include "AbilitySystem/LyraAbilitySystemComponent.h"
+#include "AbilitySystemLog.h"
 #include "Player/LyraPlayerController.h"
 #include "Character/LyraCharacter.h"
 #include "LyraGameplayTags.h"
@@ -15,6 +16,19 @@
 #include "AbilitySystem/LyraAbilitySourceInterface.h"
 #include "AbilitySystem/LyraGameplayEffectContext.h"
 #include "Physics/PhysicalMaterialWithTags.h"
+#include "GameFramework/PlayerState.h"
+#include "Camera/LyraCameraMode.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameplayAbility)
+
+#define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)																				\
+{																																						\
+	if (!ensure(IsInstantiated()))																														\
+	{																																					\
+		ABILITY_LOG(Error, TEXT("%s: " #FunctionName " cannot be called on a non-instanced ability. Check the instancing policy."), *GetPathName());	\
+		return ReturnValue;																																\
+	}																																					\
+}
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_ABILITY_SIMPLE_FAILURE_MESSAGE, "Ability.UserFacingSimpleActivateFail.Message");
 UE_DEFINE_GAMEPLAY_TAG(TAG_ABILITY_PLAY_MONTAGE_FAILURE_MESSAGE, "Ability.PlayMontageOnActivateFail.Message");
@@ -29,6 +43,8 @@ ULyraGameplayAbility::ULyraGameplayAbility(const FObjectInitializer& ObjectIniti
 
 	ActivationPolicy = ELyraAbilityActivationPolicy::OnInputTriggered;
 	ActivationGroup = ELyraAbilityActivationGroup::Independent;
+
+	bLogCancelation = false;
 
 	ActiveCameraMode = nullptr;
 }
@@ -123,20 +139,18 @@ bool ULyraGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle H
 		return false;
 	}
 
-	ULyraAbilitySystemComponent* LyraASC = CastChecked<ULyraAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
-	const FLyraGameplayTags& GameplayTags = FLyraGameplayTags::Get();
-
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 	{
 		return false;
 	}
 
 	//@TODO Possibly remove after setting up tag relationships
+	ULyraAbilitySystemComponent* LyraASC = CastChecked<ULyraAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
 	if (LyraASC->IsActivationGroupBlocked(ActivationGroup))
 	{
 		if (OptionalRelevantTags)
 		{
-			OptionalRelevantTags->AddTag(GameplayTags.Ability_ActivateFail_ActivationGroup);
+			OptionalRelevantTags->AddTag(LyraGameplayTags::Ability_ActivateFail_ActivationGroup);
 		}
 		return false;
 	}
@@ -338,11 +352,10 @@ bool ULyraGameplayAbility::DoesAbilitySatisfyTagRequirements(const UAbilitySyste
 
 		if (AbilitySystemComponentTags.HasAny(AllBlockedTags))
 		{
-			const FLyraGameplayTags& GameplayTags = FLyraGameplayTags::Get();
-			if (OptionalRelevantTags && AbilitySystemComponentTags.HasTag(GameplayTags.Status_Death))
+			if (OptionalRelevantTags && AbilitySystemComponentTags.HasTag(LyraGameplayTags::Status_Death))
 			{
 				// If player is dead and was rejected due to blocking tags, give that feedback
-				OptionalRelevantTags->AddTag(GameplayTags.Ability_ActivateFail_IsDead);
+				OptionalRelevantTags->AddTag(LyraGameplayTags::Ability_ActivateFail_IsDead);
 			}
 
 			bBlocked = true;
@@ -530,3 +543,4 @@ void ULyraGameplayAbility::ClearCameraMode()
 		ActiveCameraMode = nullptr;
 	}
 }
+

@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GenericTeamAgentInterface.h"
-#include "UObject/ScriptInterface.h"
+#include "UObject/Object.h"
 
+#include "UObject/WeakObjectPtr.h"
 #include "LyraTeamAgentInterface.generated.h"
+
+template <typename InterfaceType> class TScriptInterface;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLyraTeamIndexChangedDelegate, UObject*, ObjectChangingTeam, int32, OldTeamID, int32, NewTeamID);
 

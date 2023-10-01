@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
+#include "GameplayTagContainer.h"
 
 #include "LyraAbilityTagRelationshipMapping.generated.h"
+
+class UObject;
 
 /** Struct that defines the relationship between different ability tags */
 USTRUCT()

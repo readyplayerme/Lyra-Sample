@@ -1,13 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraEquipmentManagerComponent.h"
+
 #include "AbilitySystem/LyraAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "AbilitySystem/LyraAbilitySet.h"
-#include "LyraEquipmentInstance.h"
-#include "LyraEquipmentDefinition.h"
-#include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
+#include "LyraEquipmentDefinition.h"
+#include "LyraEquipmentInstance.h"
+#include "Net/UnrealNetwork.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraEquipmentManagerComponent)
+
+class FLifetimeProperty;
+struct FReplicationFlags;
 
 //////////////////////////////////////////////////////////////////////
 // FLyraAppliedEquipmentEntry
@@ -149,6 +154,11 @@ ULyraEquipmentInstance* ULyraEquipmentManagerComponent::EquipItem(TSubclassOf<UL
 		if (Result != nullptr)
 		{
 			Result->OnEquipped();
+
+			if (IsUsingRegisteredSubObjectList() && IsReadyForReplication())
+			{
+				AddReplicatedSubObject(Result);
+			}
 		}
 	}
 	return Result;
@@ -158,6 +168,11 @@ void ULyraEquipmentManagerComponent::UnequipItem(ULyraEquipmentInstance* ItemIns
 {
 	if (ItemInstance != nullptr)
 	{
+		if (IsUsingRegisteredSubObjectList())
+		{
+			RemoveReplicatedSubObject(ItemInstance);
+		}
+
 		ItemInstance->OnUnequipped();
 		EquipmentList.RemoveEntry(ItemInstance);
 	}
@@ -203,6 +218,25 @@ void ULyraEquipmentManagerComponent::UninitializeComponent()
 	Super::UninitializeComponent();
 }
 
+void ULyraEquipmentManagerComponent::ReadyForReplication()
+{
+	Super::ReadyForReplication();
+
+	// Register existing LyraEquipmentInstances
+	if (IsUsingRegisteredSubObjectList())
+	{
+		for (const FLyraAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+		{
+			ULyraEquipmentInstance* Instance = Entry.Instance;
+
+			if (IsValid(Instance))
+			{
+				AddReplicatedSubObject(Instance);
+			}
+		}
+	}
+}
+
 ULyraEquipmentInstance* ULyraEquipmentManagerComponent::GetFirstInstanceOfType(TSubclassOf<ULyraEquipmentInstance> InstanceType)
 {
 	for (FLyraAppliedEquipmentEntry& Entry : EquipmentList.Entries)
@@ -234,4 +268,5 @@ TArray<ULyraEquipmentInstance*> ULyraEquipmentManagerComponent::GetEquipmentInst
 	}
 	return Results;
 }
+
 

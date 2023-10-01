@@ -1,18 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraWeaponStateComponent.h"
-#include "Teams/LyraTeamSubsystem.h"
-#include "Engine/World.h"
-#include "GameFramework/PlayerController.h"
-#include "Abilities/GameplayAbilityTargetTypes.h"
-#include "AbilitySystemComponent.h"
-#include "Kismet/GameplayStatics.h"
 
-#include "GameFramework/Pawn.h"
+#include "Abilities/GameplayAbilityTargetTypes.h"
 #include "Equipment/LyraEquipmentManagerComponent.h"
-#include "Weapons/LyraRangedWeaponInstance.h"
+#include "GameFramework/Pawn.h"
+#include "GameplayEffectTypes.h"
+#include "Kismet/GameplayStatics.h"
 #include "NativeGameplayTags.h"
 #include "Physics/PhysicalMaterialWithTags.h"
+#include "Teams/LyraTeamSubsystem.h"
+#include "Weapons/LyraRangedWeaponInstance.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraWeaponStateComponent)
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Gameplay_Zone, "Gameplay.Zone");
 
@@ -157,3 +157,4 @@ double ULyraWeaponStateComponent::GetTimeSinceLastHitNotification() const
 	UWorld* World = GetWorld();
 	return World->TimeSince(LastWeaponDamageInstigatedTime);
 }
+

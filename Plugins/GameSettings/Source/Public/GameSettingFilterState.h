@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "Misc/TextFilterExpressionEvaluator.h"
 
+#include "UObject/ObjectPtr.h"
 #include "GameSettingFilterState.generated.h"
 
 class ULocalPlayer;
@@ -68,11 +67,11 @@ private:
 	FTextFilterExpressionEvaluator SearchTextEvaluator;
 
 	UPROPERTY()
-	TArray<UGameSetting*> SettingRootList;
+	TArray<TObjectPtr<UGameSetting>> SettingRootList;
 
 	// If this is non-empty, then only settings in here are allowed
 	UPROPERTY()
-	TArray<UGameSetting*> SettingAllowList;
+	TArray<TObjectPtr<UGameSetting>> SettingAllowList;
 };
 
 /**

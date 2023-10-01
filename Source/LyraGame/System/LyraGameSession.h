@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/GameSession.h"
+
 #include "LyraGameSession.generated.h"
+
+class UObject;
 
 
 UCLASS(Config = Game)
@@ -17,6 +19,9 @@ public:
 	ALyraGameSession(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
+
+	/** Override to disable the default behavior */
+	virtual bool ProcessAutoLogin() override;
 
 	virtual void HandleMatchHasStarted() override;
 	virtual void HandleMatchHasEnded() override;

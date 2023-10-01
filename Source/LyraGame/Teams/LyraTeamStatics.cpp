@@ -1,10 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraTeamStatics.h"
-#include "LyraTeamSubsystem.h"
-#include "LyraLogChannels.h"
+
 #include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "LyraLogChannels.h"
 #include "Teams/LyraTeamDisplayAsset.h"
+#include "Teams/LyraTeamSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTeamStatics)
+
+class UTexture;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -86,3 +92,4 @@ UTexture* ULyraTeamStatics::GetTeamTextureWithFallback(ULyraTeamDisplayAsset* Di
 	}
 	return DefaultValue;
 }
+

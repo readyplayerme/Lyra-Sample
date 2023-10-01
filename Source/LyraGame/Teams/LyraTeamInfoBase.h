@@ -2,14 +2,17 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Info.h"
 #include "System/GameplayTagStack.h"
 
 #include "LyraTeamInfoBase.generated.h"
 
+namespace EEndPlayReason { enum Type : int; }
+
 class ULyraTeamCreationComponent;
 class ULyraTeamSubsystem;
+class UObject;
+struct FFrame;
 
 UCLASS(Abstract)
 class ALyraTeamInfoBase : public AInfo

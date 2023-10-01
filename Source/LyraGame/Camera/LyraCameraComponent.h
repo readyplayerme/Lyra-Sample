@@ -2,16 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Actor.h"
+
 #include "LyraCameraComponent.generated.h"
 
-
+class UCanvas;
 class ULyraCameraMode;
 class ULyraCameraModeStack;
-class UCanvas;
+class UObject;
+struct FFrame;
 struct FGameplayTag;
+struct FMinimalViewInfo;
+template <class TClass> class TSubclassOf;
 
 DECLARE_DELEGATE_RetVal(TSubclassOf<ULyraCameraMode>, FLyraCameraModeDelegate);
 
@@ -59,7 +62,7 @@ protected:
 
 	// Stack used to blend the camera modes.
 	UPROPERTY()
-	ULyraCameraModeStack* CameraModeStack;
+	TObjectPtr<ULyraCameraModeStack> CameraModeStack;
 
 	// Offset applied to the field of view.  The offset is only for one frame, it gets cleared once it is applied.
 	float FieldOfViewOffset;

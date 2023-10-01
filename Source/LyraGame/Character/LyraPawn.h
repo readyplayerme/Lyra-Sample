@@ -2,17 +2,20 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ModularPawn.h"
 #include "Teams/LyraTeamAgentInterface.h"
 
 #include "LyraPawn.generated.h"
 
+class AController;
+class UObject;
+struct FFrame;
+
 /**
  * ALyraPawn
  */
 UCLASS()
-class ALyraPawn : public AModularPawn, public ILyraTeamAgentInterface
+class LYRAGAME_API ALyraPawn : public AModularPawn, public ILyraTeamAgentInterface
 {
 	GENERATED_BODY()
 

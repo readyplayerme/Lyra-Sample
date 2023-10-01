@@ -1,9 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraVerbMessageHelpers.h"
-#include "GameFramework/PlayerState.h"
-#include "GameFramework/PlayerController.h"
+
 #include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerState.h"
+#include "GameplayEffectTypes.h"
+#include "Messages/LyraVerbMessage.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraVerbMessageHelpers)
 
 //////////////////////////////////////////////////////////////////////
 // FLyraVerbMessage
@@ -89,3 +94,4 @@ FLyraVerbMessage ULyraVerbMessageHelpers::CueParametersToVerbMessage(const FGame
 
 	return Result;
 }
+

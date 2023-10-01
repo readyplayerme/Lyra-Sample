@@ -1,7 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraTeamPublicInfo.h"
+
 #include "Net/UnrealNetwork.h"
+#include "Teams/LyraTeamInfoBase.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTeamPublicInfo)
+
+class FLifetimeProperty;
 
 ALyraTeamPublicInfo::ALyraTeamPublicInfo(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -29,3 +35,4 @@ void ALyraTeamPublicInfo::OnRep_TeamDisplayAsset()
 {
 	TryRegisterWithTeamSubsystem();
 }
+

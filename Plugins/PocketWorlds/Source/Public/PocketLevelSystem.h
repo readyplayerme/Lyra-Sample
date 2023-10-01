@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "Subsystems/LocalPlayerSubsystem.h"
 #include "Subsystems/WorldSubsystem.h"
 
 #include "PocketLevelSystem.generated.h"
 
-class UPocketLevel;
 class ULocalPlayer;
-class ULevelStreamingDynamic;
+class UObject;
+class UPocketLevel;
 class UPocketLevelInstance;
 
 /**
@@ -28,5 +27,5 @@ public:
 
 private:
 	UPROPERTY()
-	TArray<UPocketLevelInstance*> PocketInstances;
+	TArray<TObjectPtr<UPocketLevelInstance>> PocketInstances;
 };

@@ -2,14 +2,17 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
+
 #include "LyraAudioMixEffectsSubsystem.generated.h"
 
-class USoundControlBusMix;
+class FSubsystemCollectionBase;
+class UObject;
 class USoundControlBus;
-class USoundSubmix;
+class USoundControlBusMix;
 class USoundEffectSubmixPreset;
+class USoundSubmix;
+class UWorld;
 
 USTRUCT()
 struct FLyraAudioSubmixEffectsChain
@@ -18,11 +21,11 @@ struct FLyraAudioSubmixEffectsChain
 
 	// Submix on which to apply the Submix Effect Chain Override
 	UPROPERTY(Transient)
-	USoundSubmix* Submix = nullptr;
+	TObjectPtr<USoundSubmix> Submix = nullptr;
 
 	// Submix Effect Chain Override (Effects processed in Array index order)
 	UPROPERTY(Transient)
-	TArray<USoundEffectSubmixPreset*> SubmixEffectChain;
+	TArray<TObjectPtr<USoundEffectSubmixPreset>> SubmixEffectChain;
 };
 
 /**
@@ -63,35 +66,35 @@ protected:
 
 	// Default Sound Control Bus Mix retrieved from the Lyra Audio Settings
 	UPROPERTY(Transient)
-	USoundControlBusMix* DefaultBaseMix = nullptr;
+	TObjectPtr<USoundControlBusMix> DefaultBaseMix = nullptr;
 
 	// Loading Screen Sound Control Bus Mix retrieved from the Lyra Audio Settings
 	UPROPERTY(Transient)
-	USoundControlBusMix* LoadingScreenMix = nullptr;
+	TObjectPtr<USoundControlBusMix> LoadingScreenMix = nullptr;
 
 	// User Sound Control Bus Mix retrieved from the Lyra Audio Settings
 	UPROPERTY(Transient)
-	USoundControlBusMix* UserMix = nullptr;
+	TObjectPtr<USoundControlBusMix> UserMix = nullptr;
 
 	// Overall Sound Control Bus retrieved from the Lyra Audio Settings and linked to the UI and game settings in LyraSettingsLocal
 	UPROPERTY(Transient)
-	USoundControlBus* OverallControlBus = nullptr;
+	TObjectPtr<USoundControlBus> OverallControlBus = nullptr;
 
 	// Music Sound Control Bus retrieved from the Lyra Audio Settings and linked to the UI and game settings in LyraSettingsLocal
 	UPROPERTY(Transient)
-	USoundControlBus* MusicControlBus = nullptr;
+	TObjectPtr<USoundControlBus> MusicControlBus = nullptr;
 
 	// SoundFX Sound Control Bus retrieved from the Lyra Audio Settings and linked to the UI and game settings in LyraSettingsLocal
 	UPROPERTY(Transient)
-	USoundControlBus* SoundFXControlBus = nullptr;
+	TObjectPtr<USoundControlBus> SoundFXControlBus = nullptr;
 
 	// Dialogue Sound Control Bus retrieved from the Lyra Audio Settings and linked to the UI and game settings in LyraSettingsLocal
 	UPROPERTY(Transient)
-	USoundControlBus* DialogueControlBus = nullptr;
+	TObjectPtr<USoundControlBus> DialogueControlBus = nullptr;
 
 	// VoiceChat Sound Control Bus retrieved from the Lyra Audio Settings and linked to the UI and game settings in LyraSettingsLocal
 	UPROPERTY(Transient)
-	USoundControlBus* VoiceChatControlBus = nullptr;
+	TObjectPtr<USoundControlBus> VoiceChatControlBus = nullptr;
 
 	// Submix Effect Chain Overrides to apply when HDR Audio is turned on
 	UPROPERTY(Transient)

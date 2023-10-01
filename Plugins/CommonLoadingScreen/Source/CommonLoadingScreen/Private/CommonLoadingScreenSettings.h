@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
 #include "Engine/DeveloperSettingsBackedByCVars.h"
+#include "UObject/SoftObjectPath.h"
 
 #include "CommonLoadingScreenSettings.generated.h"
+
+class UObject;
 
 /**
  * Settings for a loading screen system.
@@ -23,7 +23,7 @@ public:
 public:
 	
 	// The widget to load for the loading screen.
-	UPROPERTY(config, EditAnywhere, Category=Display, meta=(MetaClass="UserWidget"))
+	UPROPERTY(config, EditAnywhere, Category=Display, meta=(MetaClass="/Script/UMG.UserWidget"))
 	FSoftClassPath LoadingScreenWidget;
 
 	// The z-order of the loading screen widget in the viewport stack

@@ -2,17 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "GameplayTagContainer.h"
 
 #include "LyraTeamSubsystem.generated.h"
 
-class ALyraTeamInfoBase;
-class ALyraTeamPublicInfo;
-class ALyraTeamPrivateInfo;
+class AActor;
 class ALyraPlayerState;
+class ALyraTeamInfoBase;
+class ALyraTeamPrivateInfo;
+class ALyraTeamPublicInfo;
+class FSubsystemCollectionBase;
 class ULyraTeamDisplayAsset;
+struct FFrame;
+struct FGameplayTag;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLyraTeamDisplayAssetChangedDelegate, const ULyraTeamDisplayAsset*, DisplayAsset);
 
@@ -23,10 +25,10 @@ struct FLyraTeamTrackingInfo
 
 public:
 	UPROPERTY()
-	ALyraTeamPublicInfo* PublicInfo = nullptr;
+	TObjectPtr<ALyraTeamPublicInfo> PublicInfo = nullptr;
 
 	UPROPERTY()
-	ALyraTeamPrivateInfo* PrivateInfo = nullptr;
+	TObjectPtr<ALyraTeamPrivateInfo> PrivateInfo = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<ULyraTeamDisplayAsset> DisplayAsset = nullptr;
@@ -67,8 +69,11 @@ public:
 	virtual void Deinitialize() override;
 	//~End of USubsystem interface
 
-	void RegisterTeamInfo(ALyraTeamInfoBase* TeamInfo);
-	void UnregisterTeamInfo(ALyraTeamInfoBase* TeamInfo);
+	// Tries to registers a new team
+	bool RegisterTeamInfo(ALyraTeamInfoBase* TeamInfo);
+
+	// Tries to unregister a team, will return false if it didn't work
+	bool UnregisterTeamInfo(ALyraTeamInfoBase* TeamInfo);
 
 	// Changes the team associated with this actor if possible
 	// Note: This function can only be called on the authority

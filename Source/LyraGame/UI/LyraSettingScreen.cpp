@@ -1,9 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSettingScreen.h"
-#include "Settings/LyraGameSettingRegistry.h"
-#include "Player/LyraLocalPlayer.h"
+
 #include "Input/CommonUIInputTypes.h"
+#include "Player/LyraLocalPlayer.h"
+#include "Settings/LyraGameSettingRegistry.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingScreen)
+
+class UGameSettingRegistry;
 
 void ULyraSettingScreen::NativeOnInitialized()
 {

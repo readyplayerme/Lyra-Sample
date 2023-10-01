@@ -1,10 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSettingValueDiscreteDynamic_AudioOutputDevice.h"
+
 #include "AudioDeviceNotificationSubsystem.h"
-#include "LyraLogChannels.h"
-#include "AudioMixerBlueprintLibrary.h"
-#include "Engine/LocalPlayer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingValueDiscreteDynamic_AudioOutputDevice)
 
 #define LOCTEXT_NAMESPACE "LyraSettings"
 

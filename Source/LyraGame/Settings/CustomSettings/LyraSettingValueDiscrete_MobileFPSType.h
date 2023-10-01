@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameSettingValueDiscrete.h"
 //#include "Settings/LyraMobilePerformance.h"
-#include "Containers/SortedMap.h"
+#include "GameSettingValueDiscrete.h"
 
 #include "LyraSettingValueDiscrete_MobileFPSType.generated.h"
+
+enum class EGameSettingChangeReason : uint8;
+
+class UObject;
 
 UCLASS()
 class ULyraSettingValueDiscrete_MobileFPSType : public UGameSettingValueDiscrete

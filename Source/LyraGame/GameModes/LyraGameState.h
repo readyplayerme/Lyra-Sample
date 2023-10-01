@@ -2,16 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "ModularGameState.h"
 #include "AbilitySystemInterface.h"
-#include "Messages/LyraVerbMessage.h"
+#include "ModularGameState.h"
 
 #include "LyraGameState.generated.h"
 
-class ULyraExperienceManagerComponent;
-class ULyraAbilitySystemComponent;
+struct FLyraVerbMessage;
+
+class APlayerState;
 class UAbilitySystemComponent;
+class ULyraAbilitySystemComponent;
+class ULyraExperienceManagerComponent;
+class UObject;
+struct FFrame;
 
 /**
  * ALyraGameState
@@ -27,23 +30,24 @@ public:
 
 	ALyraGameState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	float GetServerFPS() const { return ServerFPS; }
-
 	//~AActor interface
 	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Tick(float DeltaSeconds) override;
 	//~End of AActor interface
 
 	//~AGameStateBase interface
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
 	virtual void RemovePlayerState(APlayerState* PlayerState) override;
+	virtual void SeamlessTravelTransitionCheckpoint(bool bToTransitionMap) override;
 	//~End of AGameStateBase interface
 
 	//~IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~End of IAbilitySystemInterface
 
+	// Gets the ability system component used for game wide things
 	UFUNCTION(BlueprintCallable, Category = "Lyra|GameState")
 	ULyraAbilitySystemComponent* GetLyraAbilitySystemComponent() const { return AbilitySystemComponent; }
 
@@ -57,20 +61,38 @@ public:
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Lyra|GameState")
 	void MulticastReliableMessageToClients(const FLyraVerbMessage Message);
 
+	// Gets the server's FPS, replicated to clients
+	float GetServerFPS() const;
+
+	// Indicate the local player state is recording a replay
+	void SetRecorderPlayerState(APlayerState* NewPlayerState);
+
+	// Gets the player state that recorded the replay, if valid
+	APlayerState* GetRecorderPlayerState() const;
+
+	// Delegate called when the replay player state changes
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnRecorderPlayerStateChanged, APlayerState*);
+	FOnRecorderPlayerStateChanged OnRecorderPlayerStateChangedEvent;
+
 private:
+	// Handles loading and managing the current gameplay experience
 	UPROPERTY()
-	ULyraExperienceManagerComponent* ExperienceManagerComponent;
+	TObjectPtr<ULyraExperienceManagerComponent> ExperienceManagerComponent;
 
 	// The ability system component subobject for game-wide things (primarily gameplay cues)
 	UPROPERTY(VisibleAnywhere, Category = "Lyra|GameState")
-	ULyraAbilitySystemComponent* AbilitySystemComponent;
-
-
-protected:
-
-	virtual void Tick(float DeltaSeconds) override;
+	TObjectPtr<ULyraAbilitySystemComponent> AbilitySystemComponent;
 
 protected:
 	UPROPERTY(Replicated)
 	float ServerFPS;
+
+	// The player state that recorded a replay, it is used to select the right pawn to follow
+	// This is only set in replay streams and is not replicated normally
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_RecorderPlayerState)
+	TObjectPtr<APlayerState> RecorderPlayerState;
+
+	UFUNCTION()
+	void OnRep_RecorderPlayerState();
+
 };

@@ -1,12 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LyraLocalPlayer.h"
+#include "Player/LyraLocalPlayer.h"
+
+#include "AudioMixerBlueprintLibrary.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "Settings/LyraSettingsLocal.h"
 #include "Settings/LyraSettingsShared.h"
-#include "Input/LyraInputConfig.h"
-#include "InputMappingContext.h"
-#include "AudioMixerBlueprintLibrary.h"
-#include "GameFramework/PlayerController.h"
+#include "CommonUserSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraLocalPlayer)
+
+class UObject;
 
 ULyraLocalPlayer::ULyraLocalPlayer()
 {
@@ -98,10 +103,46 @@ ULyraSettingsShared* ULyraLocalPlayer::GetSharedSettings() const
 {
 	if (!SharedSettings)
 	{
-		SharedSettings = ULyraSettingsShared::LoadOrCreateSettings(this);
+		// On PC it's okay to use the sync load because it only checks the disk
+		// This could use a platform tag to check for proper save support instead
+		bool bCanLoadBeforeLogin = PLATFORM_DESKTOP;
+		
+		if (bCanLoadBeforeLogin)
+		{
+			SharedSettings = ULyraSettingsShared::LoadOrCreateSettings(this);
+		}
+		else
+		{
+			// We need to wait for user login to get the real settings so return temp ones
+			SharedSettings = ULyraSettingsShared::CreateTemporarySettings(this);
+		}
 	}
 
 	return SharedSettings;
+}
+
+void ULyraLocalPlayer::LoadSharedSettingsFromDisk(bool bForceLoad)
+{
+	FUniqueNetIdRepl CurrentNetId = GetCachedUniqueNetId();
+	if (!bForceLoad && SharedSettings && CurrentNetId == NetIdForSharedSettings)
+	{
+		// Already loaded once, don't reload
+		return;
+	}
+
+	ensure(ULyraSettingsShared::AsyncLoadOrCreateSettings(this, ULyraSettingsShared::FOnSettingsLoadedEvent::CreateUObject(this, &ULyraLocalPlayer::OnSharedSettingsLoaded)));
+}
+
+void ULyraLocalPlayer::OnSharedSettingsLoaded(ULyraSettingsShared* LoadedOrCreatedSettings)
+{
+	// The settings are applied before it gets here
+	if (ensure(LoadedOrCreatedSettings))
+	{
+		// This will replace the temporary or previously loaded object which will GC out normally
+		SharedSettings = LoadedOrCreatedSettings;
+
+		NetIdForSharedSettings = GetCachedUniqueNetId();
+	}
 }
 
 void ULyraLocalPlayer::OnAudioOutputDeviceChanged(const FString& InAudioOutputDeviceId)
@@ -122,3 +163,4 @@ void ULyraLocalPlayer::OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam
 {
 	ConditionalBroadcastTeamChanged(this, IntegerToGenericTeamId(OldTeam), IntegerToGenericTeamId(NewTeam));
 }
+

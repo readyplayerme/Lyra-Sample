@@ -2,6 +2,11 @@
 
 #include "LyraCosmeticAnimationTypes.h"
 
+#include "Animation/AnimInstance.h"
+#include "Engine/SkeletalMesh.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCosmeticAnimationTypes)
+
 TSubclassOf<UAnimInstance> FLyraAnimLayerSelectionSet::SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const
 {
 	for (const FLyraAnimLayerSelectionEntry& Rule : LayerRules)
@@ -27,3 +32,4 @@ USkeletalMesh* FLyraAnimBodyStyleSelectionSet::SelectBestBodyStyle(const FGamepl
 
 	return DefaultMesh;
 }
+

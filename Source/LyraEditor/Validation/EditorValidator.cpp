@@ -1,28 +1,30 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EditorValidator.h"
-#include "AssetData.h"
-#include "AssetRegistryModule.h"
-#include "Logging/MessageLog.h"
-#include "MessageLogModule.h"
-#include "Misc/ConfigCacheIni.h"
-#include "Misc/ScopedSlowTask.h"
-#include "Misc/MessageDialog.h"
-#include "EditorValidatorSubsystem.h"
+
+#include "AssetRegistry/ARFilter.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "Blueprint/BlueprintSupport.h"
 #include "Editor.h"
+#include "EditorValidatorSubsystem.h"
+#include "Engine/BlueprintCore.h"
 #include "ISourceControlModule.h"
 #include "ISourceControlProvider.h"
-#include "SourceControlHelpers.h"
-#include "SourceControlOperations.h"
-#include "StudioAnalytics.h"
-#include "ShaderCompiler.h"
-#include "Misc/ConfigCacheIni.h"
-#include "Settings/ProjectPackagingSettings.h"
-#include "SourceCodeNavigation.h"
-#include "Stats/StatsMisc.h"
-#include "DataValidationModule.h"
-
+#include "Logging/MessageLog.h"
 #include "LyraEditor.h"
+#include "Misc/ConfigCacheIni.h"
+#include "Misc/MessageDialog.h"
+#include "Misc/PackageName.h"
+#include "Misc/ScopedSlowTask.h"
+#include "Settings/ProjectPackagingSettings.h"
+#include "ShaderCompiler.h"
+#include "SourceCodeNavigation.h"
+#include "SourceControlOperations.h"
+#include "Stats/StatsMisc.h"
+#include "StudioAnalytics.h"
+#include "UObject/UObjectIterator.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EditorValidator)
 
 #define LOCTEXT_NAMESPACE "EditorValidator"
 
@@ -246,7 +248,7 @@ bool UEditorValidator::ValidatePackages(const TArray<FString>& ExistingPackageNa
 				{
 					if (!AssetToCheck.IsAssetLoaded())
 					{
-						UE_LOG(LogLyraEditor, Display, TEXT("Preloading %s..."), *AssetToCheck.ObjectPath.ToString());
+						UE_LOG(LogLyraEditor, Display, TEXT("Preloading %s..."), *AssetToCheck.GetObjectPathString());
 
 						// Start listening for load warnings
 						FLyraValidationMessageGatherer ScopedPreloadMessageGatherer;
@@ -435,16 +437,16 @@ void UEditorValidator::GetChangedAssetsForCode(IAssetRegistry& AssetRegistry, co
 			if (UClass* ModifiedClass = ModifiedClassPtr.Get())
 			{
 				// This finds all native derived blueprints, both direct subclasses, or subclasses of subclasses.
-				TSet<FName> DerivedClassNames;
-				TArray<FName> ClassNames;
-				ClassNames.Add(ModifiedClass->GetFName());
-				AssetRegistry.GetDerivedClassNames(ClassNames, TSet<FName>(), DerivedClassNames);
+				TSet<FTopLevelAssetPath> DerivedClassNames;
+				TArray<FTopLevelAssetPath> ClassNames;
+				ClassNames.Add(ModifiedClass->GetClassPathName());
+				AssetRegistry.GetDerivedClassNames(ClassNames, TSet<FTopLevelAssetPath>(), DerivedClassNames);
 
 				UE_LOG(LogLyraEditor, Display, TEXT("Validating Subclasses of %s in %s + %s"), *ModifiedClass->GetName(), *ChangedHeaderModule, *ChangedHeaderReleativeToModule);
 
 				FARFilter Filter;
 				Filter.bRecursiveClasses = true;
-				Filter.ClassNames.Add(UBlueprintCore::StaticClass()->GetFName());
+				Filter.ClassPaths.Add(UBlueprintCore::StaticClass()->GetClassPathName());
 
 				// We enumerate all assets to find any blueprints who inherit from native classes directly - or
 				// from other blueprints.
@@ -458,9 +460,8 @@ void UEditorValidator::GetChangedAssetsForCode(IAssetRegistry& AssetRegistry, co
 							const FString ClassFromData = AssetData.GetTagValueRef<FString>(FBlueprintTags::GeneratedClassPath);
 							if (!ClassFromData.IsEmpty())
 							{
-								const FString ClassObjectPath = FPackageName::ExportTextPathToObjectPath(ClassFromData);
-								const FString ClassName = FPackageName::ObjectPathToObjectName(ClassObjectPath);
-								if (DerivedClassNames.Contains(FName(*ClassName)))
+								const FTopLevelAssetPath ClassObjectPath(FPackageName::ExportTextPathToObjectPath(ClassFromData));
+								if (DerivedClassNames.Contains(ClassObjectPath))
 								{
 									UE_LOG(LogLyraEditor, Display, TEXT("\tAdding %s To Validate"), *PackageName);
 

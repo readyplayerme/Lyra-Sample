@@ -1,7 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AsyncAction_ObserveTeam.h"
-#include "Engine/GameInstance.h"
+#include "Teams/AsyncAction_ObserveTeam.h"
+
+#include "Teams/LyraTeamAgentInterface.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AsyncAction_ObserveTeam)
 
 UAsyncAction_ObserveTeam::UAsyncAction_ObserveTeam(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -66,3 +69,4 @@ void UAsyncAction_ObserveTeam::OnWatchedAgentChangedTeam(UObject* TeamAgent, int
 {
 	OnTeamChanged.Broadcast(NewTeam != INDEX_NONE, NewTeam);
 }
+

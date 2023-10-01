@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/Widget.h"
-#include "Fonts/SlateFontInfo.h"
 #include "Styling/SlateTypes.h"
 #include "SubtitleDisplaySubsystem.h"
-#include "SubtitleDisplayOptions.h"
 
 #include "SubtitleDisplay.generated.h"
+
+class USubtitleDisplayOptions;
 
 struct FSubtitleFormat;
 
@@ -23,7 +22,7 @@ public:
 	FSubtitleFormat Format;
 
 	UPROPERTY(EditAnywhere, Category = "Display Info")
-	USubtitleDisplayOptions* Options;
+	TObjectPtr<USubtitleDisplayOptions> Options;
 
 	// Whether text wraps onto a new line when it's length exceeds this width; if this value is zero or negative, no wrapping occurs.
 	UPROPERTY(EditAnywhere, Category="Display Info")

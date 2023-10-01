@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSettingValue.h"
 
 #include "GameSettingValueDiscrete.generated.h"
+
+class UObject;
+struct FFrame;
 
 UCLASS(Abstract)
 class GAMESETTINGS_API UGameSettingValueDiscrete : public UGameSettingValue

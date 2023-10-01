@@ -1,8 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameSettingCollection.h"
-#include "Framework/Text/ITextDecorator.h"
-#include "Framework/Text/RichTextMarkupProcessing.h"
+#include "Templates/Casts.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingCollection)
 
 #define LOCTEXT_NAMESPACE "GameSetting"
 
@@ -119,3 +120,4 @@ void UGameSettingCollectionPage::ExecuteNavigation()
 }
 
 #undef LOCTEXT_NAMESPACE
+

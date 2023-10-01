@@ -1,13 +1,20 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Input/AimAssistInputModifier.h"
+#include "CommonInputTypeEnum.h"
+#include "Curves/CurveFloat.h"
+#include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/World.h"
 #include "EnhancedPlayerInput.h"
-#include "GameFramework/GameStateBase.h"
 #include "Input/AimAssistTargetManagerComponent.h"
 #include "Input/LyraAimSensitivityData.h"
 #include "Player/LyraLocalPlayer.h"
 #include "Player/LyraPlayerState.h"
+#include "SceneView.h"
 #include "Settings/LyraSettingsShared.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AimAssistInputModifier)
 
 #if ENABLE_DRAW_DEBUG
 #include "Engine/Canvas.h"

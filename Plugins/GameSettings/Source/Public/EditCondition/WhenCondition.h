@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameSetting.h"
+#include "GameSettingFilterState.h"
 
 class FWhenCondition : public FGameSettingEditCondition
 {

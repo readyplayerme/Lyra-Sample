@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+
 #include "LyraLobbyBackground.generated.h"
+
+class UObject;
+class UWorld;
 
 /**
  * Developer settings / editor cheats

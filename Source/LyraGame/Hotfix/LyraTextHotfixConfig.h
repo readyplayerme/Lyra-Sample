@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
-#include "Internationalization/PolyglotTextData.h"
 #include "LyraTextHotfixConfig.generated.h"
+
+struct FPolyglotTextData;
+struct FPropertyChangedEvent;
 
 /**
  * This class allows hotfixing individual FText values anywhere

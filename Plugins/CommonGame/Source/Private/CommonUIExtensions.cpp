@@ -1,15 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CommonUIExtensions.h"
-#include "CommonInputBaseTypes.h"
+
 #include "CommonInputSubsystem.h"
-#include "Blueprint/UserWidget.h"
+#include "CommonInputTypeEnum.h"
+#include "CommonLocalPlayer.h"
+#include "Engine/GameInstance.h"
 #include "GameUIManagerSubsystem.h"
 #include "GameUIPolicy.h"
 #include "PrimaryGameLayout.h"
-#include "CommonActivatableWidget.h"
-#include "CommonLocalPlayer.h"
-#include "Engine/AssetManager.h"
+#include "Widgets/CommonActivatableWidgetContainer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(CommonUIExtensions)
 
 int32 UCommonUIExtensions::InputSuspensions = 0;
 
@@ -52,11 +54,10 @@ bool UCommonUIExtensions::IsOwningPlayerUsingGamepad(const UUserWidget* WidgetCo
 
 UCommonActivatableWidget* UCommonUIExtensions::PushContentToLayer_ForPlayer(const ULocalPlayer* LocalPlayer, FGameplayTag LayerName, TSubclassOf<UCommonActivatableWidget> WidgetClass)
 {
-	//if (!WidgetClass)
-	//{
-	//	//UE_LOG ERROR
-	//	return nullptr;
-	//}
+	if (!ensure(LocalPlayer) || !ensure(WidgetClass != nullptr))
+	{
+		return nullptr;
+	}
 
 	if (UGameUIManagerSubsystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
 	{
@@ -74,6 +75,11 @@ UCommonActivatableWidget* UCommonUIExtensions::PushContentToLayer_ForPlayer(cons
 
 void UCommonUIExtensions::PushStreamedContentToLayer_ForPlayer(const ULocalPlayer* LocalPlayer, FGameplayTag LayerName, TSoftClassPtr<UCommonActivatableWidget> WidgetClass)
 {
+	if (!ensure(LocalPlayer) || !ensure(!WidgetClass.IsNull()))
+	{
+		return;
+	}
+
 	if (UGameUIManagerSubsystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
 	{
 		if (UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
@@ -89,6 +95,12 @@ void UCommonUIExtensions::PushStreamedContentToLayer_ForPlayer(const ULocalPlaye
 
 void UCommonUIExtensions::PopContentFromLayer(UCommonActivatableWidget* ActivatableWidget)
 {
+	if (!ActivatableWidget)
+	{
+		// Ignore request to pop an already deleted widget
+		return;
+	}
+
 	if (const ULocalPlayer* LocalPlayer = ActivatableWidget->GetOwningLocalPlayer())
 	{
 		if (const UGameUIManagerSubsystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
@@ -156,3 +168,4 @@ void UCommonUIExtensions::ResumeInputForPlayer(ULocalPlayer* LocalPlayer, FName 
 		CommonInputSubsystem->SetInputTypeFilter(ECommonInputType::Touch, SuspendToken, false);
 	}
 }
+

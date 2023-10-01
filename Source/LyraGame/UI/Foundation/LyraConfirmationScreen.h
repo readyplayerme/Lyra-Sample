@@ -2,10 +2,13 @@
 
 #pragma once
 
-#include "CommonActivatableWidget.h"
+#include "Engine/DataTable.h"
 #include "Messaging/CommonGameDialog.h"
 
+#include "Messaging/CommonMessagingSubsystem.h"
 #include "LyraConfirmationScreen.generated.h"
+
+class IWidgetCompilerLog;
 
 class UCommonTextBlock;
 class UCommonRichTextBlock;
@@ -40,17 +43,17 @@ private:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UCommonTextBlock* Text_Title;
+	TObjectPtr<UCommonTextBlock> Text_Title;
 
 	UPROPERTY(Meta = (BindWidget))
-	UCommonRichTextBlock* RichText_Description;
+	TObjectPtr<UCommonRichTextBlock> RichText_Description;
 
 	UPROPERTY(Meta = (BindWidget))
-	UDynamicEntryBox* EntryBox_Buttons;
+	TObjectPtr<UDynamicEntryBox> EntryBox_Buttons;
 
 	UPROPERTY(Meta = (BindWidget))
-	UCommonBorder* Border_TapToCloseZone;
+	TObjectPtr<UCommonBorder> Border_TapToCloseZone;
 
-	UPROPERTY(EditDefaultsOnly, meta = (RowType = CommonInputActionDataBase))
+	UPROPERTY(EditDefaultsOnly, meta = (RowType = "/Script/CommonUI.CommonInputActionDataBase"))
 	FDataTableRowHandle CancelAction;
 };

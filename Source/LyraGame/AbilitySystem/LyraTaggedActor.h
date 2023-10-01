@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameplayTagAssetInterface.h"
 #include "GameplayTagContainer.h"
@@ -23,7 +22,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Actor)
 	FString AvatarUrl;
-	
+
 	UPROPERTY(BlueprintAssignable, Category=Actor)
 	FLoadAvatarPart OnLoadAvatarPart;
 

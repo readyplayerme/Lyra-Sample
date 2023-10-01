@@ -2,10 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
+
 #include "GameplayMessageProcessor.generated.h"
+
+namespace EEndPlayReason { enum Type : int; }
+
+class UObject;
 
 /**
  * UGameplayMessageProcessor

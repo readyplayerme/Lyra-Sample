@@ -2,9 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "LyraAttributeSet.h"
+
 #include "LyraCombatSet.generated.h"
+
+class UObject;
+struct FFrame;
 
 
 /**

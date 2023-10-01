@@ -1,11 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AsyncAction_ObserveTeamColors.h"
-#include "Engine/GameInstance.h"
-#include "Teams/LyraTeamSubsystem.h"
-#include "Teams/LyraTeamStatics.h"
-#include "Engine/World.h"
+#include "Teams/AsyncAction_ObserveTeamColors.h"
+
 #include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "Teams/LyraTeamAgentInterface.h"
+#include "Teams/LyraTeamStatics.h"
+#include "Teams/LyraTeamSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AsyncAction_ObserveTeamColors)
 
 UAsyncAction_ObserveTeamColors::UAsyncAction_ObserveTeamColors(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -103,3 +106,4 @@ void UAsyncAction_ObserveTeamColors::OnDisplayAssetChanged(const ULyraTeamDispla
 {
 	BroadcastChange(LastBroadcastTeamId, DisplayAsset);
 }
+

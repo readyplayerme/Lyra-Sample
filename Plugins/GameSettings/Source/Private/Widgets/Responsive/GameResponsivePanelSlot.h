@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/ScriptMacros.h"
 #include "Components/PanelSlot.h"
-#include "Components/SlateWrapperTypes.h"
 #include "SGameResponsivePanel.h"
 
 #include "GameResponsivePanelSlot.generated.h"
+
+class UObject;
 
 UCLASS()
 class UGameResponsivePanelSlot : public UPanelSlot

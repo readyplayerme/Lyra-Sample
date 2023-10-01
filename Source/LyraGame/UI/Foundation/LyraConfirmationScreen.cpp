@@ -3,6 +3,7 @@
 #include "LyraConfirmationScreen.h"
 
 #if WITH_EDITOR
+#include "CommonInputSettings.h"
 #include "Editor/WidgetCompilerLog.h"
 #endif
 
@@ -11,9 +12,9 @@
 #include "CommonTextBlock.h"
 #include "Components/DynamicEntryBox.h"
 #include "ICommonInputModule.h"
-#include "Input/Reply.h"
-#include "CommonButtonBase.h"
 #include "LyraButtonBase.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraConfirmationScreen)
 
 void ULyraConfirmationScreen::SetupDialog(UCommonGameDialogDescriptor* Descriptor, FCommonMessagingResultDelegate ResultCallback)
 {

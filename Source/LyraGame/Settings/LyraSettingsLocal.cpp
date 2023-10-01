@@ -1,22 +1,21 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSettingsLocal.h"
-#include "Sound/SoundClass.h"
-#include "AudioDeviceManager.h"
-#include "AudioDevice.h"
-#include "LyraLogChannels.h"
-#include "AudioMixerBlueprintLibrary.h"
-#include "CommonInputBaseTypes.h"
+#include "Engine/Engine.h"
+#include "EnhancedActionKeyMapping.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Engine/World.h"
+#include "Misc/App.h"
 #include "CommonInputSubsystem.h"
+#include "GenericPlatform/GenericPlatformFramePacer.h"
 #include "Player/LyraLocalPlayer.h"
+#include "Performance/LyraPerformanceStatTypes.h"
 #include "PlayerMappableInputConfig.h"
 #include "EnhancedInputSubsystems.h"
-#include "CommonInputBaseTypes.h"
-#include "NativeGameplayTags.h"
 #include "ICommonUIModule.h"
 #include "CommonUISettings.h"
+#include "SoundControlBusMix.h"
 #include "Widgets/Layout/SSafeZone.h"
-#include "ProfilingDebugging/CsvProfiler.h"
 #include "Performance/LyraPerformanceSettings.h"
 #include "DeviceProfiles/DeviceProfileManager.h"
 #include "DeviceProfiles/DeviceProfile.h"
@@ -26,6 +25,9 @@
 #include "AudioModulationStatics.h"
 #include "Audio/LyraAudioSettings.h"
 #include "Audio/LyraAudioMixEffectsSubsystem.h"
+#include "EnhancedActionKeyMapping.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingsLocal)
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Platform_Trait_BinauralSettingControlledByOS, "Platform.Trait.BinauralSettingControlledByOS");
 
@@ -333,6 +335,7 @@ namespace LyraSettingsHelpers
 
 //////////////////////////////////////////////////////////////////////
 
+PRAGMA_DISABLE_DEPRECATION_WARNINGS
 ULyraSettingsLocal::ULyraSettingsLocal()
 {
 	if (!HasAnyFlags(RF_ClassDefaultObject) && FSlateApplication::IsInitialized())
@@ -342,6 +345,7 @@ ULyraSettingsLocal::ULyraSettingsLocal()
 
 	SetToDefaults();
 }
+PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 void ULyraSettingsLocal::SetToDefaults()
 {
@@ -783,7 +787,7 @@ void ULyraSettingsLocal::ClampMobileQuality()
 
 		// Choose the closest supported frame rate to the user desired setting without going over the device imposed limit
 		const TArray<int32>& PossibleRates = PlatformSettings->MobileFrameRateLimits;
-		const int32 LimitIndex = PossibleRates.FindLastByPredicate([=](const int32& TestRate) { return (TestRate <= DesiredMobileFrameRateLimit) && IsSupportedMobileFramePace(TestRate); });
+		const int32 LimitIndex = PossibleRates.FindLastByPredicate([this](const int32& TestRate) { return (TestRate <= DesiredMobileFrameRateLimit) && IsSupportedMobileFramePace(TestRate); });
 		const int32 ActualLimitFPS = PossibleRates.IsValidIndex(LimitIndex) ? PossibleRates[LimitIndex] : GetDefaultMobileFrameRate();
 
 		ClampMobileResolutionQuality(ActualLimitFPS);
@@ -952,7 +956,7 @@ void ULyraSettingsLocal::SetOverallVolume(float InVolume)
 	ensureMsgf(bSoundControlBusMixLoaded, TEXT("UserControlBusMix Settings Failed to Load."));
 
 	// Locate the locally cached bus and set the volume on it
-	if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("Overall")))
+	if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Overall")))
 	{
 		if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 		{
@@ -982,7 +986,7 @@ void ULyraSettingsLocal::SetMusicVolume(float InVolume)
 	ensureMsgf(bSoundControlBusMixLoaded, TEXT("UserControlBusMix Settings Failed to Load."));
 
 	// Locate the locally cached bus and set the volume on it
-	if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("Music")))
+	if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Music")))
 	{
 		if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 		{
@@ -1012,7 +1016,7 @@ void ULyraSettingsLocal::SetSoundFXVolume(float InVolume)
 	ensureMsgf(bSoundControlBusMixLoaded, TEXT("UserControlBusMix Settings Failed to Load."));
 
 	// Locate the locally cached bus and set the volume on it
-	if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("SoundFX")))
+	if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("SoundFX")))
 	{
 		if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 		{
@@ -1042,7 +1046,7 @@ void ULyraSettingsLocal::SetDialogueVolume(float InVolume)
 	ensureMsgf(bSoundControlBusMixLoaded, TEXT("UserControlBusMix Settings Failed to Load."));
 
 	// Locate the locally cached bus and set the volume on it
-	if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("Dialogue")))
+	if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Dialogue")))
 	{
 		if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 		{
@@ -1072,7 +1076,7 @@ void ULyraSettingsLocal::SetVoiceChatVolume(float InVolume)
 	ensureMsgf(bSoundControlBusMixLoaded, TEXT("UserControlBusMix Settings Failed to Load."));
 
 	// Locate the locally cached bus and set the volume on it
-	if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("VoiceChat")))
+	if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("VoiceChat")))
 	{
 		if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 		{
@@ -1142,7 +1146,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 
 	// In this section, update each Control Bus to the currently cached UI settings
 	{
-		if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("Overall")))
+		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Overall")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1150,7 +1154,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("Music")))
+		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Music")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1158,7 +1162,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("SoundFX")))
+		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("SoundFX")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1166,7 +1170,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("Dialogue")))
+		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Dialogue")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1174,7 +1178,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (USoundControlBus** ControlBusDblPtr = ControlBusMap.Find(TEXT("VoiceChat")))
+		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("VoiceChat")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1265,6 +1269,8 @@ FName ULyraSettingsLocal::GetControllerPlatform() const
 	return ControllerPlatform;
 }
 
+PRAGMA_DISABLE_DEPRECATION_WARNINGS
+
 void ULyraSettingsLocal::RegisterInputConfig(ECommonInputType Type, const UPlayerMappableInputConfig* NewConfig, const bool bIsActive)
 {
 	if (NewConfig)
@@ -1294,32 +1300,6 @@ int32 ULyraSettingsLocal::UnregisterInputConfig(const UPlayerMappableInputConfig
 			
 	}
 	return INDEX_NONE;
-}
-
-void ULyraSettingsLocal::ActivateInputConfig(const UPlayerMappableInputConfig* Config)
-{
-	if (Config)
-	{
-		const int32 ExistingConfigIdx = RegisteredInputConfigs.IndexOfByPredicate( [&Config](const FLoadedMappableConfigPair& Pair) { return Pair.Config == Config; } );
-		if (ExistingConfigIdx != INDEX_NONE)
-		{
-			RegisteredInputConfigs[ExistingConfigIdx].bIsActive = true;
-			OnInputConfigActivated.Broadcast(RegisteredInputConfigs[ExistingConfigIdx]);
-		}
-	}
-}
-
-void ULyraSettingsLocal::DeactivateInputConfig(const UPlayerMappableInputConfig* Config)
-{
-	if (Config)
-	{
-		const int32 ExistingConfigIdx = RegisteredInputConfigs.IndexOfByPredicate( [&Config](const FLoadedMappableConfigPair& Pair) { return Pair.Config == Config; } );
-		if (ExistingConfigIdx != INDEX_NONE)
-		{
-			RegisteredInputConfigs[ExistingConfigIdx].bIsActive = false;
-			OnInputConfigDeactivated.Broadcast(RegisteredInputConfigs[ExistingConfigIdx]);
-		}
-	}
 }
 
 const UPlayerMappableInputConfig* ULyraSettingsLocal::GetInputConfigByName(FName ConfigName) const
@@ -1354,6 +1334,42 @@ void ULyraSettingsLocal::GetRegisteredInputConfigsOfType(ECommonInputType Type, 
 	}
 }
 
+void ULyraSettingsLocal::GetAllMappingNamesFromKey(const FKey InKey, TArray<FName>& OutActionNames)
+{
+	if (InKey == EKeys::Invalid)
+	{
+		return;
+	}
+
+	// adding any names of actions that are bound to that key
+	for (const FLoadedMappableConfigPair& Pair : RegisteredInputConfigs)
+	{
+		if (Pair.Type == ECommonInputType::MouseAndKeyboard)
+		{
+			for (const FEnhancedActionKeyMapping& Mapping : Pair.Config->GetPlayerMappableKeys())
+			{
+				FName MappingName(Mapping.GetDisplayName().ToString());
+				FName ActionName = Mapping.GetMappingName();
+				// make sure it isn't custom bound as well
+				if (const FKey* MappingKey = CustomKeyboardConfig.Find(ActionName))
+				{
+					if (*MappingKey == InKey)
+					{
+						OutActionNames.Add(MappingName);
+					}
+				}
+				else
+				{
+					if (Mapping.Key == InKey)
+					{
+						OutActionNames.Add(MappingName);
+					}
+				}
+			}
+		}
+	}
+}
+
 void ULyraSettingsLocal::AddOrUpdateCustomKeyboardBindings(const FName MappingName, const FKey NewKey, ULyraLocalPlayer* LocalPlayer)
 {
 	if (MappingName == NAME_None)
@@ -1369,10 +1385,10 @@ void ULyraSettingsLocal::AddOrUpdateCustomKeyboardBindings(const FName MappingNa
 			for (const FEnhancedActionKeyMapping& Mapping : DefaultConfig->GetPlayerMappableKeys())
 			{
 				// Make sure that the mapping has a valid name, its possible to have an empty name
-				// if someone has marked a mapping as "Player Mappabe" but deleted the default field value
-				if (Mapping.PlayerMappableOptions.Name != NAME_None)
+				// if someone has marked a mapping as "Player Mappable" but deleted the default field value
+				if (Mapping.GetMappingName() != NAME_None)
 				{
-					CustomKeyboardConfig.Add(Mapping.PlayerMappableOptions.Name, Mapping.Key);
+					CustomKeyboardConfig.Add(Mapping.GetMappingName(), Mapping.Key);
 				}
 			}
 		}
@@ -1393,9 +1409,27 @@ void ULyraSettingsLocal::AddOrUpdateCustomKeyboardBindings(const FName MappingNa
 	// Tell the enhanced input subsystem for this local player that we should remap some input! Woo
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
 	{
-		Subsystem->AddPlayerMappedKey(MappingName, NewKey);
+		Subsystem->AddPlayerMappedKeyInSlot(MappingName, NewKey);
 	}
 }
+
+void ULyraSettingsLocal::ResetKeybindingToDefault(const FName MappingName, ULyraLocalPlayer* LocalPlayer)
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
+	{
+		Subsystem->RemoveAllPlayerMappedKeysForMapping(MappingName);
+	}
+}
+
+void ULyraSettingsLocal::ResetKeybindingsToDefault(ULyraLocalPlayer* LocalPlayer)
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
+	{
+		Subsystem->RemoveAllPlayerMappedKeys();
+	}
+}
+
+PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 void ULyraSettingsLocal::LoadUserControlBusMix()
 {
@@ -1713,7 +1747,7 @@ void ULyraSettingsLocal::UpdateMobileFramePacing()
 	// Choose the closest supported frame rate to the user desired setting without going over the device imposed limit
 	const ULyraPlatformSpecificRenderingSettings* PlatformSettings = ULyraPlatformSpecificRenderingSettings::Get();
 	const TArray<int32>& PossibleRates = PlatformSettings->MobileFrameRateLimits;
-	const int32 LimitIndex = PossibleRates.FindLastByPredicate([=](const int32& TestRate) { return (TestRate <= MobileFrameRateLimit) && IsSupportedMobileFramePace(TestRate); });
+	const int32 LimitIndex = PossibleRates.FindLastByPredicate([this](const int32& TestRate) { return (TestRate <= MobileFrameRateLimit) && IsSupportedMobileFramePace(TestRate); });
 	const int32 TargetFPS = PossibleRates.IsValidIndex(LimitIndex) ? PossibleRates[LimitIndex] : GetDefaultMobileFrameRate();
 
 	UE_LOG(LogConsoleResponse, Log, TEXT("Setting frame pace to %d Hz."), TargetFPS);
@@ -1736,3 +1770,4 @@ void ULyraSettingsLocal::UpdateDynamicResFrameTime(float TargetFPS)
 		}
 	}
 }
+

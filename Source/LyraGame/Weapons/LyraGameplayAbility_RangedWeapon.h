@@ -2,13 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Equipment/LyraGameplayAbility_FromEquipment.h"
 
 #include "LyraGameplayAbility_RangedWeapon.generated.h"
 
-class ULyraRangedWeaponInstance;
+enum ECollisionChannel : int;
+
 class APawn;
+class ULyraRangedWeaponInstance;
+class UObject;
+struct FCollisionQueryParams;
+struct FFrame;
+struct FGameplayAbilityActorInfo;
+struct FGameplayEventData;
+struct FGameplayTag;
+struct FGameplayTagContainer;
 
 /** Defines where an ability starts its trace from and where it should face */
 UENUM(BlueprintType)

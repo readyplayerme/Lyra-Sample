@@ -2,17 +2,20 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Subsystems/GameInstanceSubsystem.h"
 #include "NetworkReplayStreaming.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "GameplayTagContainer.h"
 
 #include "LyraReplaySubsystem.generated.h"
 
 class UDemoNetDriver;
+class APlayerController;
+class ULocalPlayer;
+struct FFrame;
 
-// An available replay
+/** An available replay for display in the UI */
 UCLASS(BlueprintType)
-class ULyraReplayListEntry : public UObject
+class LYRAGAME_API ULyraReplayListEntry : public UObject
 {
 	GENERATED_BODY()
 
@@ -40,39 +43,67 @@ public:
 	bool GetIsLive() const { return StreamInfo.bIsLive; }
 };
 
-// Results of querying for replays
+/** Results of querying for replays list of results for the UI */
 UCLASS(BlueprintType)
-class ULyraReplayList : public UObject
+class LYRAGAME_API ULyraReplayList : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(BlueprintReadWrite, Category=Replays)
-	TArray<ULyraReplayListEntry*> Results;
+	TArray<TObjectPtr<ULyraReplayListEntry>> Results;
 };
 
+/** Subsystem to handle recording/loading replays */
 UCLASS()
-class ULyraReplaySubsystem : public UGameInstanceSubsystem
+class LYRAGAME_API ULyraReplaySubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
 public:
 	ULyraReplaySubsystem();
 
+	/** Returns true if this platform supports replays at all */
+	UFUNCTION(BlueprintCallable, Category = Replays, BlueprintPure = false)
+	static bool DoesPlatformSupportReplays();
+
+	/** Returns the trait tag for platform support, used in options */
+	static FGameplayTag GetPlatformSupportTraitTag();
+
+	/** Loads the appropriate map and plays a replay */
 	UFUNCTION(BlueprintCallable, Category=Replays)
 	void PlayReplay(ULyraReplayListEntry* Replay);
 
-	//void DeleteReplay();
+	/** Starts recording a client replay, and handles any file cleanup needed */
+	UFUNCTION(BlueprintCallable, Category = Replays)
+	void RecordClientReplay(APlayerController* PlayerController);
 
+	/** Starts deleting local replays starting with the oldest until there are NumReplaysToKeep or fewer */
+	UFUNCTION(BlueprintCallable, Category = Replays)
+	void CleanupLocalReplays(ULocalPlayer* LocalPlayer, int32 NumReplaysToKeep);
+
+	/** Move forward or back in currently playing replay */
 	UFUNCTION(BlueprintCallable, Category=Replays)
 	void SeekInActiveReplay(float TimeInSeconds);
 
+	/** Gets length of current replay */
 	UFUNCTION(BlueprintCallable, Category = Replays, BlueprintPure = false)
 	float GetReplayLengthInSeconds() const;
 
+	/** Gets current playback time */
 	UFUNCTION(BlueprintCallable, Category=Replays, BlueprintPure=false)
 	float GetReplayCurrentTime() const;
 
 private:
+	TSharedPtr<INetworkReplayStreamer> CurrentReplayStreamer;
+
+	UPROPERTY()
+	TObjectPtr<ULocalPlayer> LocalPlayerDeletingReplays;
+
+	int32 DeletingReplaysNumberToKeep;
+
 	UDemoNetDriver* GetDemoDriver() const;
+
+	void OnEnumerateStreamsCompleteForDelete(const FEnumerateStreamsResult& Result);
+	void OnDeleteReplay(const FDeleteFinishedStreamResult& DeleteResult);
 };

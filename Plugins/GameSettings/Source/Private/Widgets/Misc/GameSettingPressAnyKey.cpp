@@ -1,9 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Widgets/Misc/GameSettingPressAnyKey.h"
+
 #include "Framework/Application/IInputProcessor.h"
-#include "Containers/Ticker.h"
-#include "Stats/Stats.h"
+#include "Framework/Application/SlateApplication.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingPressAnyKey)
+
+class ICursor;
 
 class FSettingsPressAnyKeyInputPreProcessor : public IInputProcessor
 {

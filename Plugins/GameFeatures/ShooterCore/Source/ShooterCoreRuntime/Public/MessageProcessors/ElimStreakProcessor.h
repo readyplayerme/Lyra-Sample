@@ -3,11 +3,14 @@
 #pragma once
 
 #include "Messages/GameplayMessageProcessor.h"
-#include "GameplayTagContainer.h"
+
 #include "ElimStreakProcessor.generated.h"
 
-struct FLyraVerbMessage;
 class APlayerState;
+class UObject;
+struct FGameplayTag;
+struct FLyraVerbMessage;
+template <typename T> struct TObjectPtr;
 
 // Tracks a streak of eliminations (X eliminations without being eliminated)
 UCLASS(Abstract)

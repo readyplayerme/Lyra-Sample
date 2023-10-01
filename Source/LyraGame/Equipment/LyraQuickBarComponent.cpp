@@ -2,19 +2,19 @@
 
 #include "LyraQuickBarComponent.h"
 
-#include "NativeGameplayTags.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
-
-#include "Net/UnrealNetwork.h"
-#include "Inventory/LyraInventoryItemInstance.h"
-#include "Inventory/LyraInventoryItemDefinition.h"
-#include "Inventory/InventoryFragment_EquippableItem.h"
-#include "Equipment/LyraEquipmentInstance.h"
 #include "Equipment/LyraEquipmentDefinition.h"
+#include "Equipment/LyraEquipmentInstance.h"
 #include "Equipment/LyraEquipmentManagerComponent.h"
-
-#include "GameFramework/Controller.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameFramework/Pawn.h"
+#include "Inventory/InventoryFragment_EquippableItem.h"
+#include "NativeGameplayTags.h"
+#include "Net/UnrealNetwork.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraQuickBarComponent)
+
+class FLifetimeProperty;
+class ULyraEquipmentDefinition;
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Lyra_QuickBar_Message_SlotsChanged, "Lyra.QuickBar.Message.SlotsChanged");
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Lyra_QuickBar_Message_ActiveIndexChanged, "Lyra.QuickBar.Message.ActiveIndexChanged");
@@ -221,3 +221,4 @@ void ULyraQuickBarComponent::OnRep_ActiveSlotIndex()
 	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(this);
 	MessageSystem.BroadcastMessage(TAG_Lyra_QuickBar_Message_ActiveIndexChanged, Message);
 }
+

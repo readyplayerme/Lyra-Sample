@@ -2,15 +2,22 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameplayTagContainer.h"
+
 #include "LyraWeaponSpawner.generated.h"
 
+namespace EEndPlayReason { enum Type : int; }
+
+class APawn;
+class UCapsuleComponent;
 class ULyraInventoryItemDefinition;
 class ULyraWeaponPickupDefinition;
-class UCapsuleComponent;
+class UObject;
+class UPrimitiveComponent;
 class UStaticMeshComponent;
+struct FFrame;
+struct FGameplayTag;
+struct FHitResult;
 
 UCLASS(Blueprintable,BlueprintType)
 class LYRAGAME_API ALyraWeaponSpawner : public AActor
@@ -35,7 +42,7 @@ public:
 protected:
 	//Data asset used to configure a Weapon Spawner
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Lyra|WeaponPickup")
-	ULyraWeaponPickupDefinition* WeaponDefinition;
+	TObjectPtr<ULyraWeaponPickupDefinition> WeaponDefinition;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, ReplicatedUsing = OnRep_WeaponAvailability, Category = "Lyra|WeaponPickup")
 	bool bIsWeaponAvailable;
@@ -55,13 +62,13 @@ protected:
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|WeaponPickup")
-	UCapsuleComponent* CollisionVolume;
+	TObjectPtr<UCapsuleComponent> CollisionVolume;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|WeaponPickup")
-	UStaticMeshComponent* PadMesh;
+	TObjectPtr<UStaticMeshComponent> PadMesh;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Lyra|WeaponPickup")
-	UStaticMeshComponent* WeaponMesh;
+	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Lyra|WeaponPickup")
 	float WeaponMeshRotationSpeed;

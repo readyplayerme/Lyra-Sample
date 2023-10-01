@@ -2,13 +2,17 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/LyraGameplayAbility.h"
-#include "Interaction/InteractionQuery.h"
-#include "Interaction/IInteractableTarget.h"
+#include "Interaction/InteractionOption.h"
+
 #include "LyraGameplayAbility_Interact.generated.h"
 
 class UIndicatorDescriptor;
+class UObject;
+class UUserWidget;
+struct FFrame;
+struct FGameplayAbilityActorInfo;
+struct FGameplayEventData;
 
 /**
  * ULyraGameplayAbility_Interact
@@ -37,7 +41,7 @@ protected:
 	TArray<FInteractionOption> CurrentOptions;
 
 	UPROPERTY()
-	TArray<UIndicatorDescriptor*> Indicators;
+	TArray<TObjectPtr<UIndicatorDescriptor>> Indicators;
 
 protected:
 

@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "InputModifiers.h"
 #include "GameplayTagContainer.h"
+#include "Math/IntRect.h"
 #include "ScalableFloat.h"
 #include "WorldCollision.h"
 #include "Input/LyraInputModifiers.h"
@@ -156,7 +155,7 @@ struct FAimAssistFilter
 
 	/** Any target whose owning actor is of this type will be excluded. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSet<UClass*> ExcludedClasses;
+	TSet<TObjectPtr<UClass>> ExcludedClasses;
 
 	/** Targets with any of these tags will be excluded. */
 	FGameplayTagContainer ExclusionGameplayTags;
@@ -208,7 +207,7 @@ struct FAimAssistSettings
 
 	// How much weight the target has based on the time it has been targeted.  (0 = None, 1 = Max)
 	UPROPERTY(EditAnywhere)
-	const UCurveFloat* TargetWeightCurve = nullptr;
+	TObjectPtr<const UCurveFloat> TargetWeightCurve = nullptr;
 
 	// How much target and player movement contributes to the aim assist pull when target is under the inner reticle. (0 = None, 1 = Max)
 	UPROPERTY(EditAnywhere)
@@ -338,7 +337,7 @@ public:
 
 	/** The input action that represents the actual movement of the player */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=Settings)
-	const UInputAction* MoveInputAction = nullptr;
+	TObjectPtr<const UInputAction> MoveInputAction = nullptr;
 	
 	/** The type of targeting to use for this Sensitivity */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=Settings, Config)

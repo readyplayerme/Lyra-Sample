@@ -7,6 +7,7 @@
 #include "LyraControllerDisconnectedScreen.generated.h"
 
 class UHorizontalBox;
+class UObject;
 
 UCLASS(Abstract, BlueprintType, Blueprintable)
 class ULyraControllerDisconnectedScreen : public UCommonActivatableWidget
@@ -18,5 +19,5 @@ protected:
 
 private:
 	UPROPERTY(meta = (BindWidget))
-	UHorizontalBox* HBox_SwitchUser;
+	TObjectPtr<UHorizontalBox> HBox_SwitchUser;
 };

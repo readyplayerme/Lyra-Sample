@@ -2,12 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonUserWidget.h"
 
 #include "LyraPerfStatWidgetBase.generated.h"
 
+enum class ELyraDisplayablePerformanceStat : uint8;
+
 class ULyraPerformanceStatSubsystem;
+class UObject;
+struct FFrame;
 
 /**
  * ULyraPerfStatWidgetBase

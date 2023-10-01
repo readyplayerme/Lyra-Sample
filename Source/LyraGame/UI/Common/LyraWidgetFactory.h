@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "Templates/SubclassOf.h"
-#include "UObject/ObjectMacros.h"
+#include "UObject/Object.h"
 
 #include "LyraWidgetFactory.generated.h"
+
+template <class TClass> class TSubclassOf;
+
+class UUserWidget;
+struct FFrame;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, EditInlineNew)
 class LYRAGAME_API ULyraWidgetFactory : public UObject

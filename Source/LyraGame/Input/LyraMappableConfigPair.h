@@ -2,17 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "CommonInputBaseTypes.h"
+#include "CommonInputTypeEnum.h"
 #include "GameplayTagContainer.h"
+#include "UObject/SoftObjectPtr.h"
 
 #include "LyraMappableConfigPair.generated.h"
+
+PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 class UPlayerMappableInputConfig;
 
 /** A container to organize loaded player mappable configs to their CommonUI input type */
 USTRUCT(BlueprintType)
-struct FLoadedMappableConfigPair
+struct UE_DEPRECATED(5.3, "FLoadedMappableConfigPair has been deprecated. Please use FInputMappingContextAndPriority instead.") FLoadedMappableConfigPair
 {
 	GENERATED_BODY()
 
@@ -25,7 +27,7 @@ struct FLoadedMappableConfigPair
 
 	/** The player mappable input config that should be applied to the Enhanced Input subsystem */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	const UPlayerMappableInputConfig* Config = nullptr;
+	TObjectPtr<const UPlayerMappableInputConfig> Config = nullptr;
 
 	/** The type of device that this mapping config should be applied to */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -38,7 +40,7 @@ struct FLoadedMappableConfigPair
 
 /** A container to organize potentially unloaded player mappable configs to their CommonUI input type */
 USTRUCT()
-struct FMappableConfigPair
+struct UE_DEPRECATED(5.3, "FMappableConfigPair has been deprecated. Please use FInputMappingContextAndPriority instead.") FMappableConfigPair
 {
 	GENERATED_BODY()
 	
@@ -80,17 +82,14 @@ struct FMappableConfigPair
 	bool CanBeActivated() const;
 	
 	/**
-	 * Registers the given config mapping with the settings
+	 * Registers the given config mapping with the local settings
 	 */
 	static bool RegisterPair(const FMappableConfigPair& Pair);
 
 	/**
-	 * Activates the given config mapping in the settings. This will also register the mapping
-	 * if it hasn't been yet. 
+	 * Unregisters the given config mapping with the local settings
 	 */
-	static bool ActivatePair(const FMappableConfigPair& Pair);
-
-	static void DeactivatePair(const FMappableConfigPair& Pair);
-	
 	static void UnregisterPair(const FMappableConfigPair& Pair);
 };
+
+PRAGMA_ENABLE_DEPRECATION_WARNINGS

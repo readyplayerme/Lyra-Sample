@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+
 #include "LyraGameData.generated.h"
 
 class UGameplayEffect;
+class UObject;
 
 /**
  * ULyraGameData

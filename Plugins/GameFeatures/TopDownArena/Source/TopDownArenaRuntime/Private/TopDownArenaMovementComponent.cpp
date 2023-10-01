@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TopDownArenaMovementComponent.h"
-#include "GameplayAbilities/Public/AbilitySystemGlobals.h"
-// #include "GameFramework/Character.h"
-// #include "CollisionQueryParams.h"
-// #include "Components/CapsuleComponent.h"
+
+#include "AbilitySystemGlobals.h"
 #include "TopDownArenaAttributeSet.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(TopDownArenaMovementComponent)
 
 UTopDownArenaMovementComponent::UTopDownArenaMovementComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

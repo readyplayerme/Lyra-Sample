@@ -2,18 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/Script.h"
-#include "UObject/ScriptMacros.h"
-#include "UObject/Object.h"
-#include "UObject/ObjectMacros.h"
 #include "Tickable.h"
-#include "Misc/Timespan.h"
-#include "IMediaPlayer.h"
 
+#include "UObject/ObjectPtr.h"
+#include "UObject/WeakObjectPtr.h"
 #include "MediaSubtitlesPlayer.generated.h"
 
+class UMediaPlayer;
 class UOverlays;
+struct FFrame;
 
 /**
  * A Game-specific player for media subtitles. This needs to exist next to Media Players
@@ -31,7 +28,7 @@ public:
 
 	/** The subtitles to use for this player. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Subtitles Source")
-	UOverlays* SourceSubtitles;
+	TObjectPtr<UOverlays> SourceSubtitles;
 
 public:
 

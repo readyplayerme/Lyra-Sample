@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameSettingRegistryChangeTracker.h"
+
 #include "GameSettingRegistry.h"
 #include "GameSettingValue.h"
-#include "GameSetting.h"
 
 #define LOCTEXT_NAMESPACE "GameSetting"
 

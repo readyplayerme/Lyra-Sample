@@ -2,16 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
+#include "Accolades/LyraAccoladeDefinition.h"
+#include "AsyncMixin.h"
 #include "CommonUserWidget.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
-#include "Messages/LyraNotificationMessage.h"
-#include "DataRegistryTypes.h"
-#include "AsyncMixin.h"
-#include "Accolades/LyraAccoladeDefinition.h"
 
 #include "LyraAccoladeHostWidget.generated.h"
+
+class UObject;
+class USoundBase;
+class UUserWidget;
+struct FDataRegistryAcquireResult;
+struct FLyraNotificationMessage;
 
 USTRUCT(BlueprintType)
 struct FPendingAccoladeEntry
@@ -22,13 +24,13 @@ struct FPendingAccoladeEntry
 	FLyraAccoladeDefinitionRow Row; 
 
 	UPROPERTY(BlueprintReadOnly)
-	USoundBase* Sound = nullptr;
+	TObjectPtr<USoundBase> Sound = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	UObject* Icon = nullptr;
+	TObjectPtr<UObject> Icon = nullptr;
 
 	UPROPERTY()
-	UUserWidget* AllocatedWidget = nullptr;
+	TObjectPtr<UUserWidget> AllocatedWidget = nullptr;
 
 	int32 SequenceID = 0;
 

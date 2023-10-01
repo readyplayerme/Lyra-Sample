@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Editor/UnrealEdEngine.h"
+
 #include "LyraEditorEngine.generated.h"
+
+class IEngineLoop;
+class UObject;
 
 
 UCLASS()

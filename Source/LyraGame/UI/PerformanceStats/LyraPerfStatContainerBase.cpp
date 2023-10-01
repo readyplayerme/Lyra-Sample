@@ -1,9 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPerfStatContainerBase.h"
-#include "Settings/LyraSettingsLocal.h"
-#include "LyraPerfStatWidgetBase.h"
+
 #include "Blueprint/WidgetTree.h"
+#include "LyraPerfStatWidgetBase.h"
+#include "Settings/LyraSettingsLocal.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPerfStatContainerBase)
 
 //////////////////////////////////////////////////////////////////////
 // ULyraPerfStatsContainerBase
@@ -63,3 +66,4 @@ void ULyraPerfStatContainerBase::UpdateVisibilityOfChildren()
 		}
 	});
 }
+

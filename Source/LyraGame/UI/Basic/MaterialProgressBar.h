@@ -122,10 +122,10 @@ private:
 	bool bUseStroke = true;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* StrokeMaterial;
+	TObjectPtr<UMaterialInterface> StrokeMaterial;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* NoStrokeMaterial;
+	TObjectPtr<UMaterialInterface> NoStrokeMaterial;
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY(EditAnywhere, meta = (DisplayName = "Design Time Progress"))
@@ -133,13 +133,13 @@ private:
 #endif
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess))
-	UImage* Image_Bar;
+	TObjectPtr<UImage> Image_Bar;
 
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim, AllowPrivateAccess))
-	UWidgetAnimation* BoundAnim_FillBar;
+	TObjectPtr<UWidgetAnimation> BoundAnim_FillBar;
 
 	UPROPERTY(Transient)
-	mutable UMaterialInstanceDynamic* CachedMID;
+	mutable TObjectPtr<UMaterialInstanceDynamic> CachedMID;
 
 	float CachedProgress = -1.0f;
 	float CachedStartProgress = -1.0f;

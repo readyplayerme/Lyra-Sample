@@ -1,11 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EditorValidator_MaterialFunctions.h"
-#include "Materials/MaterialFunction.h"
-#include "Materials/Material.h"
-#include "AssetRegistryModule.h"
-#include "Validation/EditorValidator_Load.h"
+
+#include "AssetRegistry/AssetData.h"
+#include "AssetRegistry/IAssetRegistry.h"
 #include "LyraEditor.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialFunction.h"
+#include "Validation/EditorValidator.h"
+#include "Validation/EditorValidator_Load.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EditorValidator_MaterialFunctions)
 
 #define LOCTEXT_NAMESPACE "EditorValidator"
 
@@ -71,7 +76,7 @@ EDataValidationResult UEditorValidator_MaterialFunctions::ValidateLoadedAsset_Im
 				AssetRegistry.GetAssetsByPackageName(HardReferencer, ReferencerAssets, true);
 				for (const FAssetData& ReferencerAssetData : ReferencerAssets)
 				{
-					if (ReferencerAssetData.AssetClass == UMaterial::StaticClass()->GetFName())
+					if (ReferencerAssetData.AssetClassPath == UMaterial::StaticClass()->GetClassPathName())
 					{
 						UE_LOG(LogLyraEditor, Display, TEXT("    Loading referencing material %s"), *HardReferencerStr);
 

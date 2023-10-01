@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSettingDataSource.h"
 #include "PropertyPathHelpers.h"
+
+class ULocalPlayer;
 
 //--------------------------------------
 // FGameSettingDataSourceDynamic

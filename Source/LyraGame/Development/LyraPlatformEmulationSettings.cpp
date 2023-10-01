@@ -1,14 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPlatformEmulationSettings.h"
-#include "Interfaces/IProjectManager.h"
 #include "CommonUIVisibilitySubsystem.h"
-#include "Engine/PlatformSettings.h"
+#include "Engine/PlatformSettingsManager.h"
 #include "Misc/App.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "DeviceProfiles/DeviceProfileManager.h"
 #include "DeviceProfiles/DeviceProfile.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPlatformEmulationSettings)
 
 #define LOCTEXT_NAMESPACE "LyraCheats"
 
@@ -192,3 +193,4 @@ void ULyraPlatformEmulationSettings::PickReasonableBaseDeviceProfile()
 }
 
 #undef LOCTEXT_NAMESPACE
+

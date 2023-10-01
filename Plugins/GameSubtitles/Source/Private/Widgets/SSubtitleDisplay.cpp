@@ -2,11 +2,12 @@
 
 #include "Widgets/SSubtitleDisplay.h"
 
-#include "SlateGlobals.h"
-#include "Widgets/Text/SRichTextBlock.h"
-#include "Widgets/Layout/SBorder.h"
-#include "SubtitleManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "SubtitleManager.h"
+#include "Widgets/Layout/SBorder.h"
+#include "Widgets/Text/SRichTextBlock.h"
+
+struct FSlateBrush;
 
 void SSubtitleDisplay::Construct(const FArguments& InArgs)
 {

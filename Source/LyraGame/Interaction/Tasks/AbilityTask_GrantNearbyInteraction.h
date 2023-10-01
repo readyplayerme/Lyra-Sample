@@ -1,13 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "Abilities/Tasks/AbilityTask.h"
+
 #include "AbilityTask_GrantNearbyInteraction.generated.h"
 
-class AActor;
-class UPrimitiveComponent;
+class UGameplayAbility;
+class UObject;
+struct FFrame;
+struct FGameplayAbilitySpecHandle;
+struct FObjectKey;
 
 UCLASS()
 class UAbilityTask_GrantNearbyInteraction : public UAbilityTask

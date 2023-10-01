@@ -1,12 +1,20 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LyraPawnComponent_CharacterParts.h"
-#include "GameFramework/Character.h"
+#include "Cosmetics/LyraPawnComponent_CharacterParts.h"
+
 #include "Components/SkeletalMeshComponent.h"
-#include "Components/ChildActorComponent.h"
-#include "Net/UnrealNetwork.h"
+#include "Cosmetics/LyraCharacterPartTypes.h"
+#include "GameFramework/Character.h"
 #include "GameplayTagAssetInterface.h"
 #include "AbilitySystem/LyraTaggedActor.h"
+#include "Net/UnrealNetwork.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPawnComponent_CharacterParts)
+
+class FLifetimeProperty;
+class UPhysicsAsset;
+class USkeletalMesh;
+class UWorld;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -26,7 +34,7 @@ void FLyraCharacterPartList::PreReplicatedRemove(const TArrayView<int32> Removed
 		bDestroyedAnyActors |= DestroyActorForEntry(Entry);
 	}
 
-	if (bDestroyedAnyActors)
+	if (bDestroyedAnyActors && ensure(OwnerComponent))
 	{
 		OwnerComponent->BroadcastChanged();
 	}
@@ -41,7 +49,7 @@ void FLyraCharacterPartList::PostReplicatedAdd(const TArrayView<int32> AddedIndi
 		bCreatedAnyActors |= SpawnActorForEntry(Entry);
 	}
 
-	if (bCreatedAnyActors)
+	if (bCreatedAnyActors && ensure(OwnerComponent))
 	{
 		OwnerComponent->BroadcastChanged();
 	}
@@ -60,7 +68,7 @@ void FLyraCharacterPartList::PostReplicatedChange(const TArrayView<int32> Change
 		bChangedAnyActors |= SpawnActorForEntry(Entry);
 	}
 
-	if (bChangedAnyActors)
+	if (bChangedAnyActors && ensure(OwnerComponent))
 	{
 		OwnerComponent->BroadcastChanged();
 	}
@@ -99,7 +107,7 @@ void FLyraCharacterPartList::RemoveEntry(FLyraCharacterPartHandle Handle)
 			EntryIt.RemoveCurrent();
 			MarkArrayDirty();
 
-			if (bDestroyedActor)
+			if (bDestroyedActor && ensure(OwnerComponent))
 			{
 				OwnerComponent->BroadcastChanged();
 			}
@@ -119,7 +127,7 @@ void FLyraCharacterPartList::ClearAllEntries(bool bBroadcastChangeDelegate)
 	Entries.Reset();
 	MarkArrayDirty();
 
-	if (bDestroyedAnyActors && bBroadcastChangeDelegate)
+	if (bDestroyedAnyActors && bBroadcastChangeDelegate && ensure(OwnerComponent))
 	{
 		OwnerComponent->BroadcastChanged();
 	}
@@ -147,7 +155,7 @@ bool FLyraCharacterPartList::SpawnActorForEntry(FLyraAppliedCharacterPartEntry& 
 {
 	bool bCreatedAnyActors = false;
 
-	if (!OwnerComponent->IsNetMode(NM_DedicatedServer))
+	if (ensure(OwnerComponent) && !OwnerComponent->IsNetMode(NM_DedicatedServer))
 	{
 		if (Entry.Part.PartClass != nullptr)
 		{
@@ -165,6 +173,11 @@ bool FLyraCharacterPartList::SpawnActorForEntry(FLyraAppliedCharacterPartEntry& 
 
 				if (AActor* SpawnedActor = PartComponent->GetChildActor())
 				{
+					if (ALyraTaggedActor* LyraTaggedActor = Cast<ALyraTaggedActor>(SpawnedActor))
+					{
+						LyraTaggedActor->AvatarUrl = Entry.Part.AvatarUrl;
+						LyraTaggedActor->OnLoadAvatarPart.Broadcast();
+					}
 					switch (Entry.Part.CollisionMode)
 					{
 					case ECharacterCustomizationCollisionMode::UseCollisionFromCharacterPart:
@@ -181,9 +194,6 @@ bool FLyraCharacterPartList::SpawnActorForEntry(FLyraAppliedCharacterPartEntry& 
 					{
 						SpawnedRootComponent->AddTickPrerequisiteComponent(ComponentToAttachTo);
 					}
-					ALyraTaggedActor* LyraTaggedActor = Cast<ALyraTaggedActor>(SpawnedActor);
-					LyraTaggedActor->AvatarUrl = Entry.Part.AvatarUrl;
-					(void)LyraTaggedActor->OnLoadAvatarPart.Broadcast();
 				}
 
 				Entry.SpawnedComponent = PartComponent;
@@ -213,7 +223,6 @@ bool FLyraCharacterPartList::DestroyActorForEntry(FLyraAppliedCharacterPartEntry
 
 ULyraPawnComponent_CharacterParts::ULyraPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	, CharacterPartList(this)
 {
 	SetIsReplicatedByDefault(true);
 }
@@ -250,6 +259,16 @@ void ULyraPawnComponent_CharacterParts::EndPlay(const EEndPlayReason::Type EndPl
 	CharacterPartList.ClearAllEntries(/*bBroadcastChangeDelegate=*/ false);
 
 	Super::EndPlay(EndPlayReason);
+}
+
+void ULyraPawnComponent_CharacterParts::OnRegister()
+{
+	Super::OnRegister();
+	
+	if (!IsTemplate())
+	{
+		CharacterPartList.SetOwnerComponent(this);
+	}
 }
 
 TArray<AActor*> ULyraPawnComponent_CharacterParts::GetCharacterPartActors() const
@@ -340,4 +359,5 @@ void ULyraPawnComponent_CharacterParts::BroadcastChanged()
 	// Let observers know, e.g., if they need to apply team coloring or similar
 	OnCharacterPartsChanged.Broadcast(this);
 }
+
 

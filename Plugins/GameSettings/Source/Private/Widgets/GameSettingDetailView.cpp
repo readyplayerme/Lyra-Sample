@@ -2,15 +2,18 @@
 
 
 #include "Widgets/GameSettingDetailView.h"
-#include "Widgets/GameSettingVisualData.h"
-#include "Widgets/GameSettingDetailExtension.h"
 
 #include "CommonRichTextBlock.h"
 #include "CommonTextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 #include "GameSetting.h"
+#include "Widgets/GameSettingDetailExtension.h"
+#include "Widgets/GameSettingVisualData.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingDetailView)
 
 #define LOCTEXT_NAMESPACE "GameSetting"
 

@@ -2,12 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Net/Serialization/FastArraySerializer.h"
+#include "GameplayTagContainer.h"
 #include "LyraVerbMessage.h"
+#include "Net/Serialization/FastArraySerializer.h"
+
 #include "LyraVerbMessageReplication.generated.h"
 
+class UObject;
 struct FLyraVerbMessageReplication;
+struct FNetDeltaSerializeInfo;
 
 /**
  * Represents one verb message
@@ -71,7 +74,7 @@ private:
 	
 	// Owner (for a route to a world)
 	UPROPERTY()
-	UObject* Owner = nullptr;
+	TObjectPtr<UObject> Owner = nullptr;
 };
 
 template<>

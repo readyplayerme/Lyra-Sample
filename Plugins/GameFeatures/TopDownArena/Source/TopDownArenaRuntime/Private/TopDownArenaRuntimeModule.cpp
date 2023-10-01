@@ -2,6 +2,8 @@
 
 #include "TopDownArenaRuntimeModule.h"
 
+#include "Modules/ModuleManager.h"
+
 #define LOCTEXT_NAMESPACE "FTopDownArenaRuntimeModule"
 
 void FTopDownArenaRuntimeModule::StartupModule()

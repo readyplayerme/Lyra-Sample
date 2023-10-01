@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/Interface.h"
-#include "Engine/GameInstance.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "UObject/SoftObjectPtr.h"
 
 #include "GameUIManagerSubsystem.generated.h"
 
-class ULocalPlayer;
-class UGameUIPolicy;
+class FSubsystemCollectionBase;
 class UCommonLocalPlayer;
+class UGameUIPolicy;
+class UObject;
 
 /**
  * This manager is intended to be replaced by whatever your game needs to
@@ -43,7 +43,7 @@ protected:
 
 private:
 	UPROPERTY(Transient)
-	UGameUIPolicy* CurrentPolicy = nullptr;
+	TObjectPtr<UGameUIPolicy> CurrentPolicy = nullptr;
 
 	UPROPERTY(config, EditAnywhere)
 	TSoftClassPtr<UGameUIPolicy> DefaultUIPolicyClass;

@@ -1,11 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Input/LyraMappableConfigPair.h"
-#include "System/LyraAssetManager.h"
-#include "Settings/LyraSettingsLocal.h"
-#include "ICommonUIModule.h"
+
 #include "CommonUISettings.h"
+#include "ICommonUIModule.h"
 #include "PlayerMappableInputConfig.h"
+#include "Settings/LyraSettingsLocal.h"
+#include "System/LyraAssetManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraMappableConfigPair)
+
+PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 bool FMappableConfigPair::CanBeActivated() const
 {
@@ -43,37 +48,6 @@ bool FMappableConfigPair::RegisterPair(const FMappableConfigPair& Pair)
 	return false;
 }
 
-bool FMappableConfigPair::ActivatePair(const FMappableConfigPair& Pair)
-{
-	ULyraAssetManager& AssetManager = ULyraAssetManager::Get();
-	// Only activate a pair that has been successfully registered
-	if (FMappableConfigPair::RegisterPair(Pair) && Pair.CanBeActivated())
-	{		
-		if (ULyraSettingsLocal* Settings = ULyraSettingsLocal::Get())
-		{
-			if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
-			{
-				Settings->ActivateInputConfig(LoadedConfig);
-				return true;
-			}			
-		}
-	}
-	return false;
-}
-
-void FMappableConfigPair::DeactivatePair(const FMappableConfigPair& Pair)
-{
-	ULyraAssetManager& AssetManager = ULyraAssetManager::Get();
-	
-	if (ULyraSettingsLocal* Settings = ULyraSettingsLocal::Get())
-	{
-		if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
-		{
-			Settings->DeactivateInputConfig(LoadedConfig);
-		}
-	}
-}
-
 void FMappableConfigPair::UnregisterPair(const FMappableConfigPair& Pair)
 {
 	ULyraAssetManager& AssetManager = ULyraAssetManager::Get();
@@ -86,3 +60,5 @@ void FMappableConfigPair::UnregisterPair(const FMappableConfigPair& Pair)
 		}
 	}
 }
+
+PRAGMA_ENABLE_DEPRECATION_WARNINGS

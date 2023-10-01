@@ -2,19 +2,16 @@
 
 
 #include "AnimNotify_LyraContextEffects.h"
-#include "LyraContextEffectComponent.h"
+#include "Feedback/ContextEffects/LyraContextEffectsLibrary.h"
 #include "LyraContextEffectsInterface.h"
-#include "UObject/UObjectBaseUtility.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Animation/AnimSequenceBase.h"
-#include "Engine/EngineTypes.h"
 #include "Engine/World.h"
-#include "CollisionQueryParams.h"
 #include "LyraContextEffectsSubsystem.h"
 #include "NiagaraFunctionLibrary.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
-#include "LyraContextEffectsLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraSystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AnimNotify_LyraContextEffects)
 
 
 
@@ -227,3 +224,4 @@ void UAnimNotify_LyraContextEffects::SetParameters(FGameplayTag EffectIn, FVecto
 
 }
 #endif
+

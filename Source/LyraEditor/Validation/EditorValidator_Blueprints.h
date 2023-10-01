@@ -3,7 +3,11 @@
 #pragma once
 
 #include "EditorValidator.h"
+
 #include "EditorValidator_Blueprints.generated.h"
+
+class FText;
+class UObject;
 
 UCLASS()
 class UEditorValidator_Blueprints : public UEditorValidator

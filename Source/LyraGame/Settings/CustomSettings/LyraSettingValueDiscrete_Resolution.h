@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSettingValueDiscrete.h"
 
 #include "LyraSettingValueDiscrete_Resolution.generated.h"
 
+namespace EWindowMode { enum Type : int; }
+
+class UObject;
 struct FScreenResolutionRHI;
 
 UCLASS()

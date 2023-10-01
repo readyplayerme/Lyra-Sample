@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Modules/ModuleManager.h"
 #include "GameplayTagsManager.h"
 #include "Misc/Paths.h"
+#include "Modules/ModuleManager.h"
 
 class FGameSubtitlesModule : public IModuleInterface
 {

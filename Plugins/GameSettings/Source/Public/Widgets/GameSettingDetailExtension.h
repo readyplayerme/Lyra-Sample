@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameSettingFilterState.h"
 #include "Blueprint/UserWidget.h"
+
 #include "GameSettingDetailExtension.generated.h"
 
+enum class EGameSettingChangeReason : uint8;
+
 class UGameSetting;
+class UObject;
 
 /**
  * 
@@ -32,5 +34,5 @@ protected:
 
 protected:
 	UPROPERTY(Transient)
-	UGameSetting* Setting;
+	TObjectPtr<UGameSetting> Setting;
 };

@@ -1,21 +1,29 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPlayerState.h"
-#include "LyraLogChannels.h"
-#include "Net/UnrealNetwork.h"
-#include "LyraPlayerController.h"
-#include "Character/LyraPawnExtensionComponent.h"
-#include "AbilitySystem/LyraAbilitySystemComponent.h"
-#include "AbilitySystem/LyraAbilitySet.h"
-#include "AbilitySystem/Attributes/LyraHealthSet.h"
-#include "AbilitySystem/Attributes/LyraCombatSet.h"
-#include "Character/LyraPawnData.h"
-#include "Components/GameFrameworkComponentManager.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
 
+#include "AbilitySystem/Attributes/LyraCombatSet.h"
+#include "AbilitySystem/Attributes/LyraHealthSet.h"
+#include "AbilitySystem/LyraAbilitySet.h"
+#include "AbilitySystem/LyraAbilitySystemComponent.h"
+#include "Character/LyraPawnData.h"
+#include "Character/LyraPawnExtensionComponent.h"
+#include "Components/GameFrameworkComponentManager.h"
+#include "Engine/World.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "GameModes/LyraExperienceManagerComponent.h"
 //@TODO: Would like to isolate this a bit better to get the pawn data in here without this having to know about other stuff
 #include "GameModes/LyraGameMode.h"
-#include "GameModes/LyraExperienceManagerComponent.h"
+#include "LyraLogChannels.h"
+#include "LyraPlayerController.h"
+#include "Messages/LyraVerbMessage.h"
+#include "Net/UnrealNetwork.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPlayerState)
+
+class AController;
+class APlayerState;
+class FLifetimeProperty;
 
 const FName ALyraPlayerState::NAME_LyraAbilityReady("LyraAbilitiesReady");
 
@@ -27,8 +35,9 @@ ALyraPlayerState::ALyraPlayerState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	CreateDefaultSubobject<ULyraHealthSet>(TEXT("HealthSet"));
-	CreateDefaultSubobject<ULyraCombatSet>(TEXT("CombatSet"));
+	// These attribute sets will be detected by AbilitySystemComponent::InitializeComponent. Keeping a reference so that the sets don't get garbage collected before that.
+	HealthSet = CreateDefaultSubobject<ULyraHealthSet>(TEXT("HealthSet"));
+	CombatSet = CreateDefaultSubobject<ULyraCombatSet>(TEXT("CombatSet"));
 
 	// AbilitySystemComponent needs to be updated at a high frequency.
 	NetUpdateFrequency = 100.0f;
@@ -53,7 +62,7 @@ void ALyraPlayerState::ClientInitialize(AController* C)
 
 	if (ULyraPawnExtensionComponent* PawnExtComp = ULyraPawnExtensionComponent::FindPawnExtensionComponent(GetPawn()))
 	{
-		PawnExtComp->CheckPawnReadyToInitialize();
+		PawnExtComp->CheckDefaultInitialization();
 	}
 }
 
@@ -124,7 +133,25 @@ void ALyraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, MyTeamID, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, MySquadID, SharedParams);
 
-	DOREPLIFETIME(ThisClass, StatTags);
+	SharedParams.Condition = ELifetimeCondition::COND_SkipOwner;
+	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, ReplicatedViewRotation, SharedParams);
+
+	DOREPLIFETIME(ThisClass, StatTags);	
+}
+
+FRotator ALyraPlayerState::GetReplicatedViewRotation() const
+{
+	// Could replace this with custom replication
+	return ReplicatedViewRotation;
+}
+
+void ALyraPlayerState::SetReplicatedViewRotation(const FRotator& NewRotation)
+{
+	if (NewRotation != ReplicatedViewRotation)
+	{
+		MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, ReplicatedViewRotation, this);
+		ReplicatedViewRotation = NewRotation;
+	}
 }
 
 ALyraPlayerController* ALyraPlayerState::GetLyraPlayerController() const
@@ -144,7 +171,8 @@ void ALyraPlayerState::PostInitializeComponents()
 	check(AbilitySystemComponent);
 	AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
 
-	if (GetNetMode() != NM_Client)
+	UWorld* World = GetWorld();
+	if (World && World->IsGameWorld() && World->GetNetMode() != NM_Client)
 	{
 		AGameStateBase* GameState = GetWorld()->GetGameState();
 		check(GameState);
@@ -269,3 +297,4 @@ void ALyraPlayerState::ClientBroadcastMessage_Implementation(const FLyraVerbMess
 		UGameplayMessageSubsystem::Get(this).BroadcastMessage(Message.Verb, Message);
 	}
 }
+

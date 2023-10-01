@@ -1,19 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraHotfixManager.h"
-#include "Misc/AES.h"
-#include "Misc/Base64.h"
-#include "Misc/CoreDelegates.h"
 #include "UObject/UObjectIterator.h"
 #include "Engine/NetDriver.h"
-#include "Engine/GameEngine.h"
-#include "Misc/FileHelper.h"
-#include "Misc/CString.h"
 #include "DeviceProfiles/DeviceProfileManager.h"
 #include "DeviceProfiles/DeviceProfile.h"
 #include "Settings/LyraSettingsLocal.h"
-#include "TimerManager.h"
 #include "HAL/MemoryMisc.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraHotfixManager)
 
 int32 ULyraHotfixManager::GameHotfixCounter = 0;
 
@@ -101,7 +96,7 @@ bool ULyraHotfixManager::HotfixIniFile(const FString& FileName, const FString& I
 	if (!bHasPendingDeviceProfileHotfix && FileName.EndsWith(TEXT("DEVICEPROFILES.INI"), ESearchCase::IgnoreCase))
 	{
 		FConfigFile DeviceProfileHotfixConfig;
-		DeviceProfileHotfixConfig.CombineFromBuffer(IniData);
+		DeviceProfileHotfixConfig.CombineFromBuffer(IniData, FileName);
 		TSet<FString> Keys;
 		for (const auto& DPSection : DeviceProfileHotfixConfig)
 		{
@@ -181,19 +176,6 @@ void ULyraHotfixManager::OnHotfixAvailablityCheck(const TArray<FCloudFileHeader>
 	}
 }
 
-bool ULyraHotfixManager::PreProcessDownloadedFileData(TArray<uint8>& FileData) const
-{
-	// No need to preprocess if there is no data
-	if (FileData.Num() == 0)
-	{
-		return true;
-	}
-
-	//TODO Any Preprocessing?
-
-	return true;
-}
-
 #if !UE_BUILD_SHIPPING
 void ULyraHotfixManager::GetOnScreenMessages(TMultiMap<FCoreDelegates::EOnScreenMessageSeverity, FText>& OutMessages)
 {
@@ -229,3 +211,4 @@ void ULyraHotfixManager::StartHotfixProcess()
 
 	Super::StartHotfixProcess();
 }
+

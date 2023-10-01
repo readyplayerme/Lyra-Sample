@@ -1,12 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AsyncAction_ExperienceReady.h"
-#include "Engine/AssetManager.h"
-#include "Engine/StreamableManager.h"
+#include "GameModes/AsyncAction_ExperienceReady.h"
+
 #include "Engine/Engine.h"
-#include "Engine/GameInstance.h"
-#include "TimerManager.h"
+#include "Engine/World.h"
 #include "GameModes/LyraExperienceManagerComponent.h"
+#include "TimerManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AsyncAction_ExperienceReady)
 
 UAsyncAction_ExperienceReady::UAsyncAction_ExperienceReady(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -91,3 +92,4 @@ void UAsyncAction_ExperienceReady::Step4_BroadcastReady()
 
 	SetReadyToDestroy();
 }
+

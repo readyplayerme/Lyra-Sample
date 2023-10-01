@@ -2,16 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "Camera/PlayerCameraManager.h"
 
 #include "LyraUICameraManagerComponent.generated.h"
 
-class APlayerController;
 class ALyraPlayerCameraManager;
+
+class AActor;
 class AHUD;
+class APlayerController;
+class FDebugDisplayInfo;
 class UCanvas;
+class UObject;
 
 UCLASS( Transient, Within=LyraPlayerCameraManager )
 class ULyraUICameraManagerComponent : public UActorComponent
@@ -36,7 +38,7 @@ public:
 
 private:
 	UPROPERTY(Transient)
-	AActor* ViewTarget;
+	TObjectPtr<AActor> ViewTarget;
 	
 	UPROPERTY(Transient)
 	bool bUpdatingViewTarget;

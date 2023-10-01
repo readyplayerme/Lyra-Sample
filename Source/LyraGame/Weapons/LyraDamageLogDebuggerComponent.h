@@ -2,12 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 
 #include "LyraDamageLogDebuggerComponent.generated.h"
 
+namespace EEndPlayReason { enum Type : int; }
+
+class UObject;
+struct FGameplayTag;
 struct FLyraVerbMessage;
 
 struct FFrameDamageEntry

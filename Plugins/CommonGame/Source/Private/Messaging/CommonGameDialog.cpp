@@ -2,6 +2,10 @@
 
 #include "Messaging/CommonGameDialog.h"
 
+#include "Messaging/CommonMessagingSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(CommonGameDialog)
+
 #define LOCTEXT_NAMESPACE "Messaging"
 
 UCommonGameDialogDescriptor* UCommonGameDialogDescriptor::CreateConfirmationOk(const FText& Header, const FText& Body)

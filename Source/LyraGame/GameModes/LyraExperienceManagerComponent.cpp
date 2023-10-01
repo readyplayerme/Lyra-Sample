@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraExperienceManagerComponent.h"
+#include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 #include "LyraExperienceDefinition.h"
 #include "LyraExperienceActionSet.h"
@@ -12,6 +13,8 @@
 #include "TimerManager.h"
 #include "Settings/LyraSettingsLocal.h"
 #include "LyraLogChannels.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraExperienceManagerComponent)
 
 //@TODO: Async load the experience definition itself
 //@TODO: Handle failures explicitly (go into a 'completed but failed' state rather than check()-ing)
@@ -50,8 +53,7 @@ ULyraExperienceManagerComponent::ULyraExperienceManagerComponent(const FObjectIn
 	SetIsReplicatedByDefault(true);
 }
 
-#if WITH_SERVER_CODE
-void ULyraExperienceManagerComponent::ServerSetCurrentExperience(FPrimaryAssetId ExperienceId)
+void ULyraExperienceManagerComponent::SetCurrentExperience(FPrimaryAssetId ExperienceId)
 {
 	ULyraAssetManager& AssetManager = ULyraAssetManager::Get();
 	FSoftObjectPath AssetPath = AssetManager.GetPrimaryAssetPath(ExperienceId);
@@ -64,7 +66,6 @@ void ULyraExperienceManagerComponent::ServerSetCurrentExperience(FPrimaryAssetId
 	CurrentExperience = Experience;
 	StartExperienceLoad();
 }
-#endif
 
 void ULyraExperienceManagerComponent::CallOrRegister_OnExperienceLoaded_HighPriority(FOnLyraExperienceLoaded::FDelegate&& Delegate)
 {
@@ -162,8 +163,17 @@ void ULyraExperienceManagerComponent::StartExperienceLoad()
 		BundlesToLoad.Add(UGameFeaturesSubsystemSettings::LoadStateServer);
 	}
 
-	const TSharedPtr<FStreamableHandle> BundleLoadHandle = AssetManager.ChangeBundleStateForPrimaryAssets(BundleAssetList.Array(), BundlesToLoad, {}, false, FStreamableDelegate(), FStreamableManager::AsyncLoadHighPriority);
-	const TSharedPtr<FStreamableHandle> RawLoadHandle = AssetManager.LoadAssetList(RawAssetList.Array(), FStreamableDelegate(), FStreamableManager::AsyncLoadHighPriority, TEXT("StartExperienceLoad()"));
+	TSharedPtr<FStreamableHandle> BundleLoadHandle = nullptr;
+	if (BundleAssetList.Num() > 0)
+	{
+		BundleLoadHandle = AssetManager.ChangeBundleStateForPrimaryAssets(BundleAssetList.Array(), BundlesToLoad, {}, false, FStreamableDelegate(), FStreamableManager::AsyncLoadHighPriority);
+	}
+
+	TSharedPtr<FStreamableHandle> RawLoadHandle = nullptr;
+	if (RawAssetList.Num() > 0)
+	{
+		RawLoadHandle = AssetManager.LoadAssetList(RawAssetList.Array(), FStreamableDelegate(), FStreamableManager::AsyncLoadHighPriority, TEXT("StartExperienceLoad()"));
+	}
 
 	// If both async loads are running, combine them
 	TSharedPtr<FStreamableHandle> Handle = nullptr;
@@ -218,7 +228,7 @@ void ULyraExperienceManagerComponent::OnExperienceLoadComplete()
 		for (const FString& PluginName : FeaturePluginList)
 		{
 			FString PluginURL;
-			if (UGameFeaturesSubsystem::Get().GetPluginURLForBuiltInPluginByName(PluginName, /*out*/ PluginURL))
+			if (UGameFeaturesSubsystem::Get().GetPluginURLByName(PluginName, /*out*/ PluginURL))
 			{
 				This->GameFeaturePluginURLs.AddUnique(PluginURL);
 			}
@@ -232,7 +242,7 @@ void ULyraExperienceManagerComponent::OnExperienceLoadComplete()
 		// 		if (!CurrentPlaylistData->GameFeaturePluginToActivateUntilDownloadedContentIsPresent.IsEmpty())
 		// 		{
 		// 			FString PluginURL;
-		// 			if (UGameFeaturesSubsystem::Get().GetPluginURLForBuiltInPluginByName(CurrentPlaylistData->GameFeaturePluginToActivateUntilDownloadedContentIsPresent, PluginURL))
+		// 			if (UGameFeaturesSubsystem::Get().GetPluginURLByName(CurrentPlaylistData->GameFeaturePluginToActivateUntilDownloadedContentIsPresent, PluginURL))
 		// 			{
 		// 				GameFeaturePluginURLs.AddUnique(PluginURL);
 		// 			}
@@ -391,7 +401,7 @@ void ULyraExperienceManagerComponent::EndPlay(const EEndPlayReason::Type EndPlay
 		NumObservedPausers = 0;
 
 		// Deactivate and unload the actions
-		FGameFeatureDeactivatingContext Context(FSimpleDelegate::CreateUObject(this, &ThisClass::OnActionDeactivationCompleted));
+		FGameFeatureDeactivatingContext Context(TEXT(""), [this](FStringView) { this->OnActionDeactivationCompleted(); });
 
 		const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld());
 		if (ExistingWorldContext)
@@ -454,3 +464,4 @@ void ULyraExperienceManagerComponent::OnAllActionsDeactivated()
 	CurrentExperience = nullptr;
 	//@TODO:	GEngine->ForceGarbageCollection(true);
 }
+

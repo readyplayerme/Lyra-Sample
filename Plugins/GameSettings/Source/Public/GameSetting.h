@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Components/SlateWrapperTypes.h"
 #include "GameSettingFilterState.h"
@@ -32,9 +31,11 @@ public:
 
 public:
 	DECLARE_EVENT_TwoParams(UGameSetting, FOnSettingChanged, UGameSetting* /*InSetting*/, EGameSettingChangeReason /*InChangeReason*/);
+	DECLARE_EVENT_OneParam(UGameSetting, FOnSettingApplied, UGameSetting* /*InSetting*/);
 	DECLARE_EVENT_OneParam(UGameSetting, FOnSettingEditConditionChanged, UGameSetting* /*InSetting*/);
 
 	FOnSettingChanged OnSettingChangedEvent;
+	FOnSettingApplied OnSettingAppliedEvent;
 	FOnSettingEditConditionChanged OnSettingEditConditionChangedEvent;
 
 public:
@@ -189,13 +190,13 @@ protected:
 protected:
 
 	UPROPERTY(Transient)
-	ULocalPlayer* LocalPlayer;
+	TObjectPtr<ULocalPlayer> LocalPlayer;
 
 	UPROPERTY(Transient)
-	UGameSetting* SettingParent;
+	TObjectPtr<UGameSetting> SettingParent;
 
 	UPROPERTY(Transient)
-	UGameSettingRegistry* OwningRegistry;
+	TObjectPtr<UGameSettingRegistry> OwningRegistry;
 
 	FName DevName;
 	FText DisplayName;

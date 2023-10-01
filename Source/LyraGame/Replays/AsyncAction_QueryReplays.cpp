@@ -1,8 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AsyncAction_QueryReplays.h"
-#include "LyraReplaySubsystem.h"
+#include "Replays/AsyncAction_QueryReplays.h"
+
 #include "GameFramework/PlayerController.h"
+#include "LyraReplaySubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AsyncAction_QueryReplays)
 
 UAsyncAction_QueryReplays::UAsyncAction_QueryReplays(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -49,15 +52,8 @@ void UAsyncAction_QueryReplays::OnEnumerateStreamsComplete(const FEnumerateStrea
 	}
 
 	// Sort demo names by date
-	struct FCompareDateTime
-	{
-		FORCEINLINE bool operator()(const ULyraReplayListEntry& A, const ULyraReplayListEntry& B) const
-		{
-			return A.StreamInfo.Timestamp.GetTicks() > B.StreamInfo.Timestamp.GetTicks();
-		}
-	};
-
-	Sort(ResultList->Results.GetData(), ResultList->Results.Num(), FCompareDateTime());
+	Algo::SortBy(ResultList->Results, [](const TObjectPtr<ULyraReplayListEntry>& Data) { return Data->StreamInfo.Timestamp.GetTicks(); }, TGreater<>());
 
 	QueryComplete.Broadcast(ResultList);
 }
+

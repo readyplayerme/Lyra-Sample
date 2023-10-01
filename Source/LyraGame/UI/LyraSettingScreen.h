@@ -1,10 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+#pragma once
+
+#include "Engine/DataTable.h"
 #include "Widgets/GameSettingScreen.h"
 
 #include "LyraSettingScreen.generated.h"
 
+class UGameSettingRegistry;
 class ULyraTabListWidgetBase;
+class UObject;
 
 UCLASS(Abstract, meta = (Category = "Settings", DisableNativeTick))
 class ULyraSettingScreen : public UGameSettingScreen
@@ -25,7 +30,7 @@ protected:
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = Input, meta = (BindWidget, OptionalWidget = true, AllowPrivateAccess = true))
-	ULyraTabListWidgetBase* TopSettingsTabs;
+	TObjectPtr<ULyraTabListWidgetBase> TopSettingsTabs;
 	
 	UPROPERTY(EditDefaultsOnly)
 	FDataTableRowHandle BackInputActionData;

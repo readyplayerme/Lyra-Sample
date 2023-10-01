@@ -2,11 +2,20 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "LyraAbilityCost.h"
+#include "ScalableFloat.h"
+#include "Templates/SubclassOf.h"
+
 #include "LyraAbilityCost_InventoryItem.generated.h"
 
+struct FGameplayAbilityActivationInfo;
+struct FGameplayAbilitySpecHandle;
+
+class ULyraGameplayAbility;
 class ULyraInventoryItemDefinition;
+class UObject;
+struct FGameplayAbilityActorInfo;
+struct FGameplayTagContainer;
 
 /**
  * Represents a cost that requires expending a quantity of an inventory item

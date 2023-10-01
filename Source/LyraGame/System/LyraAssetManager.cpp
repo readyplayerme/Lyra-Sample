@@ -6,10 +6,14 @@
 #include "LyraGameData.h"
 #include "AbilitySystemGlobals.h"
 #include "Character/LyraPawnData.h"
+#include "Misc/App.h"
 #include "Stats/StatsMisc.h"
 #include "Engine/Engine.h"
 #include "AbilitySystem/LyraGameplayCueManager.h"
 #include "Misc/ScopedSlowTask.h"
+#include "System/LyraAssetManagerStartupJob.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAssetManager)
 
 const FName FLyraBundles::Equipped("Equipped");
 
@@ -59,7 +63,7 @@ UObject* ULyraAssetManager::SynchronousLoadAsset(const FSoftObjectPath& AssetPat
 			LogTimePtr = MakeUnique<FScopeLogTime>(*FString::Printf(TEXT("Synchronously loaded asset [%s]"), *AssetPath.ToString()), nullptr, FScopeLogTime::ScopeLog_Seconds);
 		}
 
-		if (UAssetManager::IsValid())
+		if (UAssetManager::IsInitialized())
 		{
 			return UAssetManager::GetStreamableManager().LoadSynchronous(AssetPath, false);
 		}
@@ -106,7 +110,6 @@ void ULyraAssetManager::StartInitialLoading()
 	// This does all of the scanning, need to do this now even if loads are deferred
 	Super::StartInitialLoading();
 
-	STARTUP_JOB(InitializeAbilitySystem());
 	STARTUP_JOB(InitializeGameplayCueManager());
 
 	{
@@ -116,15 +119,6 @@ void ULyraAssetManager::StartInitialLoading()
 
 	// Run all the queued up startup jobs
 	DoAllStartupJobs();
-}
-
-void ULyraAssetManager::InitializeAbilitySystem()
-{
-	SCOPED_BOOT_TIMING("ULyraAssetManager::InitializeAbilitySystem");
-
-	FLyraGameplayTags::InitializeNativeTags();
-
-	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
 void ULyraAssetManager::InitializeGameplayCueManager()

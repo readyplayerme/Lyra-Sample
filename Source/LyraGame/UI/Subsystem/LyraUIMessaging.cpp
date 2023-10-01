@@ -1,10 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraUIMessaging.h"
+
+#include "Messaging/CommonGameDialog.h"
 #include "NativeGameplayTags.h"
 #include "Player/LyraLocalPlayer.h"
 #include "PrimaryGameLayout.h"
-#include "Messaging/CommonGameDialog.h"
+#include "Widgets/CommonActivatableWidgetContainer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraUIMessaging)
+
+class FSubsystemCollectionBase;
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MODAL, "UI.Layer.Modal");
 

@@ -3,6 +3,8 @@
 #include "ModularPawn.h"
 #include "Components/GameFrameworkComponentManager.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ModularPawn)
+
 void AModularPawn::PreInitializeComponents()
 {
 	Super::PreInitializeComponents();

@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ControllerComponent.h"
 #include "GameplayTagContainer.h"
 
 #include "LyraWeaponStateComponent.generated.h"
 
+class UObject;
+struct FFrame;
 struct FGameplayAbilityTargetDataHandle;
 struct FGameplayEffectContextHandle;
 struct FHitResult;

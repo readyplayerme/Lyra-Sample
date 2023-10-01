@@ -5,16 +5,13 @@
 #include "Physics/LyraCollisionChannels.h"
 #include "LyraLogChannels.h"
 #include "AIController.h"
-#include "Messages/LyraVerbMessage.h"
 #include "NativeGameplayTags.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Weapons/LyraWeaponStateComponent.h"
-#include "Teams/LyraTeamSubsystem.h"
 #include "AbilitySystemComponent.h"
-#include "GameFramework/PlayerController.h"
-#include "AbilitySystem/LyraGameplayEffectContext.h"
 #include "AbilitySystem/LyraGameplayAbilityTargetData_SingleTargetHit.h"
 #include "DrawDebugHelpers.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameplayAbility_RangedWeapon)
 
 namespace LyraConsoleVariables
 {
@@ -599,3 +596,4 @@ void ULyraGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 	// Process the target data immediately
 	OnTargetDataReadyCallback(TargetData, FGameplayTag());
 }
+

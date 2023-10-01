@@ -1,12 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SActorCanvas.h"
-#include "Layout/ArrangedChildren.h"
-#include "Rendering/DrawElements.h"
-#include "Widgets/SLeafWidget.h"
+
+#include "Engine/GameViewportClient.h"
 #include "IActorIndicatorWidget.h"
+#include "Layout/ArrangedChildren.h"
 #include "LyraIndicatorManagerComponent.h"
+#include "SceneView.h"
+#include "UI/IndicatorSystem/IndicatorDescriptor.h"
 #include "Widgets/Layout/SBox.h"
+#include "Widgets/SLeafWidget.h"
+
+class FSlateRect;
 
 namespace EArrowDirection
 {
@@ -82,7 +87,7 @@ public:
 			FSlateDrawElement::MakeRotatedBox(
 				OutDrawElements,
 				MaxLayerId++,
-				AllottedGeometry.ToPaintGeometry(FVector2D::ZeroVector, Arrow->ImageSize, 1.f),
+				AllottedGeometry.ToPaintGeometry(Arrow->ImageSize, FSlateLayoutTransform()),
 				Arrow,
 				DrawEffects,
 				FMath::DegreesToRadians(GetRotation()),
@@ -167,6 +172,9 @@ EActiveTimerReturnType SActorCanvas::UpdateCanvas(double InCurrentTime, float In
 		IndicatorComponent = ULyraIndicatorManagerComponent::GetComponent(LocalPlayerContext.GetPlayerController());
 		if (IndicatorComponent)
 		{
+			// World may have changed
+			IndicatorPool.SetWorld(LocalPlayerContext.GetWorld());
+
 			IndicatorComponentPtr = IndicatorComponent;
 			IndicatorComponent->OnIndicatorAdded.AddSP(this, &SActorCanvas::OnIndicatorAdded);
 			IndicatorComponent->OnIndicatorRemoved.AddSP(this, &SActorCanvas::OnIndicatorRemoved);

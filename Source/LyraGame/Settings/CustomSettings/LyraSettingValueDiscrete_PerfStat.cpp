@@ -1,10 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSettingValueDiscrete_PerfStat.h"
-#include "Settings/LyraSettingsLocal.h"
-#include "GameSettingFilterState.h"
-#include "Performance/LyraPerformanceSettings.h"
+
 #include "CommonUIVisibilitySubsystem.h"
+#include "Performance/LyraPerformanceSettings.h"
+#include "Performance/LyraPerformanceStatTypes.h"
+#include "Settings/LyraSettingsLocal.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingValueDiscrete_PerfStat)
+
+class ULocalPlayer;
 
 #define LOCTEXT_NAMESPACE "LyraSettings"
 

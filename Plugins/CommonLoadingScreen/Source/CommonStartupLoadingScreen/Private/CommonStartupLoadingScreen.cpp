@@ -1,11 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "SlateBasics.h"
-#include "SlateExtras.h"
-#include "MoviePlayer.h"
-#include "PreLoadScreenManager.h"
-#include "Misc/App.h"
 #include "CommonPreLoadScreen.h"
+#include "Misc/App.h"
+#include "Modules/ModuleManager.h"
+#include "PreLoadScreenManager.h"
 
 #define LOCTEXT_NAMESPACE "FCommonLoadingScreenModule"
 

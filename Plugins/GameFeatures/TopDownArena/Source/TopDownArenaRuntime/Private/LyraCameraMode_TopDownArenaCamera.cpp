@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraCameraMode_TopDownArenaCamera.h"
-#include "Curves/CurveVector.h"
-#include "GameFramework/Character.h"
-#include "EngineUtils.h"
+
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCameraMode_TopDownArenaCamera)
 
 ULyraCameraMode_TopDownArenaCamera::ULyraCameraMode_TopDownArenaCamera()
 {
@@ -28,3 +28,4 @@ void ULyraCameraMode_TopDownArenaCamera::UpdateView(float DeltaTime)
 	View.ControlRotation = View.Rotation;
 	View.FieldOfView = FieldOfView;
 }
+

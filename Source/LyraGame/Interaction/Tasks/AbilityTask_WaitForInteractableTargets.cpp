@@ -1,13 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AbilityTask_WaitForInteractableTargets.h"
-#include "GameFramework/Actor.h"
-#include "Physics/LyraCollisionChannels.h"
-#include "Interaction/IInteractableTarget.h"
-#include "Interaction/InteractionStatics.h"
-#include "Interaction/InteractionQuery.h"
+#include "Interaction/Tasks/AbilityTask_WaitForInteractableTargets.h"
+
 #include "AbilitySystemComponent.h"
+#include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "Interaction/IInteractableTarget.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AbilityTask_WaitForInteractableTargets)
+
+struct FInteractionQuery;
 
 UAbilityTask_WaitForInteractableTargets::UAbilityTask_WaitForInteractableTargets(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -131,7 +133,7 @@ void UAbilityTask_WaitForInteractableTargets::UpdateInteractableOptions(const FI
 				if (InteractionAbilitySpec)
 				{
 					// update the option
-					Option.TargetAbilitySystem = AbilitySystemComponent;
+					Option.TargetAbilitySystem = AbilitySystemComponent.Get();
 					Option.TargetInteractionAbilityHandle = InteractionAbilitySpec->Handle;
 				}
 			}

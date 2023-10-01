@@ -1,8 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ModularPlayerState.h"
+
 #include "Components/GameFrameworkComponentManager.h"
 #include "Components/PlayerStateComponent.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ModularPlayerState)
 
 void AModularPlayerState::PreInitializeComponents()
 {

@@ -2,18 +2,31 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+
 #include "LyraGameplayAbility.generated.h"
 
+struct FGameplayAbilityActivationInfo;
+struct FGameplayAbilitySpec;
+struct FGameplayAbilitySpecHandle;
 
-class ULyraAbilitySystemComponent;
-class ALyraPlayerController;
+class AActor;
+class AController;
 class ALyraCharacter;
-class ULyraHeroComponent;
-class ULyraCameraMode;
-class ULyraAbilityCost;
+class ALyraPlayerController;
+class APlayerController;
+class FText;
 class ILyraAbilitySourceInterface;
+class UAnimMontage;
+class ULyraAbilityCost;
+class ULyraAbilitySystemComponent;
+class ULyraCameraMode;
+class ULyraHeroComponent;
+class UObject;
+struct FFrame;
+struct FGameplayAbilityActorInfo;
+struct FGameplayEffectSpec;
+struct FGameplayEventData;
 
 /**
  * ELyraAbilityActivationPolicy
@@ -63,14 +76,14 @@ struct FLyraAbilityMontageFailureMessage
 public:
 	
 	UPROPERTY(BlueprintReadWrite)
-	APlayerController* PlayerController = nullptr;
+	TObjectPtr<APlayerController> PlayerController = nullptr;
 
 	// All the reasons why this ability has failed
 	UPROPERTY(BlueprintReadWrite)
 	FGameplayTagContainer FailureTags;
 
 	UPROPERTY(BlueprintReadWrite)
-	UAnimMontage* FailureMontage = nullptr;
+	TObjectPtr<UAnimMontage> FailureMontage = nullptr;
 };
 
 /**
@@ -79,7 +92,7 @@ public:
  *	The base gameplay ability class used by this project.
  */
 UCLASS(Abstract, HideCategories = Input, Meta = (ShortTooltip = "The base gameplay ability class used by this project."))
-class ULyraGameplayAbility : public UGameplayAbility
+class LYRAGAME_API ULyraGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 	friend class ULyraAbilitySystemComponent;
@@ -150,7 +163,7 @@ protected:
 	virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
 	virtual FGameplayEffectContextHandle MakeEffectContext(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo) const override;
 	virtual void ApplyAbilityTagsToGameplayEffectSpec(FGameplayEffectSpec& Spec, FGameplayAbilitySpec* AbilitySpec) const override;
-	virtual bool DoesAbilitySatisfyTagRequirements(const UAbilitySystemComponent& AbilitySystemComponent, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const override;
+	virtual bool DoesAbilitySatisfyTagRequirements(const UAbilitySystemComponent& AbilitySystemComponent, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 	//~End of UGameplayAbility interface
 
 	virtual void OnPawnAvatarSet();
@@ -189,7 +202,11 @@ protected:
 
 	// Map of failure tags to anim montages that should be played with them
 	UPROPERTY(EditDefaultsOnly, Category = "Advanced")
-	TMap<FGameplayTag, UAnimMontage*> FailureTagToAnimMontage;
+	TMap<FGameplayTag, TObjectPtr<UAnimMontage>> FailureTagToAnimMontage;
+
+	// If true, extra information should be logged when this ability is canceled. This is temporary, used for tracking a bug.
+	UPROPERTY(EditDefaultsOnly, Category = "Advanced")
+	bool bLogCancelation;
 
 	// Current camera mode set by the ability.
 	TSubclassOf<ULyraCameraMode> ActiveCameraMode;

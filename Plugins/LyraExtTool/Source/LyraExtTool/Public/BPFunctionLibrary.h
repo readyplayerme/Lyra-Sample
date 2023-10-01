@@ -2,9 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+
 #include "BPFunctionLibrary.generated.h"
+
+class UMaterialInterface;
+class UObject;
+class UStaticMesh;
+struct FFrame;
 
 /**
  *

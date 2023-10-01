@@ -9,7 +9,6 @@ public class LyraServerTarget : TargetRules
 	public LyraServerTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Server;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
 
 		ExtraModuleNames.AddRange(new string[] { "LyraGame" });
 

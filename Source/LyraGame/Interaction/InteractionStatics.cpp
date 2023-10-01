@@ -1,8 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "InteractionStatics.h"
-#include "DrawDebugHelpers.h"
+
+#include "Components/PrimitiveComponent.h"
+#include "Engine/OverlapResult.h"
 #include "IInteractableTarget.h"
+#include "UObject/ScriptInterface.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(InteractionStatics)
 
 UInteractionStatics::UInteractionStatics()
 	: Super(FObjectInitializer::Get())

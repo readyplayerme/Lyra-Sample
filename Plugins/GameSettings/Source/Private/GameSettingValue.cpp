@@ -2,6 +2,8 @@
 
 #include "GameSettingValue.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingValue)
+
 #define LOCTEXT_NAMESPACE "GameSetting"
 
 //--------------------------------------
@@ -26,3 +28,4 @@ void UGameSettingValue::OnInitialized()
 }
 
 #undef LOCTEXT_NAMESPACE
+

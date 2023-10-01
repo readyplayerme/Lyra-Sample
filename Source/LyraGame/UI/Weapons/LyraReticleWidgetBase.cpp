@@ -1,9 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraReticleWidgetBase.h"
-#include "Weapons/LyraWeaponInstance.h"
-#include "Weapons/LyraRangedWeaponInstance.h"
+
 #include "Inventory/LyraInventoryItemInstance.h"
+#include "Weapons/LyraRangedWeaponInstance.h"
+#include "Weapons/LyraWeaponInstance.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraReticleWidgetBase)
 
 ULyraReticleWidgetBase::ULyraReticleWidgetBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

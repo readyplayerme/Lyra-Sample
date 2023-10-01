@@ -1,14 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraBrightnessEditor.h"
+
 #include "CommonButtonBase.h"
-#include "Widgets/Layout/SSafeZone.h"
-#include "Settings/LyraSettingsLocal.h"
-#include "Components/WidgetSwitcher.h"
 #include "CommonRichTextBlock.h"
-#include "GameSetting.h"
+#include "Components/WidgetSwitcher.h"
 #include "GameSettingValueScalar.h"
-#include "CommonUIUtils.h"
+#include "Settings/LyraSettingsLocal.h"
+#include "Widgets/Layout/SSafeZone.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraBrightnessEditor)
+
+struct FGeometry;
 
 #define LOCTEXT_NAMESPACE "Lyra"
 
@@ -21,8 +24,8 @@ namespace BrightnessEditor
 ULyraBrightnessEditor::ULyraBrightnessEditor(const FObjectInitializer& Initializer)
 	: Super(Initializer)
 {
-	Visibility = ESlateVisibility::Visible;
-	bIsFocusable = true;
+	SetVisibility(ESlateVisibility::Visible);
+	SetIsFocusable(true);
 }
 
 void ULyraBrightnessEditor::NativeOnInitialized()

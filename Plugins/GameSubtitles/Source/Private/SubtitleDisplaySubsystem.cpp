@@ -1,9 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SubtitleDisplaySubsystem.h"
-#include "Subsystems/SubsystemCollection.h"
+
 #include "Engine/GameInstance.h"
 #include "Engine/LocalPlayer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(SubtitleDisplaySubsystem)
+
+class FSubsystemCollectionBase;
 
 USubtitleDisplaySubsystem* USubtitleDisplaySubsystem::Get(const ULocalPlayer* LocalPlayer)
 {
@@ -34,3 +38,4 @@ void USubtitleDisplaySubsystem::SetSubtitleDisplayOptions(const FSubtitleFormat&
 	SubtitleFormat = InOptions;
 	DisplayFormatChangedEvent.Broadcast(SubtitleFormat);
 }
+

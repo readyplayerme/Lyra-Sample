@@ -2,10 +2,17 @@
 
 #include "GameFeatureAction_AddWidget.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "Engine/GameInstance.h"
+#include "GameFeatures/GameFeatureAction_WorldActionBase.h"
 #include "GameFeaturesSubsystemSettings.h"
-#include "Engine/AssetManager.h"
 #include "CommonUIExtensions.h"
-#include "Engine/Engine.h"
+#include "UI/LyraHUD.h"
+
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameFeatureAction_AddWidget)
 
 #define LOCTEXT_NAMESPACE "LyraGameFeatures"
 
@@ -28,15 +35,15 @@ void UGameFeatureAction_AddWidgets::AddAdditionalAssetBundleData(FAssetBundleDat
 {
 	for (const FLyraHUDElementEntry& Entry : Widgets)
 	{
-		AssetBundleData.AddBundleAsset(UGameFeaturesSubsystemSettings::LoadStateClient, Entry.WidgetClass.ToSoftObjectPath());
+		AssetBundleData.AddBundleAsset(UGameFeaturesSubsystemSettings::LoadStateClient, Entry.WidgetClass.ToSoftObjectPath().GetAssetPath());
 	}
 }
 #endif
 
 #if WITH_EDITOR
-EDataValidationResult UGameFeatureAction_AddWidgets::IsDataValid(TArray<FText>& ValidationErrors)
+EDataValidationResult UGameFeatureAction_AddWidgets::IsDataValid(FDataValidationContext& Context) const
 {
-	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(ValidationErrors), EDataValidationResult::Valid);
+	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(Context), EDataValidationResult::Valid);
 
 	{
 		int32 EntryIndex = 0;
@@ -45,13 +52,13 @@ EDataValidationResult UGameFeatureAction_AddWidgets::IsDataValid(TArray<FText>& 
 			if (Entry.LayoutClass.IsNull())
 			{
 				Result = EDataValidationResult::Invalid;
-				ValidationErrors.Add(FText::Format(LOCTEXT("LayoutHasNullClass", "Null WidgetClass at index {0} in Layout"), FText::AsNumber(EntryIndex)));
+				Context.AddError(FText::Format(LOCTEXT("LayoutHasNullClass", "Null WidgetClass at index {0} in Layout"), FText::AsNumber(EntryIndex)));
 			}
 
 			if (!Entry.LayerID.IsValid())
 			{
 				Result = EDataValidationResult::Invalid;
-				ValidationErrors.Add(FText::Format(LOCTEXT("LayoutHasNoTag", "LayerID is not set at index {0} in Widgets"), FText::AsNumber(EntryIndex)));
+				Context.AddError(FText::Format(LOCTEXT("LayoutHasNoTag", "LayerID is not set at index {0} in Widgets"), FText::AsNumber(EntryIndex)));
 			}
 
 			++EntryIndex;
@@ -65,13 +72,13 @@ EDataValidationResult UGameFeatureAction_AddWidgets::IsDataValid(TArray<FText>& 
 			if (Entry.WidgetClass.IsNull())
 			{
 				Result = EDataValidationResult::Invalid;
-				ValidationErrors.Add(FText::Format(LOCTEXT("EntryHasNullClass", "Null WidgetClass at index {0} in Widgets"), FText::AsNumber(EntryIndex)));
+				Context.AddError(FText::Format(LOCTEXT("EntryHasNullClass", "Null WidgetClass at index {0} in Widgets"), FText::AsNumber(EntryIndex)));
 			}
 
 			if (!Entry.SlotID.IsValid())
 			{
 				Result = EDataValidationResult::Invalid;
-				ValidationErrors.Add(FText::Format(LOCTEXT("EntryHasNoTag", "SlotID is not set at index {0} in Widgets"), FText::AsNumber(EntryIndex)));
+				Context.AddError(FText::Format(LOCTEXT("EntryHasNoTag", "SlotID is not set at index {0} in Widgets"), FText::AsNumber(EntryIndex)));
 			}
 			++EntryIndex;
 		}
@@ -104,13 +111,15 @@ void UGameFeatureAction_AddWidgets::AddToWorld(const FWorldContext& WorldContext
 void UGameFeatureAction_AddWidgets::Reset(FPerContextData& ActiveData)
 {
 	ActiveData.ComponentRequests.Empty();
-	ActiveData.LayoutsAdded.Empty();
 
-	for (FUIExtensionHandle& Handle : ActiveData.ExtensionHandles)
+	for (TPair<FObjectKey, FPerActorData>& Pair : ActiveData.ActorData)
 	{
-		Handle.Unregister();
+		for (FUIExtensionHandle& Handle : Pair.Value.ExtensionHandles)
+		{
+			Handle.Unregister();
+		}
 	}
-	ActiveData.ExtensionHandles.Reset();
+	ActiveData.ActorData.Empty();
 }
 
 void UGameFeatureAction_AddWidgets::HandleActorExtension(AActor* Actor, FName EventName, FGameFeatureStateChangeContext ChangeContext)
@@ -132,18 +141,20 @@ void UGameFeatureAction_AddWidgets::AddWidgets(AActor* Actor, FPerContextData& A
 
 	if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(HUD->GetOwningPlayerController()->Player))
 	{
+		FPerActorData& ActorData = ActiveData.ActorData.FindOrAdd(HUD);
+
 		for (const FLyraHUDLayoutRequest& Entry : Layout)
 		{
 			if (TSubclassOf<UCommonActivatableWidget> ConcreteWidgetClass = Entry.LayoutClass.Get())
 			{
-				ActiveData.LayoutsAdded.Add(UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer, Entry.LayerID, ConcreteWidgetClass));
+				ActorData.LayoutsAdded.Add(UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer, Entry.LayerID, ConcreteWidgetClass));
 			}
 		}
 
 		UUIExtensionSubsystem* ExtensionSubsystem = HUD->GetWorld()->GetSubsystem<UUIExtensionSubsystem>();
 		for (const FLyraHUDElementEntry& Entry : Widgets)
 		{
-			ActiveData.ExtensionHandles.Add(ExtensionSubsystem->RegisterExtensionAsWidgetForContext(Entry.SlotID, LocalPlayer, Entry.WidgetClass.Get(), -1));
+			ActorData.ExtensionHandles.Add(ExtensionSubsystem->RegisterExtensionAsWidgetForContext(Entry.SlotID, LocalPlayer, Entry.WidgetClass.Get(), -1));
 		}
 	}
 }
@@ -152,20 +163,26 @@ void UGameFeatureAction_AddWidgets::RemoveWidgets(AActor* Actor, FPerContextData
 {
 	ALyraHUD* HUD = CastChecked<ALyraHUD>(Actor);
 
-	for (TWeakObjectPtr<UCommonActivatableWidget>& AddedLayout : ActiveData.LayoutsAdded)
+	// Only unregister if this is the same HUD actor that was registered, there can be multiple active at once on the client
+	FPerActorData* ActorData = ActiveData.ActorData.Find(HUD);
+
+	if (ActorData)
 	{
-		if (AddedLayout.IsValid())
+		for (TWeakObjectPtr<UCommonActivatableWidget>& AddedLayout : ActorData->LayoutsAdded)
 		{
-			AddedLayout->DeactivateWidget();
+			if (AddedLayout.IsValid())
+			{
+				AddedLayout->DeactivateWidget();
+			}
 		}
+
+		for (FUIExtensionHandle& Handle : ActorData->ExtensionHandles)
+		{
+			Handle.Unregister();
+		}
+		ActiveData.ActorData.Remove(HUD);
 	}
-	ActiveData.LayoutsAdded.Reset();
-	
-	for (FUIExtensionHandle& Handle : ActiveData.ExtensionHandles)
-	{
-		Handle.Unregister();
-	}
-	ActiveData.ExtensionHandles.Reset();
 }
 
 #undef LOCTEXT_NAMESPACE
+

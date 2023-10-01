@@ -2,17 +2,11 @@
 
 #pragma once
 
-#include "Widgets/SCompoundWidget.h"
 #include "UObject/GCObject.h"
+#include "Widgets/Accessibility/SlateWidgetAccessibleTypes.h"
+#include "Widgets/SCompoundWidget.h"
 
-#include "Animation/CurveHandle.h"
-#include "Animation/CurveSequence.h"
-#include "Slate/DeferredCleanupSlateBrush.h"
-#include "Widgets/DeclarativeSyntaxSupport.h"
-
-class UFont;
-class UMaterialInstance;
-class UTexture2D;
+class FReferenceCollector;
 
 class SCommonPreLoadingScreenWidget : public SCompoundWidget, public FGCObject
 {

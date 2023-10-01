@@ -2,21 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Widgets/SWidget.h"
-#include "Widgets/DeclarativeSyntaxSupport.h"
-#include "SlotBase.h"
-#include "Layout/Children.h"
-#include "Widgets/SPanel.h"
-#include "GameplayTaskTypes.h"
-#include "UObject/WeakInterfacePtr.h"
-#include "IndicatorDescriptor.h"
 #include "AsyncMixin.h"
 #include "Blueprint/UserWidgetPool.h"
+#include "Widgets/SPanel.h"
 
+class FActiveTimerHandle;
 class FArrangedChildren;
-class SActorCanvas;
+class FChildren;
+class FPaintArgs;
+class FReferenceCollector;
+class FSlateRect;
+class FSlateWindowElementList;
+class FWidgetStyle;
+class UIndicatorDescriptor;
 class ULyraIndicatorManagerComponent;
+struct FSlateBrush;
 
 class SActorCanvas : public SPanel, public FAsyncMixin, public FGCObject
 {
@@ -225,7 +225,7 @@ private:
 	void UpdateActiveTimer();
 
 private:
-	TArray<UIndicatorDescriptor*> AllIndicators;
+	TArray<TObjectPtr<UIndicatorDescriptor>> AllIndicators;
 	TArray<UIndicatorDescriptor*> InactiveIndicators;
 	
 	FLocalPlayerContext LocalPlayerContext;

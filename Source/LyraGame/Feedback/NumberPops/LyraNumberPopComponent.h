@@ -2,11 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ControllerComponent.h"
 #include "GameplayTagContainer.h"
 
 #include "LyraNumberPopComponent.generated.h"
+
+class UObject;
+struct FFrame;
 
 USTRUCT(BlueprintType)
 struct FLyraNumberPopRequest

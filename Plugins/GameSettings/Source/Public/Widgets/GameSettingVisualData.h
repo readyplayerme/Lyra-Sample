@@ -2,16 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "Engine/DataAsset.h"
-#include "GameplayTagContainer.h"
 
 #include "GameSettingVisualData.generated.h"
 
+class FName;
 class UGameSetting;
-class UGameSettingListEntryBase;
 class UGameSettingDetailExtension;
+class UGameSettingListEntryBase;
+class UObject;
 
 USTRUCT(BlueprintType)
 struct FGameSettingClassExtensions

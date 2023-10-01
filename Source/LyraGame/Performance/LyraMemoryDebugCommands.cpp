@@ -1,21 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "CoreMinimal.h"
-#include "Misc/CoreMisc.h"
-#include "Misc/Guid.h"
-#include "Misc/CommandLine.h"
+#include "Engine/BlueprintGeneratedClass.h"
 #include "UObject/UObjectIterator.h"
 #include "HAL/FileManager.h"
-#include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Engine/World.h"
-#include "HAL/IConsoleManager.h"
 
 #include "LyraLogChannels.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 #if ALLOW_DEBUG_FILES
+#include "HAL/IConsoleManager.h"
 
 // Writes a collection of the specified name containing a list of items (returning the absolute file path to the collection)
 // This is manual rather than relying on the collection manager so it can be used at runtime without depending on a developer module

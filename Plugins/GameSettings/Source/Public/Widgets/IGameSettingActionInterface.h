@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
+
 #include "IGameSettingActionInterface.generated.h"
 
 class UGameSetting;
+class UObject;
+struct FFrame;
 
 UINTERFACE(MinimalAPI, meta = (BlueprintType))
 class UGameSettingActionInterface : public UInterface

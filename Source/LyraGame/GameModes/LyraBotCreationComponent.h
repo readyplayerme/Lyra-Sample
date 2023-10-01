@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
 
 #include "LyraBotCreationComponent.generated.h"

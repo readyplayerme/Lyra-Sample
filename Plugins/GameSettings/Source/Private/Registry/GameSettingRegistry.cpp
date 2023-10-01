@@ -2,11 +2,11 @@
 
 #include "GameSettingRegistry.h"
 
-#include "GameSetting.h"
 #include "GameSettingCollection.h"
 #include "GameSettingAction.h"
-#include <IAnalyticsProviderET.h>
-#include "Stats/Stats.h"
+#include "UObject/WeakObjectPtr.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingRegistry)
 
 #define LOCTEXT_NAMESPACE "GameSetting"
 
@@ -112,6 +112,7 @@ void UGameSettingRegistry::RegisterSetting(UGameSetting* InSetting)
 void UGameSettingRegistry::RegisterInnerSettings(UGameSetting* InSetting)
 {
 	InSetting->OnSettingChangedEvent.AddUObject(this, &ThisClass::HandleSettingChanged);
+	InSetting->OnSettingAppliedEvent.AddUObject(this, &ThisClass::HandleSettingApplied);
 	InSetting->OnSettingEditConditionChangedEvent.AddUObject(this, &ThisClass::HandleSettingEditConditionsChanged);
 
 	// Not a fan of this, but it makes sense to aggregate action events for simplicity.
@@ -138,6 +139,11 @@ void UGameSettingRegistry::RegisterInnerSettings(UGameSetting* InSetting)
 	}
 }
 
+void UGameSettingRegistry::HandleSettingApplied(UGameSetting* Setting)
+{
+	OnSettingApplied(Setting);
+}
+
 void UGameSettingRegistry::HandleSettingChanged(UGameSetting* Setting, EGameSettingChangeReason Reason)
 {
 	OnSettingChangedEvent.Broadcast(Setting, Reason);
@@ -159,3 +165,4 @@ void UGameSettingRegistry::HandleSettingNavigation(UGameSetting* Setting)
 }
 
 #undef LOCTEXT_NAMESPACE
+

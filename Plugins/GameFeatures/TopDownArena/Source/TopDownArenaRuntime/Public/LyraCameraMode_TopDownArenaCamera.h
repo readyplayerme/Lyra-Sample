@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Camera/LyraCameraMode.h"
 #include "Curves/CurveFloat.h"
 
 #include "LyraCameraMode_TopDownArenaCamera.generated.h"
 
-
-class UCurveVector;
+class UObject;
 
 
 /**

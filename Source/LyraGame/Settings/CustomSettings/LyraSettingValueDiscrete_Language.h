@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSettingValueDiscrete.h"
 
 #include "LyraSettingValueDiscrete_Language.generated.h"
+
+class FText;
+class UObject;
 
 UCLASS()
 class LYRAGAME_API ULyraSettingValueDiscrete_Language : public UGameSettingValueDiscrete

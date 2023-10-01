@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameplayEffectExecutionCalculation.h"
+
 #include "LyraHealExecution.generated.h"
+
+class UObject;
 
 
 /**

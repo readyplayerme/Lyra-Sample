@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Engine/EngineTypes.h"
 
 /**
  * when you modify this, please note that this information can be saved with instances

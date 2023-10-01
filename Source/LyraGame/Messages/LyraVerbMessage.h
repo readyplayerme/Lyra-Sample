@@ -17,10 +17,10 @@ struct FLyraVerbMessage
 	FGameplayTag Verb;
 
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
-	UObject* Instigator = nullptr;
+	TObjectPtr<UObject> Instigator = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
-	UObject* Target = nullptr;
+	TObjectPtr<UObject> Target = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
 	FGameplayTagContainer InstigatorTags;

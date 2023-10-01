@@ -2,15 +2,16 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ControllerComponent.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
+#include "Inventory/LyraInventoryItemInstance.h"
 
 #include "LyraQuickBarComponent.generated.h"
 
-class ULyraInventoryItemInstance;
+class AActor;
 class ULyraEquipmentInstance;
 class ULyraEquipmentManagerComponent;
+class UObject;
+struct FFrame;
 
 UCLASS(Blueprintable, meta=(BlueprintSpawnableComponent))
 class ULyraQuickBarComponent : public UControllerComponent
@@ -86,7 +87,7 @@ struct FLyraQuickBarSlotsChangedMessage
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category=Inventory)
-	AActor* Owner = nullptr;
+	TObjectPtr<AActor> Owner = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Category = Inventory)
 	TArray<TObjectPtr<ULyraInventoryItemInstance>> Slots;
@@ -99,7 +100,7 @@ struct FLyraQuickBarActiveIndexChangedMessage
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category=Inventory)
-	AActor* Owner = nullptr;
+	TObjectPtr<AActor> Owner = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Category=Inventory)
 	int32 ActiveIndex = 0;

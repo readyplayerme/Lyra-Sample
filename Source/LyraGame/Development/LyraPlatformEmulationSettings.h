@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DeveloperSettingsBackedByCVars.h"
 #include "GameplayTagContainer.h"
 #include "LyraPlatformEmulationSettings.generated.h"
+
+struct FPropertyChangedEvent;
 
 /**
  * Platform emulation settings

@@ -2,14 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "UObject/SoftObjectPath.h"
 #include "GameplayTagContainer.h"
+#include "UObject/SoftObjectPath.h"
+#include "UObject/WeakObjectPtr.h"
+
 #include "LyraContextEffectsLibrary.generated.h"
 
-class USoundBase;
 class UNiagaraSystem;
+class USoundBase;
+struct FFrame;
 
 /**
  *
@@ -35,7 +36,7 @@ struct LYRAGAME_API FLyraContextEffects
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTagContainer Context;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowedClasses = "SoundBase, NiagaraSystem"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowedClasses = "/Script/Engine.SoundBase, /Script/Niagara.NiagaraSystem"))
 	TArray<FSoftObjectPath> Effects;
 
 };
@@ -56,10 +57,10 @@ public:
 	FGameplayTagContainer Context;
 
 	UPROPERTY(VisibleAnywhere)
-	TArray<USoundBase*> Sounds;
+	TArray<TObjectPtr<USoundBase>> Sounds;
 
 	UPROPERTY(VisibleAnywhere)
-	TArray<UNiagaraSystem*> NiagaraSystems;
+	TArray<TObjectPtr<UNiagaraSystem>> NiagaraSystems;
 };
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FLyraContextEffectLibraryLoadingComplete, TArray<ULyraActiveContextEffects*>, LyraActiveContextEffects);
@@ -91,7 +92,7 @@ private:
 	void LyraContextEffectLibraryLoadingComplete(TArray<ULyraActiveContextEffects*> LyraActiveContextEffects);
 
 	UPROPERTY(Transient)
-	TArray< ULyraActiveContextEffects*> ActiveContextEffects;
+	TArray< TObjectPtr<ULyraActiveContextEffects>> ActiveContextEffects;
 
 	UPROPERTY(Transient)
 	EContextEffectsLibraryLoadState EffectsLoadState = EContextEffectsLibraryLoadState::Unloaded;

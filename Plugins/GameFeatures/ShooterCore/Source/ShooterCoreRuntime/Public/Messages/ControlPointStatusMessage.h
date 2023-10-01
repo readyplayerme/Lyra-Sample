@@ -13,7 +13,7 @@ struct FLyraControlPointStatusMessage
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
-	AActor* ControlPoint = nullptr;
+	TObjectPtr<AActor> ControlPoint = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
 	int32 OwnerTeamID = 0;

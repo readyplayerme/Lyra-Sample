@@ -1,9 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraTeamCheats.h"
-#include "LyraTeamSubsystem.h"
+
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "HAL/IConsoleManager.h"
+#include "Teams/LyraTeamSubsystem.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTeamCheats)
 
 //////////////////////////////////////////////////////////////////////
 // ULyraTeamCheats
@@ -58,3 +62,4 @@ void ULyraTeamCheats::ListTeams()
 		}
 	}
 }
+

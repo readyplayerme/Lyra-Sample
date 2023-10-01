@@ -1,11 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UI/LyraSimulatedInputWidget.h"
-#include "Engine/LocalPlayer.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedPlayerInput.h"
-#include "InputAction.h"
 #include "LyraLogChannels.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSimulatedInputWidget)
 
 #define LOCTEXT_NAMESPACE "LyraSimulatedInputWidget"
 
@@ -24,12 +23,25 @@ const FText ULyraSimulatedInputWidget::GetPaletteCategory()
 
 void ULyraSimulatedInputWidget::NativeConstruct()
 {
-	// TODO: We should query the key the simulate whenever the user rebinds a key and after the PlayerController has
-	// had it's input initalized. Doing it here will always result in the fallback key being used because
-	// the PC does not have any keys mapped in enhanced input.
+	// Find initial key, then listen for any changes to control mappings
 	QueryKeyToSimulate();
+
+	if (UEnhancedInputLocalPlayerSubsystem* System = GetEnhancedInputSubsystem())
+	{
+		System->ControlMappingsRebuiltDelegate.AddUniqueDynamic(this, &ULyraSimulatedInputWidget::OnControlMappingsRebuilt);
+	}
 	
 	Super::NativeConstruct();
+}
+
+void ULyraSimulatedInputWidget::NativeDestruct()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* System = GetEnhancedInputSubsystem())
+	{
+		System->ControlMappingsRebuiltDelegate.RemoveAll(this);
+	}
+
+	Super::NativeDestruct();
 }
 
 FReply ULyraSimulatedInputWidget::NativeOnTouchEnded(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent)
@@ -62,7 +74,19 @@ UEnhancedPlayerInput* ULyraSimulatedInputWidget::GetPlayerInput() const
 
 void ULyraSimulatedInputWidget::InputKeyValue(const FVector& Value)
 {
-	if (UEnhancedPlayerInput* Input = GetPlayerInput())
+	// If we have an associated input action then we can use it
+	if (AssociatedAction)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* System = GetEnhancedInputSubsystem())
+		{
+			// We don't want to apply any modifiers or triggers to this action, but they are required for the function signature
+			TArray<UInputModifier*> Modifiers;
+			TArray<UInputTrigger*> Triggers;
+			System->InjectInputVectorForAction(AssociatedAction, Value, Modifiers, Triggers);
+		}
+	}
+	// In case there is no associated input action, we can attempt to simulate input on the fallback key
+	else if (UEnhancedPlayerInput* Input = GetPlayerInput())
 	{
 		if(KeyToSimulate.IsValid())
 		{
@@ -109,6 +133,11 @@ void ULyraSimulatedInputWidget::QueryKeyToSimulate()
 			KeyToSimulate = FallbackBindingKey;
 		}
 	}
+}
+
+void ULyraSimulatedInputWidget::OnControlMappingsRebuilt()
+{
+	QueryKeyToSimulate();
 }
 
 #undef LOCTEXT_NAMESPACE

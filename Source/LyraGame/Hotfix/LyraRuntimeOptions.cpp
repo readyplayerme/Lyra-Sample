@@ -2,6 +2,10 @@
 
 #include "LyraRuntimeOptions.h"
 
+#include "UObject/Class.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraRuntimeOptions)
+
 ULyraRuntimeOptions::ULyraRuntimeOptions()
 {
 	OptionCommandPrefix = TEXT("ro");

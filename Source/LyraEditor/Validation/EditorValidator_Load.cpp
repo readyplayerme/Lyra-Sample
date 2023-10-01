@@ -1,15 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EditorValidator_Load.h"
-#include "HAL/FileManager.h"
-#include "Engine/Blueprint.h"
+
+#include "AssetCompilingManager.h"
 #include "Engine/Engine.h"
-#include "Blueprint/BlueprintSupport.h"
+#include "Engine/World.h"
+#include "HAL/FileManager.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/KismetEditorUtilities.h"
-#include "Engine/World.h"
-#include "ShaderCompiler.h"
-#include "UObject/UObjectHash.h"
+#include "Misc/PackageName.h"
+#include "Misc/Paths.h"
+#include "Validation/EditorValidator.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EditorValidator_Load)
 
 #define LOCTEXT_NAMESPACE "EditorValidator"
 
@@ -182,3 +185,4 @@ bool UEditorValidator_Load::GetLoadWarningsAndErrorsForPackage(const FString& Pa
 }
 
 #undef LOCTEXT_NAMESPACE
+

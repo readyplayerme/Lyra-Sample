@@ -2,12 +2,21 @@
 
 
 #include "Audio/LyraAudioMixEffectsSubsystem.h"
+
+#include "AudioMixerBlueprintLibrary.h"
 #include "AudioModulationStatics.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
+#include "LoadingScreenManager.h"
 #include "LyraAudioSettings.h"
 #include "Settings/LyraSettingsLocal.h"
-#include "AudioMixerBlueprintLibrary.h"
-#include "LoadingScreenManager.h"
-#include "Engine/GameInstance.h"
+#include "Sound/SoundEffectSubmix.h"
+#include "SoundControlBus.h"
+#include "SoundControlBusMix.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAudioMixEffectsSubsystem)
+
+class FSubsystemCollectionBase;
 
 void ULyraAudioMixEffectsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -341,3 +350,4 @@ bool ULyraAudioMixEffectsSubsystem::DoesSupportWorldType(const EWorldType::Type 
 	// We only need this subsystem on Game worlds (PIE included)
 	return (World == EWorldType::Game || World == EWorldType::PIE);
 }
+

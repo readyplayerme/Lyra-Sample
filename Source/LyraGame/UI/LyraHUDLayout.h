@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "CommonActivatableWidget.h"
 #include "LyraActivatableWidget.h"
 
 #include "LyraHUDLayout.generated.h"
+
+class UCommonActivatableWidget;
+class UObject;
 
 
 /**

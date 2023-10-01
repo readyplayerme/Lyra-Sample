@@ -1,9 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Widgets/GameSettingVisualData.h"
-#include "Widgets/GameSettingListEntry.h"
 
 #include "GameSetting.h"
+#include "Widgets/GameSettingListEntry.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingVisualData)
 
 TSubclassOf<UGameSettingListEntryBase> UGameSettingVisualData::GetEntryForSetting(UGameSetting* InSetting)
 {

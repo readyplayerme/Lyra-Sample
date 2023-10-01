@@ -3,21 +3,21 @@
 #include "LoadingScreenManager.h"
 
 #include "HAL/ThreadHeartBeat.h"
-#include "ProfilingDebugging/CsvProfiler.h"
 
 #include "Engine/GameInstance.h"
 #include "Engine/GameViewportClient.h"
-#include "Engine/World.h"
 #include "Engine/Engine.h"
-#include "Engine/LocalPlayer.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/WorldSettings.h"
+#include "Misc/CommandLine.h"
 #include "Misc/ConfigCacheIni.h"
 
 #include "LoadingProcessInterface.h"
 
 #include "Framework/Application/IInputProcessor.h"
+#include "Framework/Application/SlateApplication.h"
 
+#include "PreLoadScreen.h"
 #include "PreLoadScreenManager.h"
 
 #include "ShaderPipelineCache.h"
@@ -26,6 +26,8 @@
 //@TODO: Used as the placeholder widget in error cases, should probably create a wrapper that at least centers it/etc...
 #include "Widgets/Images/SThrobber.h"
 #include "Blueprint/UserWidget.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LoadingScreenManager)
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLoadingScreen, Log, All);
 DEFINE_LOG_CATEGORY(LogLoadingScreen);
@@ -626,3 +628,4 @@ void ULoadingScreenManager::ChangePerformanceSettings(bool bEnabingLoadingScreen
 		FGameThreadHitchHeartBeat::Get().ResumeHeartBeat();
 	}
 }
+

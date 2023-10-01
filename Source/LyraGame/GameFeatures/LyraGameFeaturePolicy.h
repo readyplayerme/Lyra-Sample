@@ -2,17 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Delegates/Delegate.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
-#include "GameFeaturesSubsystem.h"
-#include "GameFeaturesProjectPolicies.h"
 #include "GameFeatureStateChangeObserver.h"
+#include "GameFeaturesProjectPolicies.h"
 
 #include "LyraGameFeaturePolicy.generated.h"
 
+class FName;
 class UGameFeatureData;
+struct FPrimaryAssetId;
 
 /**
  * Manager to keep track of the state machines that bring a game feature plugin into memory and active
@@ -31,7 +28,7 @@ public:
 	//~UGameFeaturesProjectPolicies interface
 	virtual void InitGameFeatureManager() override;
 	virtual void ShutdownGameFeatureManager() override;
-	virtual TArray<FPrimaryAssetId> GetPreloadAssetListForGameFeature(const UGameFeatureData* GameFeatureToLoad) const override;
+	virtual TArray<FPrimaryAssetId> GetPreloadAssetListForGameFeature(const UGameFeatureData* GameFeatureToLoad, bool bIncludeLoadedAssets = false) const override;
 	virtual bool IsPluginAllowed(const FString& PluginURL) const override;
 	virtual const TArray<FName> GetPreloadBundleStateForGameFeature() const override;
 	virtual void GetGameFeatureLoadingMode(bool& bLoadClientData, bool& bLoadServerData) const override;
@@ -51,7 +48,7 @@ class ULyraGameFeature_HotfixManager : public UObject, public IGameFeatureStateC
 	GENERATED_BODY()
 
 public:
-	virtual void OnGameFeatureLoading(const UGameFeatureData* GameFeatureData) override;
+	virtual void OnGameFeatureLoading(const UGameFeatureData* GameFeatureData, const FString& PluginURL) override;
 };
 
 // checked
@@ -61,6 +58,6 @@ class ULyraGameFeature_AddGameplayCuePaths : public UObject, public IGameFeature
 	GENERATED_BODY()
 
 public:
-	virtual void OnGameFeatureRegistering(const UGameFeatureData* GameFeatureData, const FString& PluginName) override;
-	virtual void OnGameFeatureUnregistering(const UGameFeatureData* GameFeatureData, const FString& PluginName) override;
+	virtual void OnGameFeatureRegistering(const UGameFeatureData* GameFeatureData, const FString& PluginName, const FString& PluginURL) override;
+	virtual void OnGameFeatureUnregistering(const UGameFeatureData* GameFeatureData, const FString& PluginName, const FString& PluginURL) override;
 };

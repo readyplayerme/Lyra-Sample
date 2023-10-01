@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DeveloperSettingsBackedByCVars.h"
-#include "Cosmetics/LyraCharacterPartTypes.h"
 
 #include "LyraCosmeticDeveloperSettings.generated.h"
+
+struct FLyraCharacterPart;
+struct FPropertyChangedEvent;
 
 class ULyraExperienceDefinition;
 

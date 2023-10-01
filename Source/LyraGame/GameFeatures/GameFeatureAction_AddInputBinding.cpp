@@ -1,16 +1,22 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameFeatureAction_AddInputBinding.h"
-#include "GameFeaturesSubsystem.h"
-#include "GameFeaturesSubsystemSettings.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "Engine/GameInstance.h"
 #include "GameFramework/PlayerController.h"
+#include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 #include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
 #include "Engine/LocalPlayer.h"
 #include "Character/LyraHeroComponent.h"
+#include "GameFeatures/GameFeatureAction_WorldActionBase.h"
 #include "Input/LyraInputConfig.h"
+
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameFeatureAction_AddInputBinding)
 
 #define LOCTEXT_NAMESPACE "GameFeatures"
 
@@ -40,9 +46,9 @@ void UGameFeatureAction_AddInputBinding::OnGameFeatureDeactivating(FGameFeatureD
 }
 
 #if WITH_EDITOR
-EDataValidationResult UGameFeatureAction_AddInputBinding::IsDataValid(TArray<FText>& ValidationErrors)
+EDataValidationResult UGameFeatureAction_AddInputBinding::IsDataValid(FDataValidationContext& Context) const
 {
-	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(ValidationErrors), EDataValidationResult::Valid);
+	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(Context), EDataValidationResult::Valid);
 
 	int32 Index = 0;
 
@@ -51,7 +57,7 @@ EDataValidationResult UGameFeatureAction_AddInputBinding::IsDataValid(TArray<FTe
 		if (Entry.IsNull())
 		{
 			Result = EDataValidationResult::Invalid;
-			ValidationErrors.Add(FText::Format(LOCTEXT("NullInputConfig", "Null InputConfig at index {0}."), Index));
+			Context.AddError(FText::Format(LOCTEXT("NullInputConfig", "Null InputConfig at index {0}."), Index));
 		}
 		++Index;
 	}
@@ -166,3 +172,4 @@ void UGameFeatureAction_AddInputBinding::RemoveInputMapping(APawn* Pawn, FPerCon
 }
 
 #undef LOCTEXT_NAMESPACE
+

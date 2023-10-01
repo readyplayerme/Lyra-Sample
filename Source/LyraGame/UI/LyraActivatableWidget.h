@@ -2,12 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "CommonUserWidget.h"
-#include "GameplayTagContainer.h"
 #include "CommonActivatableWidget.h"
 
 #include "LyraActivatableWidget.generated.h"
+
+struct FUIInputConfig;
 
 UENUM(BlueprintType)
 enum class ELyraWidgetInputMode : uint8

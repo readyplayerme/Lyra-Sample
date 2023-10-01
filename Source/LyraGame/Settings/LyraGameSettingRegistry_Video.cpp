@@ -1,26 +1,22 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LyraGameSettingRegistry.h"
-#include "Player/LyraLocalPlayer.h"
-
-#include "GameSetting.h"
-#include "GameSettingValueDiscreteDynamic.h"
-#include "GameSettingValueScalar.h"
-#include "GameSettingValueScalarDynamic.h"
+#include "CustomSettings/LyraSettingAction_SafeZoneEditor.h"
+#include "CustomSettings/LyraSettingValueDiscrete_MobileFPSType.h"
+#include "CustomSettings/LyraSettingValueDiscrete_OverallQuality.h"
+#include "CustomSettings/LyraSettingValueDiscrete_Resolution.h"
+#include "DataSource/GameSettingDataSource.h"
+#include "EditCondition/WhenCondition.h"
+#include "EditCondition/WhenPlatformHasTrait.h"
+#include "EditCondition/WhenPlayingAsPrimaryPlayer.h"
+#include "Framework/Application/SlateApplication.h"
 #include "GameSettingCollection.h"
-#include "GameSettingAction.h"
+#include "GameSettingValueDiscreteDynamic.h"
+#include "LyraGameSettingRegistry.h"
 #include "LyraSettingsLocal.h"
 #include "LyraSettingsShared.h"
-#include "EditCondition/WhenCondition.h"
-#include "EditCondition/WhenPlayingAsPrimaryPlayer.h"
-#include "EditCondition/WhenPlatformHasTrait.h"
-#include "CustomSettings/LyraSettingAction_SafeZoneEditor.h"
-#include "CustomSettings/LyraSettingValueDiscrete_Resolution.h"
-#include "CustomSettings/LyraSettingValueDiscrete_OverallQuality.h"
-#include "CustomSettings/LyraSettingValueDiscrete_MobileFPSType.h"
 #include "NativeGameplayTags.h"
-#include "Framework/Application/SlateApplication.h"
 #include "Performance/LyraPerformanceSettings.h"
+#include "Player/LyraLocalPlayer.h"
 
 #define LOCTEXT_NAMESPACE "Lyra"
 
@@ -611,22 +607,6 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeVideoSettings(ULyraL
 
 			AdvancedGraphics->AddSetting(Setting);
 		}
-		//----------------------------------------------------------------------------------
-	}
-
-	// Ray Tracing
-	////////////////////////////////////////////////////////////////////////////////////
-	{
-//@TODO: Ray tracing setting: Implement me or delete me!
-// 		UGameSettingCollection* RayTracing = NewObject<UGameSettingCollection>();
-// 		RayTracing->SetDevName(TEXT("RayTracingCollection"));
-// 		RayTracing->SetDisplayName(LOCTEXT("RayTracing_Collection_Name", "Ray Tracing"));
-// 		Screen->AddSetting(RayTracing);
-
-		//----------------------------------------------------------------------------------
-		{
-		}
-		//----------------------------------------------------------------------------------
 	}
 
 	return Screen;

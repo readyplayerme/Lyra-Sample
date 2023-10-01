@@ -1,12 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraHUDLayout.h"
-#include "Input/UIActionBindingHandle.h"
-#include "Engine/EngineBaseTypes.h"
-#include "Input/CommonInputMode.h"
-#include "NativeGameplayTags.h"
+
 #include "CommonUIExtensions.h"
 #include "Input/CommonUIInputTypes.h"
+#include "NativeGameplayTags.h"
+#include "UI/LyraActivatableWidget.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraHUDLayout)
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_ACTION_ESCAPE, "UI.Action.Escape");

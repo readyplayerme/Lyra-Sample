@@ -2,16 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "GameplayTagContainer.h"
 #include "LyraContextEffectsInterface.h"
-#include "UObject/SoftObjectPtr.h"
+
 #include "LyraContextEffectComponent.generated.h"
 
+namespace EEndPlayReason { enum Type : int; }
+
+class UAnimSequenceBase;
+class UAudioComponent;
 class ULyraContextEffectsLibrary;
 class UNiagaraComponent;
-class UAudioComponent;
+class UObject;
+class USceneComponent;
+struct FFrame;
+struct FHitResult;
 
 UCLASS( ClassGroup=(Custom), hidecategories = (Variable, Tags, ComponentTick, ComponentReplication, Activation, Cooking, AssetUserData, Collision), CollapseCategories, meta=(BlueprintSpawnableComponent) )
 class LYRAGAME_API ULyraContextEffectComponent : public UActorComponent, public ILyraContextEffectsInterface
@@ -63,8 +68,8 @@ private:
 	TSet<TSoftObjectPtr<ULyraContextEffectsLibrary>> CurrentContextEffectsLibraries;
 
 	UPROPERTY(Transient)
-	TArray<UAudioComponent*> ActiveAudioComponents;
+	TArray<TObjectPtr<UAudioComponent>> ActiveAudioComponents;
 
 	UPROPERTY(Transient)
-	TArray<UNiagaraComponent*> ActiveNiagaraComponents;
+	TArray<TObjectPtr<UNiagaraComponent>> ActiveNiagaraComponents;
 };

@@ -1,8 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SCommonPreLoadingScreenWidget.h"
-#include "UnrealEngine.h"
-#include "Engine/GameEngine.h"
+
+#include "Widgets/Layout/SBorder.h"
+
+class FReferenceCollector;
 
 #define LOCTEXT_NAMESPACE "SCommonPreLoadingScreenWidget"
 

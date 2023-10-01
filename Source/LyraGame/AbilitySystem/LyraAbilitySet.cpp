@@ -1,9 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraAbilitySet.h"
-#include "LyraLogChannels.h"
+
+#include "AbilitySystem/Abilities/LyraGameplayAbility.h"
 #include "LyraAbilitySystemComponent.h"
-#include "Abilities/LyraGameplayAbility.h"
+#include "LyraLogChannels.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAbilitySet)
 
 void FLyraAbilitySet_GrantedHandles::AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle)
 {
@@ -54,7 +57,7 @@ void FLyraAbilitySet_GrantedHandles::TakeFromAbilitySystem(ULyraAbilitySystemCom
 
 	for (UAttributeSet* Set : GrantedAttributeSets)
 	{
-		LyraASC->GetSpawnedAttributes_Mutable().Remove(Set);
+		LyraASC->RemoveSpawnedAttribute(Set);
 	}
 
 	AbilitySpecHandles.Reset();
@@ -142,3 +145,4 @@ void ULyraAbilitySet::GiveToAbilitySystem(ULyraAbilitySystemComponent* LyraASC, 
 		}
 	}
 }
+

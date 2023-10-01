@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameplayTagContainer.h"
 #include "Components/DynamicEntryBoxBase.h"
 #include "UIExtensionSystem.h"
 
 #include "UIExtensionPointWidget.generated.h"
+
+class IWidgetCompilerLog;
 
 class UCommonLocalPlayer;
 class APlayerState;
@@ -63,5 +62,5 @@ protected:
 	TArray<FUIExtensionPointHandle> ExtensionPointHandles;
 
 	UPROPERTY(Transient)
-	TMap<FUIExtensionHandle, UUserWidget*> ExtensionMapping;
+	TMap<FUIExtensionHandle, TObjectPtr<UUserWidget>> ExtensionMapping;
 };

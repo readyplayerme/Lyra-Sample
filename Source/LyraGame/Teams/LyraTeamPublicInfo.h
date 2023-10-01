@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "LyraTeamInfoBase.h"
 
 #include "LyraTeamPublicInfo.generated.h"
 
+class ULyraTeamCreationComponent;
 class ULyraTeamDisplayAsset;
+class UObject;
+struct FFrame;
 
 UCLASS()
 class ALyraTeamPublicInfo : public ALyraTeamInfoBase

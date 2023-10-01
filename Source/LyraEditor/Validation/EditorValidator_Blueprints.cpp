@@ -1,12 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EditorValidator_Blueprints.h"
-#include "Engine/Blueprint.h"
+
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Blueprint/BlueprintSupport.h"
 #include "Kismet2/BlueprintEditorUtils.h"
-#include "AssetRegistryModule.h"
-#include "Validation/EditorValidator_Load.h"
 #include "LyraEditor.h"
+#include "Modules/ModuleManager.h"
+#include "Validation/EditorValidator.h"
+#include "Validation/EditorValidator_Load.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EditorValidator_Blueprints)
 
 #define LOCTEXT_NAMESPACE "EditorValidator"
 

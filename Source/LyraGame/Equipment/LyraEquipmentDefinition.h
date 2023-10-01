@@ -2,12 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "GameplayTagContainer.h"
+#include "Templates/SubclassOf.h"
 
 #include "LyraEquipmentDefinition.generated.h"
 
+class AActor;
 class ULyraAbilitySet;
 class ULyraEquipmentInstance;
 

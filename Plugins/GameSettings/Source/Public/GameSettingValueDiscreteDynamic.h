@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSettingValueDiscrete.h"
-#include "DataSource/GameSettingDataSource.h"
 
 #include "GameSettingValueDiscreteDynamic.generated.h"
+
+class FGameSettingDataSource;
+enum class EGameSettingChangeReason : uint8;
 
 struct FContentControlsRules;
 

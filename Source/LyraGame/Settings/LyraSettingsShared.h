@@ -2,10 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "SubtitleDisplaySubsystem.h"
 #include "GameFramework/SaveGame.h"
+#include "SubtitleDisplayOptions.h"
+
+#include "UObject/ObjectPtr.h"
 #include "LyraSettingsShared.generated.h"
+
+class UObject;
+struct FFrame;
 
 UENUM(BlueprintType)
 enum class EColorBlindMode : uint8
@@ -55,15 +59,9 @@ class ULyraLocalPlayer;
  * we can also store settings per player, so things like controller keybind preferences should go here, because if those
  * are stored in the local settings all users would get them.
  *
- * TODO NDarnell Future version rename this maybe to CloudSave?  Even though these arent necessarily in the cloud...
- *               maybe change Localsettings to LyraPlatformSettings, or DeviceSettings?  Make this one UserSettings?  TBD
- *               
- * NOTE: I want to do Within=LocalPlayer, but SaveGames create the object in the transient package, instead
- * of getting to select the outer, maybe LoadGameFromMemory should have a variant, like LoadGameFromMemory_WithOuter, or maybe pass in
- * an optional outer.
  */
-UCLASS(/*Within=LocalPlayer*/)
-class ULyraSettingsShared : public USaveGame
+UCLASS()
+class ULyraSettingsShared : public ULocalPlayerSaveGame
 {
 	GENERATED_BODY()
 
@@ -75,14 +73,28 @@ public:
 
 	ULyraSettingsShared();
 
-	void Initialize(ULyraLocalPlayer* LocalPlayer);
+	//~ULocalPlayerSaveGame interface
+	int32 GetLatestDataVersion() const override;
+	//~End of ULocalPlayerSaveGame interface
 
 	bool IsDirty() const { return bIsDirty; }
 	void ClearDirtyFlag() { bIsDirty = false; }
 
-	void SaveSettings();
+	/** Creates a temporary settings object, this will be replaced by one loaded from the user's save game */
+	static ULyraSettingsShared* CreateTemporarySettings(const ULyraLocalPlayer* LocalPlayer);
+	
+	/** Synchronously loads a settings object, this is not valid to call before login */
 	static ULyraSettingsShared* LoadOrCreateSettings(const ULyraLocalPlayer* LocalPlayer);
 
+	DECLARE_DELEGATE_OneParam(FOnSettingsLoadedEvent, ULyraSettingsShared* Settings);
+
+	/** Starts an async load of the settings object, calls Delegate on completion */
+	static bool AsyncLoadOrCreateSettings(const ULyraLocalPlayer* LocalPlayer, FOnSettingsLoadedEvent Delegate);
+
+	/** Saves the settings to disk */
+	void SaveSettings();
+
+	/** Applies the current settings to the player */
 	void ApplySettings();
 	
 public:
@@ -365,7 +377,4 @@ private:
 	}
 
 	bool bIsDirty = false;
-
-	UPROPERTY(Transient)
-	ULyraLocalPlayer* OwningPlayer = nullptr;
 };

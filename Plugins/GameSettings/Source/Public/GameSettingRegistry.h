@@ -2,19 +2,20 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameplayTagContainer.h"
+#include "GameSetting.h"
+#include "Templates/Casts.h"
 
 #include "GameSettingRegistry.generated.h"
+
+struct FGameplayTag;
 
 //--------------------------------------
 // UGameSettingRegistry
 //--------------------------------------
 
 class ULocalPlayer;
-class UGameSetting;
 struct FGameSettingFilterState;
+
 enum class EGameSettingChangeReason : uint8;
 
 /**
@@ -65,21 +66,24 @@ public:
 protected:
 	virtual void OnInitialize(ULocalPlayer* InLocalPlayer) PURE_VIRTUAL(, )
 
+	virtual void OnSettingApplied(UGameSetting* Setting) { }
+	
 	void RegisterSetting(UGameSetting* InSetting);
 	void RegisterInnerSettings(UGameSetting* InSetting);
 
 	// Internal event handlers.
 	void HandleSettingChanged(UGameSetting* Setting, EGameSettingChangeReason Reason);
+	void HandleSettingApplied(UGameSetting* Setting);
 	void HandleSettingEditConditionsChanged(UGameSetting* Setting);
 	void HandleSettingNamedAction(UGameSetting* Setting, FGameplayTag GameSettings_Action_Tag);
 	void HandleSettingNavigation(UGameSetting* Setting);
 
 	UPROPERTY(Transient)
-	TArray<UGameSetting*> TopLevelSettings;
+	TArray<TObjectPtr<UGameSetting>> TopLevelSettings;
 
 	UPROPERTY(Transient)
-	TArray<UGameSetting*> RegisteredSettings;
+	TArray<TObjectPtr<UGameSetting>> RegisteredSettings;
 
 	UPROPERTY(Transient)
-	ULocalPlayer* OwningLocalPlayer;
+	TObjectPtr<ULocalPlayer> OwningLocalPlayer;
 };

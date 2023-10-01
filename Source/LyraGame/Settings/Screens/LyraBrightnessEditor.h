@@ -3,15 +3,23 @@
 #pragma once
 
 #include "CommonActivatableWidget.h"
-#include "CommonInputBaseTypes.h"
 #include "Widgets/IGameSettingActionInterface.h"
+
 #include "LyraBrightnessEditor.generated.h"
 
-class UGameSetting;
+enum class ECommonInputType : uint8;
+
 class UCommonButtonBase;
 class UCommonRichTextBlock;
-class UWidgetSwitcher;
+class UGameSetting;
 class UGameSettingValueScalar;
+class UObject;
+class UWidgetSwitcher;
+struct FAnalogInputEvent;
+struct FFrame;
+struct FGameplayTag;
+struct FGeometry;
+struct FPointerEvent;
 
 UCLASS(Abstract)
 class ULyraBrightnessEditor : public UCommonActivatableWidget, public IGameSettingActionInterface
@@ -50,14 +58,14 @@ private:
 	TWeakObjectPtr<UGameSettingValueScalar> ValueSetting;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-	UWidgetSwitcher* Switcher_SafeZoneMessage;
+	TObjectPtr<UWidgetSwitcher> Switcher_SafeZoneMessage;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-	UCommonRichTextBlock* RichText_Default;
+	TObjectPtr<UCommonRichTextBlock> RichText_Default;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-	UCommonButtonBase* Button_Back;
+	TObjectPtr<UCommonButtonBase> Button_Back;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-	UCommonButtonBase* Button_Done;
+	TObjectPtr<UCommonButtonBase> Button_Done;
 };

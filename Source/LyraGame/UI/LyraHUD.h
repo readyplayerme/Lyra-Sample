@@ -2,10 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "GameplayTagContainer.h"
+
 #include "LyraHUD.generated.h"
+
+namespace EEndPlayReason { enum Type : int; }
+
+class AActor;
+class UObject;
 
 /**
  * ALyraHUD

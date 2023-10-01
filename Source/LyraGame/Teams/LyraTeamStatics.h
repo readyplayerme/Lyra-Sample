@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "LyraTeamStatics.generated.h"
 
 class ULyraTeamDisplayAsset;
+class UObject;
+class UTexture;
+struct FFrame;
 
 /** A subsystem for easy access to team information for team-based actors (e.g., pawns or player states) */
 UCLASS()

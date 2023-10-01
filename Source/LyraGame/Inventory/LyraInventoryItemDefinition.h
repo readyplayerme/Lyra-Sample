@@ -2,18 +2,20 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "CoreUObject.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+
 #include "LyraInventoryItemDefinition.generated.h"
 
+template <typename T> class TSubclassOf;
+
 class ULyraInventoryItemInstance;
+struct FFrame;
 
 //////////////////////////////////////////////////////////////////////
 
 // Represents a fragment of an item definition
 UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
-class ULyraInventoryItemFragment : public UObject
+class LYRAGAME_API ULyraInventoryItemFragment : public UObject
 {
 	GENERATED_BODY()
 

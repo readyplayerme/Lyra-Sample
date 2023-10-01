@@ -2,17 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Abilities/LyraGameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "NativeGameplayTags.h"
-#include "Abilities/LyraGameplayAbility.h"
+
 #include "LyraAbilitySystemComponent.generated.h"
 
-
-class ULyraGameplayAbility;
+class AActor;
+class UGameplayAbility;
 class ULyraAbilityTagRelationshipMapping;
-struct FGameplayTag;
-struct FGameplayAbilitySpec;
+class UObject;
+struct FFrame;
+struct FGameplayAbilityTargetDataHandle;
 
 LYRAGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Gameplay_AbilityInputBlocked);
 
@@ -22,7 +23,7 @@ LYRAGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Gameplay_AbilityInputBlocked);
  *	Base ability system component class used by this project.
  */
 UCLASS()
-class ULyraAbilitySystemComponent : public UAbilitySystemComponent
+class LYRAGAME_API ULyraAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 
@@ -89,7 +90,7 @@ protected:
 
 	// If set, this table is used to look up tag relationships for activate and cancel
 	UPROPERTY()
-	ULyraAbilityTagRelationshipMapping* TagRelationshipMapping;
+	TObjectPtr<ULyraAbilityTagRelationshipMapping> TagRelationshipMapping;
 
 	// Handles to abilities that had their input pressed this frame.
 	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;

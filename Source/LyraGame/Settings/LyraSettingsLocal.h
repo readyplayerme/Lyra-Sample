@@ -2,17 +2,22 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/GameUserSettings.h"
 #include "Input/LyraMappableConfigPair.h"
-#include "Performance/LyraPerformanceStatTypes.h"
+#include "InputCoreTypes.h"
 
 #include "LyraSettingsLocal.generated.h"
 
+enum class ECommonInputType : uint8;
+enum class ELyraDisplayablePerformanceStat : uint8;
+enum class ELyraStatDisplayMode : uint8;
+
+class ULyraLocalPlayer;
+class UObject;
+class UPlayerMappableInputConfig;
 class USoundControlBus;
 class USoundControlBusMix;
-class UPlayerMappableInputConfig;
-class ULyraLocalPlayer;
+struct FFrame;
 
 USTRUCT()
 struct FLyraScalabilitySnapshot
@@ -345,34 +350,37 @@ public:
 	UFUNCTION()
 	FName GetControllerPlatform() const;
 
+	PRAGMA_DISABLE_DEPRECATION_WARNINGS
+
+	class UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings") FInputConfigDelegate;	
 	DECLARE_EVENT_OneParam(ULyraSettingsLocal, FInputConfigDelegate, const FLoadedMappableConfigPair& /*Config*/);
 
 	/** Delegate called when a new input config has been registered */
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	FInputConfigDelegate OnInputConfigRegistered;
 
 	/** Delegate called when a registered input config has been activated */
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	FInputConfigDelegate OnInputConfigActivated;
 	
 	/** Delegate called when a registered input config has been deactivate */
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	FInputConfigDelegate OnInputConfigDeactivated;
 	
 	/** Register the given input config with the settings to make it available to the player. */
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	void RegisterInputConfig(ECommonInputType Type, const UPlayerMappableInputConfig* NewConfig, const bool bIsActive);
 	
 	/** Unregister the given input config. Returns the number of configs removed. */
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	int32 UnregisterInputConfig(const UPlayerMappableInputConfig* ConfigToRemove);
-
-	/** Set a registered input config as active */
-	void ActivateInputConfig(const UPlayerMappableInputConfig* Config);
-
-	/** Deactivate a registered config */
-	void DeactivateInputConfig(const UPlayerMappableInputConfig* Config);
 
 	/** Get an input config with a certain name. If the config doesn't exist then nullptr will be returned. */
 	UFUNCTION(BlueprintCallable)
 	const UPlayerMappableInputConfig* GetInputConfigByName(FName ConfigName) const;
 
 	/** Get all currently registered input configs */
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	const TArray<FLoadedMappableConfigPair>& GetAllRegisteredInputConfigs() const { return RegisteredInputConfigs; }
 
 	/**
@@ -381,17 +389,46 @@ public:
 	 * @param Type		The type of config to get, ECommonInputType::Count will include all configs.
 	 * @param OutArray	Array to be populated with the current registered input configs that match the type
 	 */
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	void GetRegisteredInputConfigsOfType(ECommonInputType Type, OUT TArray<FLoadedMappableConfigPair>& OutArray) const;
-	
+
 	/**
-	 * Maps the given keyboard setting to the 
+	 * Returns the display name of any actions with that key bound to it
+	 * 
+	 * @param InKey The key to check for current mappings of
+	 * @param OutActionNames Array to store display names of actions of bound keys
+	 */
+	UE_DEPRECATED(5.3, "GetAllMappingNamesFromKey has been deprecated in favor of Enhanced Input User Settings")
+	void GetAllMappingNamesFromKey(const FKey InKey, TArray<FName>& OutActionNames);
+
+	/**
+	 * Maps the given keyboard setting to the new key
 	 * 
 	 * @param MappingName	The name of the FPlayerMappableKeyOptions that you would like to change
 	 * @param NewKey		The new key to bind this option to
+	 * @param LocalPlayer   local player to reset the keybinding on
 	 */
+	UE_DEPRECATED(5.3, "AddOrUpdateCustomKeyboardBindings has been deprecated in favor of Enhanced Input User Settings")
 	void AddOrUpdateCustomKeyboardBindings(const FName MappingName, const FKey NewKey, ULyraLocalPlayer* LocalPlayer);
 
+	/**
+	 * Resets keybinding to its default value in its input mapping context 
+	 * 
+	 * @param MappingName	The name of the FPlayerMappableKeyOptions that you would like to change
+	 * @param LocalPlayer   local player to reset the keybinding on
+	 */
+	UE_DEPRECATED(5.3, "ResetKeybindingToDefault has been deprecated in favor of Enhanced Input User Settings")
+	void ResetKeybindingToDefault(const FName MappingName, ULyraLocalPlayer* LocalPlayer);
+
+	/** Resets all keybindings to their default value in their input mapping context
+	 * @param LocalPlayer   local player to reset the keybinding on
+	 */
+	UE_DEPRECATED(5.3, "ResetKeybindingsToDefault has been deprecated in favor of Enhanced Input User Settings")
+	void ResetKeybindingsToDefault(ULyraLocalPlayer* LocalPlayer);
+
+	UE_DEPRECATED(5.3, "GetCustomPlayerInputConfig has been deprecated in favor of Enhanced Input User Settings")
 	const TMap<FName, FKey>& GetCustomPlayerInputConfig() const { return CustomKeyboardConfig; }
+	PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 private:
 	void LoadUserControlBusMix();
@@ -408,10 +445,10 @@ private:
 	float VoiceChatVolume = 1.0f;
 
 	UPROPERTY(Transient)
-	TMap<FName/*SoundClassName*/, USoundControlBus*> ControlBusMap;
+	TMap<FName/*SoundClassName*/, TObjectPtr<USoundControlBus>> ControlBusMap;
 
 	UPROPERTY(Transient)
-	USoundControlBusMix* ControlBusMix = nullptr;
+	TObjectPtr<USoundControlBusMix> ControlBusMix = nullptr;
 
 	UPROPERTY(Transient)
 	bool bSoundControlBusMixLoaded;
@@ -433,18 +470,42 @@ private:
 	/** The name of the current input config that the user has selected. */
 	UPROPERTY(Config)
 	FName InputConfigName = TEXT("Default");
-	
+
+	PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	/**
 	 * Array of currently registered input configs. This is populated by game feature plugins
 	 * 
 	 * @see UGameFeatureAction_AddInputConfig
 	 */
-	UPROPERTY(VisibleAnywhere)
+	UE_DEPRECATED(5.3, "Input registration has been deprecated in favor of Enhanced Input User Settings")
 	TArray<FLoadedMappableConfigPair> RegisteredInputConfigs;
 	
 	/** Array of custom key mappings that have been set by the player. Empty by default. */
-	UPROPERTY(Config)
+	UE_DEPRECATED(5.3, "CustomKeyboardConfig has been deprecated in favor of Enhanced Input User Settings")
 	TMap<FName, FKey> CustomKeyboardConfig;
+
+	PRAGMA_ENABLE_DEPRECATION_WARNINGS
+
+	// Replays
+public:
+
+	UFUNCTION()
+	bool ShouldAutoRecordReplays() const { return bShouldAutoRecordReplays; }
+	UFUNCTION()
+	void SetShouldAutoRecordReplays(bool bEnabled) { bShouldAutoRecordReplays = bEnabled;}
+
+	UFUNCTION()
+	int32 GetNumberOfReplaysToKeep() const { return NumberOfReplaysToKeep; }
+	UFUNCTION()
+	void SetNumberOfReplaysToKeep(int32 InNumberOfReplays) { NumberOfReplaysToKeep = InNumberOfReplays; }
+
+private:
+
+	UPROPERTY(Config)
+	bool bShouldAutoRecordReplays = false;
+
+	UPROPERTY(Config)
+	int32 NumberOfReplaysToKeep = 5;
 
 private:
 	void OnAppActivationStateChanged(bool bIsActive);

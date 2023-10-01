@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
-#include "GameFeaturePluginOperationResult.h"
 #include "LoadingProcessInterface.h"
 
 #include "LyraExperienceManagerComponent.generated.h"
+
+namespace UE::GameFeatures { struct FResult; }
 
 class ULyraExperienceDefinition;
 
@@ -41,9 +41,8 @@ public:
 	virtual bool ShouldShowLoadingScreen(FString& OutReason) const override;
 	//~End of ILoadingProcessInterface
 
-#if WITH_SERVER_CODE
-	void ServerSetCurrentExperience(FPrimaryAssetId ExperienceId);
-#endif
+	// Tries to set the current experience, either a UI or gameplay one
+	void SetCurrentExperience(FPrimaryAssetId ExperienceId);
 
 	// Ensures the delegate is called once the experience has been loaded,
 	// before others are called.
@@ -79,7 +78,7 @@ private:
 
 private:
 	UPROPERTY(ReplicatedUsing=OnRep_CurrentExperience)
-	const ULyraExperienceDefinition* CurrentExperience;
+	TObjectPtr<const ULyraExperienceDefinition> CurrentExperience;
 
 	ELyraExperienceLoadState LoadState = ELyraExperienceLoadState::Unloaded;
 

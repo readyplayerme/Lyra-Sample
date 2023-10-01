@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/CheatManager.h"
 
 #include "LyraCosmeticCheats.generated.h"
 
 class ULyraControllerComponent_CharacterParts;
+class UObject;
+struct FFrame;
 
 /** Cheats related to bots */
 UCLASS(NotBlueprintable)

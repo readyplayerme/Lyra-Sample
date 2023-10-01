@@ -1,13 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "HitMarkerConfirmationWidget.h"
-#include "SHitMarkerConfirmationWidget.h"
+
 #include "Blueprint/UserWidget.h"
+#include "SHitMarkerConfirmationWidget.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(HitMarkerConfirmationWidget)
+
+class SWidget;
 
 UHitMarkerConfirmationWidget::UHitMarkerConfirmationWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	Visibility = ESlateVisibility::HitTestInvisible;
+	SetVisibility(ESlateVisibility::HitTestInvisible);
 	bIsVolatile = true;
 	AnyHitsMarkerImage.DrawAs = ESlateBrushDrawType::NoDrawType;
 }
@@ -32,3 +37,4 @@ TSharedRef<SWidget> UHitMarkerConfirmationWidget::RebuildWidget()
 
 	return MyMarkerWidget.ToSharedRef();
 }
+

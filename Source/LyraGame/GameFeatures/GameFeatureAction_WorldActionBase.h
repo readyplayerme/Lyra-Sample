@@ -2,12 +2,17 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFeatureAction.h"
 #include "GameFeaturesSubsystem.h"
+
 #include "GameFeatureAction_WorldActionBase.generated.h"
 
+class FDelegateHandle;
 class UGameInstance;
+class UObject;
+struct FGameFeatureActivatingContext;
+struct FGameFeatureDeactivatingContext;
+struct FGameFeatureStateChangeContext;
 struct FWorldContext;
 
 /**

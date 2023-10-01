@@ -2,17 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSetting.h"
 
 #include "GameSettingValue.generated.h"
 
+class UObject;
+
 //--------------------------------------
 // UGameSettingValue
 //--------------------------------------
-
-class ULocalPlayer;
 
 /**
  * The base class for all settings that are conceptually a value, that can be 

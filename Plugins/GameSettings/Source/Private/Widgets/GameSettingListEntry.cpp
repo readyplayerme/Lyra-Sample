@@ -2,18 +2,20 @@
 
 #include "Widgets/GameSettingListEntry.h"
 
-#include "CommonTextBlock.h"
-#include "CommonButtonBase.h"
-#include "CommonRichTextBlock.h"
-
-#include "GameSettingValueDiscrete.h"
-#include "CommonRotator.h"
-#include "GameSettingValueScalar.h"
 #include "AnalogSlider.h"
+#include "CommonInputSubsystem.h"
+#include "CommonInputTypeEnum.h"
+#include "CommonTextBlock.h"
 #include "GameSettingAction.h"
-#include "Widgets/GameSettingListView.h"
 #include "GameSettingCollection.h"
+#include "GameSettingValueDiscrete.h"
+#include "GameSettingValueScalar.h"
 #include "Widgets/Misc/GameSettingRotator.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingListEntry)
+
+class SWidget;
+struct FGeometry;
 
 #define LOCTEXT_NAMESPACE "GameSetting"
 
@@ -251,13 +253,16 @@ void UGameSettingListEntrySetting_Scalar::HandleSliderValueChanged(float Value)
 {
 	TGuardValue<bool> Suspend(bSuspendChangeUpdates, true);
 
-	ScalarSetting->SetValueNormalized(Value);
-	Value = ScalarSetting->GetValueNormalized();
+	if (ensure(ScalarSetting))
+	{
+		ScalarSetting->SetValueNormalized(Value);
+		Value = ScalarSetting->GetValueNormalized();
 
-	Slider_SettingValue->SetValue(Value);
-	Text_SettingValue->SetText(ScalarSetting->GetFormattedText());
+		Slider_SettingValue->SetValue(Value);
+		Text_SettingValue->SetText(ScalarSetting->GetFormattedText());
 
-	OnValueChanged(Value);
+		OnValueChanged(Value);
+	}
 }
 
 void UGameSettingListEntrySetting_Scalar::HandleSliderCaptureEnded()

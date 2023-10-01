@@ -1,10 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraInputConfig.h"
+
 #include "LyraLogChannels.h"
-#include "InputMappingContext.h"
-#include "Settings/LyraSettingsLocal.h"
-#include "Player/LyraLocalPlayer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraInputConfig)
 
 
 ULyraInputConfig::ULyraInputConfig(const FObjectInitializer& ObjectInitializer)

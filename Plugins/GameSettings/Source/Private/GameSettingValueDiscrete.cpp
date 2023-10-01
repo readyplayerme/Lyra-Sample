@@ -2,6 +2,9 @@
 
 #include "GameSettingValueDiscrete.h"
 
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingValueDiscrete)
+
 #define LOCTEXT_NAMESPACE "GameSetting"
 
 //--------------------------------------
@@ -30,3 +33,4 @@ FString UGameSettingValueDiscrete::GetAnalyticsValue() const
 }
 
 #undef LOCTEXT_NAMESPACE
+

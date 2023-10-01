@@ -1,10 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LyraControllerComponent_CharacterParts.h"
-#include "LyraPawnComponent_CharacterParts.h"
-#include "GameFramework/Controller.h"
+#include "Cosmetics/LyraControllerComponent_CharacterParts.h"
+#include "Cosmetics/LyraCharacterPartTypes.h"
+#include "Cosmetics/LyraPawnComponent_CharacterParts.h"
+#include "GameFramework/CheatManagerDefines.h"
 #include "LyraCosmeticDeveloperSettings.h"
-#include "GameFramework/CheatManager.h"
+#include "GameFramework/Pawn.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraControllerComponent_CharacterParts)
 
 //////////////////////////////////////////////////////////////////////
 
@@ -117,9 +120,8 @@ void ULyraControllerComponent_CharacterParts::OnPossessedPawnChanged(APawn* OldP
 	{
 		for (FLyraControllerCharacterPartEntry& Entry : CharacterParts)
 		{
-			ensure(!Entry.Handle.IsValid());
-
-			if (Entry.Source != ECharacterPartSource::NaturalSuppressedViaCheat)
+			// Don't readd if it's already there, this can get called with a null oldpawn
+			if (!Entry.Handle.IsValid() && Entry.Source != ECharacterPartSource::NaturalSuppressedViaCheat)
 			{
 				Entry.Handle = NewCustomizer->AddCharacterPart(Entry.Part);
 			}
@@ -218,3 +220,4 @@ void ULyraControllerComponent_CharacterParts::SetSuppressionOnNaturalParts(bool 
 	}
 #endif
 }
+

@@ -1,16 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameFeatures/LyraGameFeaturePolicy.h"
-#include "Interfaces/IPluginManager.h"
-#include "Misc/Paths.h"
-#include "Misc/FileHelper.h"
-#include "Serialization/JsonReader.h"
-#include "Serialization/JsonSerializer.h"
-#include "Engine/Engine.h"
-#include "GameFeaturesSubsystem.h"
-#include "GameFeatureData.h"
-#include "GameFeaturesSubsystemSettings.h"
+
 #include "AbilitySystem/LyraGameplayCueManager.h"
+#include "GameFeatureData.h"
 #include "GameplayCueSet.h"
 
 ULyraGameFeaturePolicy::ULyraGameFeaturePolicy(const FObjectInitializer& ObjectInitializer)
@@ -49,9 +42,9 @@ void ULyraGameFeaturePolicy::ShutdownGameFeatureManager()
 	Observers.Empty();
 }
 
-TArray<FPrimaryAssetId> ULyraGameFeaturePolicy::GetPreloadAssetListForGameFeature(const UGameFeatureData* GameFeatureToLoad) const
+TArray<FPrimaryAssetId> ULyraGameFeaturePolicy::GetPreloadAssetListForGameFeature(const UGameFeatureData* GameFeatureToLoad, bool bIncludeLoadedAssets) const
 {
-	return Super::GetPreloadAssetListForGameFeature(GameFeatureToLoad);
+	return Super::GetPreloadAssetListForGameFeature(GameFeatureToLoad, bIncludeLoadedAssets);
 }
 
 const TArray<FName> ULyraGameFeaturePolicy::GetPreloadBundleStateForGameFeature() const
@@ -76,7 +69,7 @@ bool ULyraGameFeaturePolicy::IsPluginAllowed(const FString& PluginURL) const
 
 #include "Hotfix/LyraHotfixManager.h"
 
-void ULyraGameFeature_HotfixManager::OnGameFeatureLoading(const UGameFeatureData* GameFeatureData)
+void ULyraGameFeature_HotfixManager::OnGameFeatureLoading(const UGameFeatureData* GameFeatureData, const FString& PluginURL)
 {
 	if (ULyraHotfixManager* HotfixManager = Cast<ULyraHotfixManager>(UOnlineHotfixManager::Get(nullptr)))
 	{
@@ -87,11 +80,15 @@ void ULyraGameFeature_HotfixManager::OnGameFeatureLoading(const UGameFeatureData
 //////////////////////////////////////////////////////////////////////
 //
 
-#include "GameFeatureAction_AddGameplayCuePath.h"
-#include "GameplayCueManager.h"
 #include "AbilitySystemGlobals.h"
+#include "GameFeatureAction_AddGameplayCuePath.h"
 
-void ULyraGameFeature_AddGameplayCuePaths::OnGameFeatureRegistering(const UGameFeatureData* GameFeatureData, const FString& PluginName)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameFeaturePolicy)
+
+class FName;
+struct FPrimaryAssetId;
+
+void ULyraGameFeature_AddGameplayCuePaths::OnGameFeatureRegistering(const UGameFeatureData* GameFeatureData, const FString& PluginName, const FString& PluginURL)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(ULyraGameFeature_AddGameplayCuePaths::OnGameFeatureRegistering);
 	
@@ -130,7 +127,7 @@ void ULyraGameFeature_AddGameplayCuePaths::OnGameFeatureRegistering(const UGameF
 	}
 }
 
-void ULyraGameFeature_AddGameplayCuePaths::OnGameFeatureUnregistering(const UGameFeatureData* GameFeatureData, const FString& PluginName)
+void ULyraGameFeature_AddGameplayCuePaths::OnGameFeatureUnregistering(const UGameFeatureData* GameFeatureData, const FString& PluginName, const FString& PluginURL)
 {
 	const FString PluginRootPath = TEXT("/") + PluginName;
 	for (const UGameFeatureAction* Action : GameFeatureData->GetActions())

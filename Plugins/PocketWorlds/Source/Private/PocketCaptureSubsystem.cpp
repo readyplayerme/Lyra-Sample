@@ -1,8 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PocketCaptureSubsystem.h"
-#include "PocketCapture.h"
+
 #include "Components/PrimitiveComponent.h"
+#include "PocketCapture.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PocketCaptureSubsystem)
+
+class FSubsystemCollectionBase;
 
 // UPocketCaptureSubsystem
 //---------------------------------------------------------------------------------
@@ -90,3 +95,4 @@ bool UPocketCaptureSubsystem::Tick(float DeltaTime)
 
 	return true;
 }
+

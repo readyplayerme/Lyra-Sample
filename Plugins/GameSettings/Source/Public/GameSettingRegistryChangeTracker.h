@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include "Templates/UnrealTemplate.h"
-#include "UObject/WeakObjectPtrTemplates.h"
 #include "UObject/ObjectKey.h"
-#include "GameSettingFilterState.h"
+#include "UObject/WeakObjectPtrTemplates.h"
 
-class UGameSettingRegistry;
+enum class EGameSettingChangeReason : uint8;
+
 class UGameSetting;
+class UGameSettingRegistry;
+struct FObjectKey;
 
 /**
  * 

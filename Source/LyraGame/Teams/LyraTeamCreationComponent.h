@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
 
 #include "LyraTeamCreationComponent.generated.h"
@@ -25,7 +24,7 @@ public:
 
 	//~UObject interface
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
 #endif
 	//~End of UObject interface
 
@@ -56,7 +55,7 @@ protected:
 	virtual void ServerChooseTeamForPlayer(ALyraPlayerState* PS);
 
 private:
-	void OnPostLogin(AGameModeBase* GameMode, AController* NewPlayer);
+	void OnPlayerInitialized(AGameModeBase* GameMode, AController* NewPlayer);
 	void ServerCreateTeam(int32 TeamId, ULyraTeamDisplayAsset* DisplayAsset);
 
 	/** returns the Team ID with the fewest active players, or INDEX_NONE if there are no valid teams */

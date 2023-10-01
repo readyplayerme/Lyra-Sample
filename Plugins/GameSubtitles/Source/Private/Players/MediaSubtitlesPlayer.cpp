@@ -2,9 +2,12 @@
 
 #include "Players/MediaSubtitlesPlayer.h"
 
-#include "Overlays.h"
-#include "SubtitleManager.h"
 #include "MediaPlayer.h"
+#include "Overlays.h"
+#include "Stats/Stats.h"
+#include "SubtitleManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(MediaSubtitlesPlayer)
 
 UMediaSubtitlesPlayer::UMediaSubtitlesPlayer(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -70,3 +73,4 @@ void UMediaSubtitlesPlayer::Tick(float DeltaSeconds)
 		}
 	}
 }
+

@@ -2,15 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "SlateFwd.h"
-#include "UObject/ObjectMacros.h"
-#include "Styling/SlateBrush.h"
-#include "Widgets/SWidget.h"
 #include "Components/Widget.h"
-#include "SCircumferenceMarkerWidget.h"
+#include "UI/Weapons/SCircumferenceMarkerWidget.h"
 
 #include "CircumferenceMarkerWidget.generated.h"
+
+class SWidget;
+class UObject;
+struct FFrame;
 
 UCLASS()
 class UCircumferenceMarkerWidget : public UWidget

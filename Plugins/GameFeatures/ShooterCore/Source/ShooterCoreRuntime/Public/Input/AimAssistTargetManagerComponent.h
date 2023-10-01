@@ -2,14 +2,20 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
-#include "Input/AimAssistInputModifier.h"
-#include "Input/IAimAssistTargetInterface.h"
-#include "CommonInputBaseTypes.h"
+
 #include "AimAssistTargetManagerComponent.generated.h"
 
+enum class ECommonInputType : uint8;
+
 class APlayerController;
+class UObject;
+struct FAimAssistFilter;
+struct FAimAssistOwnerViewData;
+struct FAimAssistSettings;
+struct FAimAssistTargetOptions;
+struct FCollisionQueryParams;
+struct FLyraAimAssistTarget;
 
 /**
  * The Aim Assist Target Manager Component is used to gather all aim assist targets that are within

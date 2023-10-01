@@ -2,11 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ModularAIController.h"
 #include "Teams/LyraTeamAgentInterface.h"
-#include "Perception/AIPerceptionComponent.h"
+
 #include "LyraPlayerBotController.generated.h"
+
+namespace ETeamAttitude { enum Type : int; }
+struct FGenericTeamId;
+
+class APlayerState;
+class UAIPerceptionComponent;
+class UObject;
+struct FFrame;
 
 /**
  * ALyraPlayerBotController
@@ -61,5 +68,5 @@ private:
 	FOnLyraTeamIndexChangedDelegate OnTeamChangedDelegate;
 
 	UPROPERTY()
-	APlayerState* LastSeenPlayerState;
+	TObjectPtr<APlayerState> LastSeenPlayerState;
 };

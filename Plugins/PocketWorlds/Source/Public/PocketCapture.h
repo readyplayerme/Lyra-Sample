@@ -2,13 +2,19 @@
 
 #pragma once
 
-#include "Engine/EngineTypes.h"
-#include "Subsystems/GameInstanceSubsystem.h"
+#include "GameFramework/Actor.h"
+
 #include "PocketCapture.generated.h"
 
+enum ESceneCaptureSource : int;
+
 class UMaterialInterface;
-class USceneCaptureComponent2D;
 class UPocketCaptureSubsystem;
+class UPrimitiveComponent;
+class USceneCaptureComponent2D;
+class UTextureRenderTarget2D;
+class UWorld;
+struct FFrame;
 
 UCLASS(Abstract, Within=PocketCaptureSubsystem, BlueprintType, Blueprintable)
 class POCKETWORLDS_API UPocketCapture : public UObject
@@ -73,14 +79,14 @@ protected:
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* AlphaMaskMaterial;
+	TObjectPtr<UMaterialInterface> AlphaMaskMaterial;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* EffectMaskMaterial;
+	TObjectPtr<UMaterialInterface> EffectMaskMaterial;
 
 protected:
 	UPROPERTY(Transient)
-	UWorld* PrivateWorld;
+	TObjectPtr<UWorld> PrivateWorld;
 
 	UPROPERTY(Transient)
 	int32 RendererIndex = INDEX_NONE;
@@ -92,16 +98,16 @@ protected:
 	int32 SurfaceHeight = 1;
 
 	UPROPERTY(VisibleAnywhere)
-	UTextureRenderTarget2D* DiffuseRT;
+	TObjectPtr<UTextureRenderTarget2D> DiffuseRT;
 
 	UPROPERTY(VisibleAnywhere)
-	UTextureRenderTarget2D* AlphaMaskRT;
+	TObjectPtr<UTextureRenderTarget2D> AlphaMaskRT;
 
 	UPROPERTY(VisibleAnywhere)
-	UTextureRenderTarget2D* EffectsRT;
+	TObjectPtr<UTextureRenderTarget2D> EffectsRT;
 
 	UPROPERTY(VisibleAnywhere)
-	USceneCaptureComponent2D* CaptureComponent;
+	TObjectPtr<USceneCaptureComponent2D> CaptureComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	TWeakObjectPtr<AActor> CaptureTargetPtr;

@@ -1,7 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraGameMode.h"
+#include "AssetRegistry/AssetData.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
 #include "LyraLogChannels.h"
+#include "Misc/CommandLine.h"
 #include "System/LyraAssetManager.h"
 #include "LyraGameState.h"
 #include "System/LyraGameSession.h"
@@ -15,10 +19,16 @@
 #include "GameModes/LyraWorldSettings.h"
 #include "GameModes/LyraExperienceDefinition.h"
 #include "GameModes/LyraExperienceManagerComponent.h"
+#include "GameModes/LyraUserFacingExperienceDefinition.h"
 #include "Kismet/GameplayStatics.h"
 #include "Development/LyraDeveloperSettings.h"
 #include "Player/LyraPlayerSpawningManagerComponent.h"
+#include "CommonUserSubsystem.h"
+#include "CommonSessionSubsystem.h"
 #include "TimerManager.h"
+#include "GameMapsSettings.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameMode)
 
 ALyraGameMode::ALyraGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -71,7 +81,7 @@ void ALyraGameMode::InitGame(const FString& MapName, const FString& Options, FSt
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	//@TODO: Eventually only do this for PIE/auto
+	// Wait for the next frame to give time to initialize startup settings
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignmentIfNotExpectingOne);
 }
 
@@ -86,6 +96,7 @@ void ALyraGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	//  - Developer Settings (PIE only)
 	//  - Command Line override
 	//  - World Settings
+	//  - Dedicated server
 	//  - Default experience
 
 	UWorld* World = GetWorld();
@@ -110,6 +121,10 @@ void ALyraGameMode::HandleMatchAssignmentIfNotExpectingOne()
 		if (FParse::Value(FCommandLine::Get(), TEXT("Experience="), ExperienceFromCommandLine))
 		{
 			ExperienceId = FPrimaryAssetId::ParseTypeAndName(ExperienceFromCommandLine);
+			if (!ExperienceId.PrimaryAssetType.IsValid())
+			{
+				ExperienceId = FPrimaryAssetId(FPrimaryAssetType(ULyraExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromCommandLine));
+			}
 			ExperienceIdSource = TEXT("CommandLine");
 		}
 	}
@@ -135,6 +150,12 @@ void ALyraGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	// Final fallback to the default experience
 	if (!ExperienceId.IsValid())
 	{
+		if (TryDedicatedServerLogin())
+		{
+			// This will start to host as a dedicated server
+			return;
+		}
+
 		//@TODO: Pull this from a config setting or something
 		ExperienceId = FPrimaryAssetId(FPrimaryAssetType("LyraExperienceDefinition"), FName("B_LyraDefaultExperience"));
 		ExperienceIdSource = TEXT("Default");
@@ -143,22 +164,144 @@ void ALyraGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	OnMatchAssignmentGiven(ExperienceId, ExperienceIdSource);
 }
 
+bool ALyraGameMode::TryDedicatedServerLogin()
+{
+	// Some basic code to register as an active dedicated server, this would be heavily modified by the game
+	FString DefaultMap = UGameMapsSettings::GetGameDefaultMap();
+	UWorld* World = GetWorld();
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance && World && World->GetNetMode() == NM_DedicatedServer && World->URL.Map == DefaultMap)
+	{
+		// Only register if this is the default map on a dedicated server
+		UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>();
+
+		// Dedicated servers may need to do an online login
+		UserSubsystem->OnUserInitializeComplete.AddDynamic(this, &ALyraGameMode::OnUserInitializedForDedicatedServer);
+
+		// There are no local users on dedicated server, but index 0 means the default platform user which is handled by the online login code
+		if (!UserSubsystem->TryToLoginForOnlinePlay(0))
+		{
+			OnUserInitializedForDedicatedServer(nullptr, false, FText(), ECommonUserPrivilege::CanPlayOnline, ECommonUserOnlineContext::Default);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+void ALyraGameMode::HostDedicatedServerMatch(ECommonSessionOnlineMode OnlineMode)
+{
+	FPrimaryAssetType UserExperienceType = ULyraUserFacingExperienceDefinition::StaticClass()->GetFName();
+	
+	// Figure out what UserFacingExperience to load
+	FPrimaryAssetId UserExperienceId;
+	FString UserExperienceFromCommandLine;
+	if (FParse::Value(FCommandLine::Get(), TEXT("UserExperience="), UserExperienceFromCommandLine) ||
+		FParse::Value(FCommandLine::Get(), TEXT("Playlist="), UserExperienceFromCommandLine))
+	{
+		UserExperienceId = FPrimaryAssetId::ParseTypeAndName(UserExperienceFromCommandLine);
+		if (!UserExperienceId.PrimaryAssetType.IsValid())
+		{
+			UserExperienceId = FPrimaryAssetId(FPrimaryAssetType(UserExperienceType), FName(*UserExperienceFromCommandLine));
+		}
+	}
+
+	// Search for the matching experience, it's fine to force load them because we're in dedicated server startup
+	ULyraAssetManager& AssetManager = ULyraAssetManager::Get();
+	TSharedPtr<FStreamableHandle> Handle = AssetManager.LoadPrimaryAssetsWithType(UserExperienceType);
+	if (ensure(Handle.IsValid()))
+	{
+		Handle->WaitUntilComplete();
+	}
+
+	TArray<UObject*> UserExperiences;
+	AssetManager.GetPrimaryAssetObjectList(UserExperienceType, UserExperiences);
+	ULyraUserFacingExperienceDefinition* FoundExperience = nullptr;
+	ULyraUserFacingExperienceDefinition* DefaultExperience = nullptr;
+
+	for (UObject* Object : UserExperiences)
+	{
+		ULyraUserFacingExperienceDefinition* UserExperience = Cast<ULyraUserFacingExperienceDefinition>(Object);
+		if (ensure(UserExperience))
+		{
+			if (UserExperience->GetPrimaryAssetId() == UserExperienceId)
+			{
+				FoundExperience = UserExperience;
+				break;
+			}
+			
+			if (UserExperience->bIsDefaultExperience && DefaultExperience == nullptr)
+			{
+				DefaultExperience = UserExperience;
+			}
+		}
+	}
+
+	if (FoundExperience == nullptr)
+	{
+		FoundExperience = DefaultExperience;
+	}
+	
+	UGameInstance* GameInstance = GetGameInstance();
+	if (ensure(FoundExperience && GameInstance))
+	{
+		// Actually host the game
+		UCommonSession_HostSessionRequest* HostRequest = FoundExperience->CreateHostingRequest();
+		if (ensure(HostRequest))
+		{
+			HostRequest->OnlineMode = OnlineMode;
+
+			// TODO override other parameters?
+
+			UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>();
+			SessionSubsystem->HostSession(nullptr, HostRequest);
+			
+			// This will handle the map travel
+		}
+	}
+
+}
+
+void ALyraGameMode::OnUserInitializedForDedicatedServer(const UCommonUserInfo* UserInfo, bool bSuccess, FText Error, ECommonUserPrivilege RequestedPrivilege, ECommonUserOnlineContext OnlineContext)
+{
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance)
+	{
+		// Unbind
+		UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>();
+		UserSubsystem->OnUserInitializeComplete.RemoveDynamic(this, &ALyraGameMode::OnUserInitializedForDedicatedServer);
+
+		if (bSuccess)
+		{
+			// Online login worked, start a full online game
+			UE_LOG(LogLyraExperience, Log, TEXT("Dedicated server online login succeeded, starting online server"));
+			HostDedicatedServerMatch(ECommonSessionOnlineMode::Online);
+		}
+		else
+		{
+			// Go ahead and try to host anyway, but without online support
+			// This behavior is fairly game specific, but this behavior provides the most flexibility for testing
+			UE_LOG(LogLyraExperience, Log, TEXT("Dedicated server online login failed, starting LAN-only server"));
+			HostDedicatedServerMatch(ECommonSessionOnlineMode::LAN);
+		}
+	}
+}
+
 void ALyraGameMode::OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId, const FString& ExperienceIdSource)
 {
-#if WITH_SERVER_CODE
 	if (ExperienceId.IsValid())
 	{
 		UE_LOG(LogLyraExperience, Log, TEXT("Identified experience %s (Source: %s)"), *ExperienceId.ToString(), *ExperienceIdSource);
 
 		ULyraExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<ULyraExperienceManagerComponent>();
 		check(ExperienceComponent);
-		ExperienceComponent->ServerSetCurrentExperience(ExperienceId);
+		ExperienceComponent->SetCurrentExperience(ExperienceId);
 	}
 	else
 	{
 		UE_LOG(LogLyraExperience, Error, TEXT("Failed to identify experience, loading screen will stay up forever"));
 	}
-#endif
 }
 
 void ALyraGameMode::OnExperienceLoaded(const ULyraExperienceDefinition* CurrentExperience)
@@ -318,11 +461,11 @@ void ALyraGameMode::InitGameState()
 	ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnLyraExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
-void ALyraGameMode::OnPostLogin(AController* NewPlayer)
+void ALyraGameMode::GenericPlayerInitialization(AController* NewPlayer)
 {
-	Super::OnPostLogin(NewPlayer);
+	Super::GenericPlayerInitialization(NewPlayer);
 
-	OnGameModeCombinedPostLoginDelegate.Broadcast(this, NewPlayer);
+	OnGameModePlayerInitialized.Broadcast(this, NewPlayer);
 }
 
 void ALyraGameMode::RequestPlayerRestartNextFrame(AController* Controller, bool bForceReset)

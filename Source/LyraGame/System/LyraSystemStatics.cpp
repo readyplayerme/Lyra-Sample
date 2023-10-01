@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSystemStatics.h"
+#include "Engine/AssetManagerTypes.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "Engine/AssetManager.h"
@@ -8,9 +9,11 @@
 #include "Components/MeshComponent.h"
 #include "GameModes/LyraUserFacingExperienceDefinition.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSystemStatics)
+
 TSoftObjectPtr<UObject> ULyraSystemStatics::GetTypedSoftObjectReferenceFromPrimaryAssetId(FPrimaryAssetId PrimaryAssetId, TSubclassOf<UObject> ExpectedAssetType)
 {
-	if (UAssetManager* Manager = UAssetManager::GetIfValid())
+	if (UAssetManager* Manager = UAssetManager::GetIfInitialized())
 	{
 		FPrimaryAssetTypeInfo Info;
 		if (Manager->GetPrimaryAssetTypeInfo(PrimaryAssetId.PrimaryAssetType, Info) && !Info.bHasBlueprintClasses)
@@ -56,6 +59,9 @@ void ULyraSystemStatics::PlayNextGame(const UObject* WorldContextObject)
 	// To transition during PIE we need to strip the PIE prefix from maps.
 	LastURL.Map = UWorld::StripPIEPrefixFromPackageName(LastURL.Map, WorldContext.World()->StreamingLevelsPrefix);
 #endif
+
+	// Add seamless travel option as we want to keep clients connected. This will fall back to hard travel if seamless is disabled
+	LastURL.AddOption(TEXT("SeamlessTravel"));
 
 	FString URL = LastURL.ToString();
 	// If we don't remove the host/port info the server travel will fail.
@@ -103,3 +109,4 @@ TArray<UActorComponent*> ULyraSystemStatics::FindComponentsByClass(AActor* Targe
 	}
 	return MoveTemp(Components);
 }
+

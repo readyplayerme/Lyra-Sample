@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DeveloperSettingsBackedByCVars.h"
-#include "GameplayTagContainer.h"
+
 #include "LyraWeaponDebugSettings.generated.h"
+
+class UObject;
 
 /**
  * Developer debugging settings for weapons

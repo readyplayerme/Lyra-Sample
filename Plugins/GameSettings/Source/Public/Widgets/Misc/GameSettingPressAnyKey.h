@@ -2,9 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
+
 #include "GameSettingPressAnyKey.generated.h"
+
+struct FKey;
+
+class UObject;
 
 /**
  * 

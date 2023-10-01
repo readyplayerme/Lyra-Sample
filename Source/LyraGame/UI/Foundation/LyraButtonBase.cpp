@@ -3,6 +3,8 @@
 #include "LyraButtonBase.h"
 #include "CommonActionWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraButtonBase)
+
 void ULyraButtonBase::NativePreConstruct()
 {
 	Super::NativePreConstruct();

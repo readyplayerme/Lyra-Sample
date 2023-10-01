@@ -2,12 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "LyraNumberPopComponent.h"
 
 #include "LyraNumberPopComponent_MeshText.generated.h"
 
 class ULyraDamagePopStyle;
+class UMaterialInstanceDynamic;
+class UObject;
+class UStaticMesh;
+class UStaticMeshComponent;
 
 USTRUCT()
 struct FPooledNumberPopComponentList
@@ -15,7 +18,7 @@ struct FPooledNumberPopComponentList
 	GENERATED_BODY()
 
 	UPROPERTY(transient)
-	TArray<UStaticMeshComponent*> Components;
+	TArray<TObjectPtr<UStaticMeshComponent>> Components;
 };
 
 USTRUCT()
@@ -25,7 +28,7 @@ struct FLiveNumberPopEntry
 
 	/** The component that is currently live */
 	UPROPERTY(transient)
-	UStaticMeshComponent* Component = nullptr;
+	TObjectPtr<UStaticMeshComponent> Component = nullptr;
 
 	/** The pool this component will go into when released */
 	FPooledNumberPopComponentList* Pool = nullptr;
@@ -79,7 +82,7 @@ protected:
 
 	/** Style patterns to attempt to apply to the incoming number pops */
 	UPROPERTY(EditDefaultsOnly, Category="Number Pop|Style")
-	TArray<ULyraDamagePopStyle*> Styles;
+	TArray<TObjectPtr<ULyraDamagePopStyle>> Styles;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Number Pop|Style")
 	float ComponentLifespan;
@@ -128,7 +131,7 @@ protected:
 	TArray<FName> DurationParameterNames;
 
 	UPROPERTY(Transient)
-	TMap<UStaticMesh*, FPooledNumberPopComponentList> PooledComponentMap;
+	TMap<TObjectPtr<UStaticMesh>, FPooledNumberPopComponentList> PooledComponentMap;
 
 	UPROPERTY(transient)
 	TArray<FLiveNumberPopEntry> LiveComponents;

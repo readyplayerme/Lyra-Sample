@@ -1,8 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ModularGameState.h"
+
 #include "Components/GameFrameworkComponentManager.h"
 #include "Components/GameStateComponent.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ModularGameState)
 
 void AModularGameStateBase::PreInitializeComponents()
 {
@@ -58,3 +61,4 @@ void AModularGameState::HandleMatchHasStarted()
 		Component->HandleMatchHasStarted();
 	}
 }
+

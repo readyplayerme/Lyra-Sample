@@ -1,8 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BPFunctionLibrary.h"
+
 #include "Engine/StaticMesh.h"
-#include "Materials/MaterialInterface.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(BPFunctionLibrary)
+
+class UMaterialInterface;
 
 bool UBPFunctionLibrary::ChangeMeshMaterials(TArray<UStaticMesh*> Mesh, UMaterialInterface* Material)
 {

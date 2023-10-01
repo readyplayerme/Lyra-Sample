@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 
 #include "PocketLevel.generated.h"
+
+class UObject;
+class UWorld;
 
 /**
  * 

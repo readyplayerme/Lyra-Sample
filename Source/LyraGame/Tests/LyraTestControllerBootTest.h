@@ -3,7 +3,10 @@
 #pragma once
 
 #include "GauntletTestControllerBootTest.h"
+
 #include "LyraTestControllerBootTest.generated.h"
+
+class UObject;
 
 UCLASS()
 class ULyraTestControllerBootTest : public UGauntletTestControllerBootTest

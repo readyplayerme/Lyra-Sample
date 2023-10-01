@@ -1,12 +1,20 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraNumberPopComponent_MeshText.h"
-#include "TimerManager.h"
+
 #include "Components/StaticMeshComponent.h"
 #include "Engine/CollisionProfile.h"
-#include "Materials/MaterialInstanceDynamic.h"
-#include "Camera/PlayerCameraManager.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "Feedback/NumberPops/LyraNumberPopComponent.h"
 #include "LyraDamagePopStyle.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "TimerManager.h"
+#include "UObject/Package.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraNumberPopComponent_MeshText)
+
+class UStaticMesh;
 
 ULyraNumberPopComponent_MeshText::ULyraNumberPopComponent_MeshText(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -325,3 +333,4 @@ void ULyraNumberPopComponent_MeshText::SetMaterialParameters(const FLyraNumberPo
 		}
 	}
 }
+

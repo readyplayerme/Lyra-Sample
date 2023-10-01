@@ -4,11 +4,16 @@
 
 #include "Development/LyraDeveloperSettings.h"
 #include "Development/LyraPlatformEmulationSettings.h"
+#include "Engine/GameInstance.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "GameModes/LyraWorldSettings.h"
 #include "Settings/ContentBrowserSettings.h"
+#include "Settings/LevelEditorPlaySettings.h"
 #include "Widgets/Notifications/SNotificationList.h"
-#include "Framework/Commands/InputBindingManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraEditorEngine)
+
+class IEngineLoop;
 
 #define LOCTEXT_NAMESPACE "LyraEditor"
 
@@ -46,24 +51,6 @@ void ULyraEditorEngine::FirstTickSetup()
 	// Force show plugin content on load.
 	GetMutableDefault<UContentBrowserSettings>()->SetDisplayPluginFolders(true);
 
-	// Set PIE to default to Shift+Escape if no user overrides have been set.
-	{
-		FInputChord OutPrimaryChord, OutSecondaryChord;
-		FInputBindingManager::Get().GetUserDefinedChord("PlayWorld", "StopPlaySession", EMultipleKeyBindingIndex::Primary, OutPrimaryChord);
-		FInputBindingManager::Get().GetUserDefinedChord("PlayWorld", "StopPlaySession", EMultipleKeyBindingIndex::Secondary, OutSecondaryChord);
-
-		// Is there already a user setting for stopping PIE?  Then don't do this.
-		if (!(OutPrimaryChord.IsValidChord() || OutSecondaryChord.IsValidChord()))
-		{
-			TSharedPtr<FUICommandInfo> StopCommand = FInputBindingManager::Get().FindCommandInContext("PlayWorld", "StopPlaySession");
-			if (ensure(StopCommand))
-			{
-				// Shift+Escape to exit PIE.  Some folks like Ctrl+Q, if that's the case, change it here for your team.
-				StopCommand->SetActiveChord(FInputChord(EKeys::Escape, true, false, false, false), EMultipleKeyBindingIndex::Primary);
-				FInputBindingManager::Get().NotifyActiveChordChanged(*StopCommand, EMultipleKeyBindingIndex::Primary);
-			}
-		}
-	}
 }
 
 FGameInstancePIEResult ULyraEditorEngine::PreCreatePIEInstances(const bool bAnyBlueprintErrors, const bool bStartInSpectatorMode, const float PIEStartTime, const bool bSupportsOnlinePIE, int32& InNumOnlinePIEInstances)

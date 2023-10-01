@@ -1,10 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "IndicatorLayer.h"
-#include "Widgets/DeclarativeSyntaxSupport.h"
-#include "Widgets/Layout/SBox.h"
-#include "Engine/LocalPlayer.h"
+
 #include "SActorCanvas.h"
+#include "Widgets/Layout/SBox.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(IndicatorLayer)
+
+class SWidget;
 
 /////////////////////////////////////////////////////
 // UIndicatorLayer
@@ -13,7 +16,7 @@ UIndicatorLayer::UIndicatorLayer(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	bIsVariable = true;
-	Visibility = ESlateVisibility::HitTestInvisible;
+	SetVisibility(ESlateVisibility::HitTestInvisible);
 }
 
 void UIndicatorLayer::ReleaseSlateResources(bool bReleaseChildren)
@@ -38,3 +41,4 @@ TSharedRef<SWidget> UIndicatorLayer::RebuildWidget()
 	// Give it a trivial box, NullWidget isn't safe to use from a UWidget
 	return SNew(SBox);
 }
+

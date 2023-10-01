@@ -2,16 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Styling/SlateBrush.h"
-#include "Widgets/DeclarativeSyntaxSupport.h"
-#include "Widgets/SCompoundWidget.h"
-#include "Widgets/SLeafWidget.h"
-#include "Styling/CoreStyle.h"
 #include "Engine/LocalPlayer.h"
 #include "GameplayTagContainer.h"
+#include "Styling/CoreStyle.h"
+#include "Styling/SlateBrush.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
+#include "Widgets/Accessibility/SlateWidgetAccessibleTypes.h"
+#include "Widgets/SLeafWidget.h"
 
-struct FLocalPlayerContext;
+class FPaintArgs;
+class FSlateRect;
+class FSlateWindowElementList;
+class FWidgetStyle;
+struct FGameplayTag;
+struct FGeometry;
+struct FSlateBrush;
 
 class SHitMarkerConfirmationWidget : public SLeafWidget
 {

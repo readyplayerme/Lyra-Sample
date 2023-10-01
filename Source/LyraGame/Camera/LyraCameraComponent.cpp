@@ -1,10 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraCameraComponent.h"
-#include "LyraCameraMode.h"
+
+#include "Engine/Canvas.h"
+#include "Engine/Engine.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
-#include "Engine/Canvas.h"
+#include "LyraCameraMode.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCameraComponent)
 
 
 ULyraCameraComponent::ULyraCameraComponent(const FObjectInitializer& ObjectInitializer)
@@ -31,8 +35,6 @@ void ULyraCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& Desi
 
 	UpdateCameraModes();
 
-	
-
 	FLyraCameraModeView CameraModeView;
 	CameraModeStack->EvaluateStack(DeltaTime, CameraModeView);
 
@@ -45,12 +47,9 @@ void ULyraCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& Desi
 		}
 	}
 
-
 	// Apply any offset that was added to the field of view.
 	CameraModeView.FieldOfView += FieldOfViewOffset;
 	FieldOfViewOffset = 0.0f;
-
-	
 
 	// Keep camera component in sync with the latest view.
 	SetWorldLocationAndRotation(CameraModeView.Location, CameraModeView.Rotation);
@@ -73,6 +72,13 @@ void ULyraCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& Desi
 	if (PostProcessBlendWeight > 0.0f)
 	{
 		DesiredView.PostProcessSettings = PostProcessSettings;
+	}
+
+
+	if (IsXRHeadTrackedCamera())
+	{
+		// In XR much of the camera behavior above is irrellevant, but the post process settings are not.
+		Super::GetCameraView(DeltaTime, DesiredView);
 	}
 }
 
@@ -116,4 +122,5 @@ void ULyraCameraComponent::GetBlendInfo(float& OutWeightOfTopLayer, FGameplayTag
 	check(CameraModeStack);
 	CameraModeStack->GetBlendInfo(/*out*/ OutWeightOfTopLayer, /*out*/ OutTagOfTopLayer);
 }
+
 

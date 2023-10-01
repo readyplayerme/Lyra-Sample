@@ -4,6 +4,8 @@
 
 #include "PreLoadScreenBase.h"
 
+class SWidget;
+
 class FCommonPreLoadScreen : public FPreLoadScreenBase
 {
 public:

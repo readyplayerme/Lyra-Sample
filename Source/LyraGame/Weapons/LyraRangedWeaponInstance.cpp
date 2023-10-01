@@ -6,6 +6,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/LyraCameraComponent.h"
 #include "Physics/PhysicalMaterialWithTags.h"
+#include "Weapons/LyraWeaponInstance.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraRangedWeaponInstance)
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Lyra_Weapon_SteadyAimingCamera, "Lyra.Weapon.SteadyAimingCamera");
 
@@ -212,3 +215,4 @@ bool ULyraRangedWeaponInstance::UpdateMultipliers(float DeltaSeconds)
 	// need to handle these spread multipliers indicating we are not at min spread
 	return bStandingStillMultiplierAtMin && bCrouchingMultiplierAtTarget && bJumpFallMultiplerIs1 && bAimingMultiplierAtTarget;
 }
+

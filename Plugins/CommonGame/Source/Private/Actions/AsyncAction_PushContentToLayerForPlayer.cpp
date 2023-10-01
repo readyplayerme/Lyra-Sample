@@ -1,19 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Actions/AsyncAction_PushContentToLayerForPlayer.h"
-#include "Engine/AssetManager.h"
-#include "Engine/StreamableManager.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
+
 #include "Engine/Engine.h"
-#include "Engine/GameInstance.h"
-#include "Engine/LocalPlayer.h"
-#include "CommonInputSubsystem.h"
-#include "CommonUIExtensions.h"
-#include "GameUIManagerSubsystem.h"
 #include "PrimaryGameLayout.h"
-#include "GameUIPolicy.h"
-#include "CommonLocalPlayer.h"
-#include "CommonActivatableWidget.h"
+#include "UObject/Stack.h"
+#include "Widgets/CommonActivatableWidgetContainer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AsyncAction_PushContentToLayerForPlayer)
 
 UAsyncAction_PushContentToLayerForPlayer::UAsyncAction_PushContentToLayerForPlayer(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -84,3 +78,4 @@ void UAsyncAction_PushContentToLayerForPlayer::Activate()
 		SetReadyToDestroy();
 	}
 }
+

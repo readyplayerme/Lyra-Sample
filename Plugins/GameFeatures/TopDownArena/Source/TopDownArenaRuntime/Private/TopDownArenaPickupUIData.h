@@ -2,14 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameplayEffectUIData.h"
+#include "UObject/ObjectPtr.h"
+
 #include "TopDownArenaPickupUIData.generated.h"
 
-class UTexture2D;
 class UNiagaraSystem;
+class UObject;
 class USoundBase;
+class UTexture2D;
 
 // Icon and display name for pickups in the top-down arena game
 UCLASS(BlueprintType)
@@ -39,3 +40,4 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Data)
 	TObjectPtr<USoundBase> PickupSFX;
 };
+

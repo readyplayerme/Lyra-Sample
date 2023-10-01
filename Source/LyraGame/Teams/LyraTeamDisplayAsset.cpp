@@ -6,8 +6,10 @@
 #include "NiagaraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/Texture.h"
+#include "Teams/LyraTeamSubsystem.h"
+#include "UObject/UObjectIterator.h"
 
-#include "LyraTeamSubsystem.h"
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTeamDisplayAsset)
 
 void ULyraTeamDisplayAsset::ApplyToMaterial(UMaterialInstanceDynamic* Material)
 {
@@ -90,7 +92,7 @@ void ULyraTeamDisplayAsset::ApplyToActor(AActor* TargetActor, bool bIncludeChild
 {
 	if (TargetActor != nullptr)
 	{
-		TargetActor->ForEachComponent(bIncludeChildActors, [=](UActorComponent* InComponent)
+		TargetActor->ForEachComponent(bIncludeChildActors, [this](UActorComponent* InComponent)
 		{
 			if (UMeshComponent* MeshComponent = Cast<UMeshComponent>(InComponent))
 			{

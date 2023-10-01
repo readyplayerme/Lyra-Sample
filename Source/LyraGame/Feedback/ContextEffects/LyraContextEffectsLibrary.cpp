@@ -1,10 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+#include "Feedback/ContextEffects/LyraContextEffectsLibrary.h"
 
-#include "LyraContextEffectsLibrary.h"
 #include "NiagaraSystem.h"
 #include "Sound/SoundBase.h"
-#include "GameplayTagContainer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraContextEffectsLibrary)
 
 
 void ULyraContextEffectsLibrary::GetEffects(const FGameplayTag Effect, const FGameplayTagContainer Context, 
@@ -115,3 +116,4 @@ void ULyraContextEffectsLibrary::LyraContextEffectLibraryLoadingComplete(
 	// Append incoming Context Effects Array to current list of Active Context Effects
 	ActiveContextEffects.Append(LyraActiveContextEffects);
 }
+

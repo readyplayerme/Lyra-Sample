@@ -3,8 +3,8 @@
 #include "LyraActivatableWidget.h"
 
 #include "Editor/WidgetCompilerLog.h"
-#include "Input/CommonInputMode.h"
-#include "Input/UIActionBindingHandle.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraActivatableWidget)
 
 #define LOCTEXT_NAMESPACE "Lyra"
 

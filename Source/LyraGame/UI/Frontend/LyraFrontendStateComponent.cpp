@@ -1,26 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraFrontendStateComponent.h"
-#include "Engine/LocalPlayer.h"
-#include "GameFramework/PlayerController.h"
-#include "GameFramework/GameModeBase.h"
-#include "GameFeaturesSubsystem.h"
-#include "System/LyraAssetManager.h"
-#include "GameFeatureAction.h"
-#include "GameFeaturesSubsystemSettings.h"
-#include "GameModes/LyraExperienceManagerComponent.h"
-#include "GameModes/LyraExperienceDefinition.h"
-#include "TimerManager.h"
-#include "NativeGameplayTags.h"
-#include "ControlFlowManager.h"
-#include "CommonUIExtensions.h"
-#include "Kismet/GameplayStatics.h"
-#include "PrimaryGameLayout.h"
-#include "ICommonUIModule.h"
-#include "CommonUISettings.h"
-#include "CommonUserSubsystem.h"
+
+#include "CommonGameInstance.h"
 #include "CommonSessionSubsystem.h"
-#include "Engine/GameInstance.h"
+#include "CommonUserSubsystem.h"
+#include "ControlFlowManager.h"
+#include "GameModes/LyraExperienceManagerComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "NativeGameplayTags.h"
+#include "PrimaryGameLayout.h"
+#include "Widgets/CommonActivatableWidgetContainer.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraFrontendStateComponent)
 
 namespace FrontendTags
 {
@@ -77,6 +69,7 @@ void ULyraFrontendStateComponent::OnExperienceLoaded(const ULyraExperienceDefini
 	FControlFlow& Flow = FControlFlowStatics::Create(this, TEXT("FrontendFlow"))
 		.QueueStep(TEXT("Wait For User Initialization"), this, &ThisClass::FlowStep_WaitForUserInitialization)
 		.QueueStep(TEXT("Try Show Press Start Screen"), this, &ThisClass::FlowStep_TryShowPressStartScreen)
+		.QueueStep(TEXT("Try Join Requested Session"), this, &ThisClass::FlowStep_TryJoinRequestedSession)
 		.QueueStep(TEXT("Try Show Main Screen"), this, &ThisClass::FlowStep_TryShowMainScreen);
 
 	Flow.ExecuteFlow();
@@ -135,10 +128,10 @@ void ULyraFrontendStateComponent::FlowStep_TryShowPressStartScreen(FControlFlowN
 	// controller presses 'Start' establishes the player to actually login to the game with.
 	if (!UserSubsystem->ShouldWaitForStartInput())
 	{
-		// Start the auto login process, this should finish quickly
+		// Start the auto login process, this should finish quickly and will use the default input device id
 		InProgressPressStartScreen = SubFlow;
 		UserSubsystem->OnUserInitializeComplete.AddDynamic(this, &ULyraFrontendStateComponent::OnUserInitialized);
-		UserSubsystem->TryToInitializeForLocalPlay(0, 0, false);
+		UserSubsystem->TryToInitializeForLocalPlay(0, FInputDeviceId(), false);
 
 		return;
 	}
@@ -190,6 +183,42 @@ void ULyraFrontendStateComponent::OnUserInitialized(const UCommonUserInfo* UserI
 	}
 }
 
+void ULyraFrontendStateComponent::FlowStep_TryJoinRequestedSession(FControlFlowNodeRef SubFlow)
+{
+	UCommonGameInstance* GameInstance = Cast<UCommonGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GameInstance->GetRequestedSession() != nullptr && GameInstance->CanJoinRequestedSession())
+	{
+		UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>();
+		if (ensure(SessionSubsystem))
+		{
+			// Bind to session join completion to continue or cancel the flow
+			// TODO:  Need to ensure that after session join completes, the server travel completes.
+			OnJoinSessionCompleteEventHandle = SessionSubsystem->OnJoinSessionCompleteEvent.AddWeakLambda(this, [this, SubFlow, SessionSubsystem](const FOnlineResultInformation& Result)
+			{
+				// Unbind delegate. SessionSubsystem is the object triggering this event, so it must still be valid.
+				SessionSubsystem->OnJoinSessionCompleteEvent.Remove(OnJoinSessionCompleteEventHandle);
+				OnJoinSessionCompleteEventHandle.Reset();
+
+				if (Result.bWasSuccessful)
+				{
+					// No longer transitioning to the main menu
+					SubFlow->CancelFlow();
+				}
+				else
+				{
+					// Proceed to the main menu
+					SubFlow->ContinueFlow();
+					return;
+				}
+			});
+			GameInstance->JoinRequestedSession();
+			return;
+		}
+	}
+	// Skip this step if we didn't start requesting a session join
+	SubFlow->ContinueFlow();
+}
+
 void ULyraFrontendStateComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow)
 {
 	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(this))
@@ -211,3 +240,4 @@ void ULyraFrontendStateComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef
 		});
 	}
 }
+

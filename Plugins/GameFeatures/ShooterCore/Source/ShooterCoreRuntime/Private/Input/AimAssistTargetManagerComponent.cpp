@@ -1,19 +1,21 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Input/AimAssistTargetManagerComponent.h"
-#include "Input/AimAssistTargetComponent.h"
-#include "GameFramework/PlayerController.h"
+#include "CommonInputTypeEnum.h"
+#include "Engine/World.h"
 #include "GameFramework/InputSettings.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/InputSettings.h"
-#include "Components/ShapeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Character/LyraHealthComponent.h"
+#include "Input/AimAssistInputModifier.h"
 #include "Player/LyraPlayerState.h"
 #include "Character/LyraHealthComponent.h"
+#include "Input/IAimAssistTargetInterface.h"
 #include "ShooterCoreRuntimeSettings.h"
-#include "DrawDebugHelpers.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(AimAssistTargetManagerComponent)
 
 namespace LyraConsoleVariables
 {

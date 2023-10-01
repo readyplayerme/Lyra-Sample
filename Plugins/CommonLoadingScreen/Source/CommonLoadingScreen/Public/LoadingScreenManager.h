@@ -2,15 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Tickable.h"
 #include "UObject/WeakInterfacePtr.h"
+
 #include "LoadingScreenManager.generated.h"
 
-class SWidget;
+template <typename InterfaceType> class TScriptInterface;
+
+class FSubsystemCollectionBase;
 class IInputProcessor;
 class ILoadingProcessInterface;
+class SWidget;
+class UObject;
+class UWorld;
+struct FFrame;
 struct FWorldContext;
 
 /**

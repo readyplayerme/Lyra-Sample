@@ -1,15 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraAbilitySystemComponent.h"
-#include "LyraLogChannels.h"
-#include "System/LyraGameData.h"
-#include "System/LyraAssetManager.h"
-#include "LyraGlobalAbilitySystem.h"
-#include "GameplayTagContainer.h"
-#include "GameplayAbilitySpec.h"
-#include "Abilities/LyraGameplayAbility.h"
-#include "Animation/LyraAnimInstance.h"
+
+#include "AbilitySystem/Abilities/LyraGameplayAbility.h"
 #include "AbilitySystem/LyraAbilityTagRelationshipMapping.h"
+#include "Animation/LyraAnimInstance.h"
+#include "Engine/World.h"
+#include "GameFramework/Pawn.h"
+#include "LyraGlobalAbilitySystem.h"
+#include "LyraLogChannels.h"
+#include "System/LyraAssetManager.h"
+#include "System/LyraGameData.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAbilitySystemComponent)
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Gameplay_AbilityInputBlocked, "Gameplay.AbilityInputBlocked");
 
@@ -29,6 +32,8 @@ void ULyraAbilitySystemComponent::EndPlay(const EEndPlayReason::Type EndPlayReas
 	{
 		GlobalAbilitySystem->UnregisterASC(this);
 	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ULyraAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
@@ -53,8 +58,12 @@ void ULyraAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AAc
 				TArray<UGameplayAbility*> Instances = AbilitySpec.GetAbilityInstances();
 				for (UGameplayAbility* AbilityInstance : Instances)
 				{
-					ULyraGameplayAbility* LyraAbilityInstance = CastChecked<ULyraGameplayAbility>(AbilityInstance);
-					LyraAbilityInstance->OnPawnAvatarSet();
+					ULyraGameplayAbility* LyraAbilityInstance = Cast<ULyraGameplayAbility>(AbilityInstance);
+					if (LyraAbilityInstance)
+					{
+						// Ability instances may be missing for replays
+						LyraAbilityInstance->OnPawnAvatarSet();
+					}
 				}
 			}
 			else
@@ -136,7 +145,7 @@ void ULyraAbilitySystemComponent::CancelAbilitiesByFunc(TShouldCancelAbilityFunc
 
 void ULyraAbilitySystemComponent::CancelInputActivatedAbilities(bool bReplicateCancelAbility)
 {
-	TShouldCancelAbilityFunc ShouldCancelFunc = [this](const ULyraGameplayAbility* LyraAbility, FGameplayAbilitySpecHandle Handle)
+	auto ShouldCancelFunc = [this](const ULyraGameplayAbility* LyraAbility, FGameplayAbilitySpecHandle Handle)
 	{
 		const ELyraAbilityActivationPolicy ActivationPolicy = LyraAbility->GetActivationPolicy();
 		return ((ActivationPolicy == ELyraAbilityActivationPolicy::OnInputTriggered) || (ActivationPolicy == ELyraAbilityActivationPolicy::WhileInputActive));
@@ -458,7 +467,7 @@ void ULyraAbilitySystemComponent::RemoveAbilityFromActivationGroup(ELyraAbilityA
 
 void ULyraAbilitySystemComponent::CancelActivationGroupAbilities(ELyraAbilityActivationGroup Group, ULyraGameplayAbility* IgnoreLyraAbility, bool bReplicateCancelAbility)
 {
-	TShouldCancelAbilityFunc ShouldCancelFunc = [this, Group, IgnoreLyraAbility](const ULyraGameplayAbility* LyraAbility, FGameplayAbilitySpecHandle Handle)
+	auto ShouldCancelFunc = [this, Group, IgnoreLyraAbility](const ULyraGameplayAbility* LyraAbility, FGameplayAbilitySpecHandle Handle)
 	{
 		return ((LyraAbility->GetActivationGroup() == Group) && (LyraAbility != IgnoreLyraAbility));
 	};
@@ -512,3 +521,4 @@ void ULyraAbilitySystemComponent::GetAbilityTargetData(const FGameplayAbilitySpe
 		OutTargetDataHandle = ReplicatedData->TargetData;
 	}
 }
+

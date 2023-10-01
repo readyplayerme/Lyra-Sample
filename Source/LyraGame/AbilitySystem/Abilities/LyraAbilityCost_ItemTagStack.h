@@ -2,9 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "LyraAbilityCost.h"
+#include "ScalableFloat.h"
+
 #include "LyraAbilityCost_ItemTagStack.generated.h"
+
+struct FGameplayAbilityActivationInfo;
+struct FGameplayAbilitySpecHandle;
+
+class ULyraGameplayAbility;
+class UObject;
+struct FGameplayAbilityActorInfo;
 
 /**
  * Represents a cost that requires expending a quantity of a tag stack

@@ -2,10 +2,11 @@
 
 #include "LyraAbilityCost_ItemTagStack.h"
 
-#include "Equipment/LyraEquipmentInstance.h"
-#include "Inventory/LyraInventoryItemInstance.h"
 #include "Equipment/LyraGameplayAbility_FromEquipment.h"
+#include "Inventory/LyraInventoryItemInstance.h"
 #include "NativeGameplayTags.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAbilityCost_ItemTagStack)
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_ABILITY_FAIL_COST, "Ability.ActivateFail.Cost");
 
@@ -56,3 +57,4 @@ void ULyraAbilityCost_ItemTagStack::ApplyCost(const ULyraGameplayAbility* Abilit
 		}
 	}
 }
+

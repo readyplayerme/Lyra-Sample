@@ -1,13 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Accolades/LyraAccoladeHostWidget.h"
-#include "NativeGameplayTags.h"
-#include "GameFramework/PlayerController.h"
-#include "GameFramework/PlayerState.h"
+
 #include "DataRegistrySubsystem.h"
-#include "TimerManager.h"
-#include "Sound/SoundBase.h"
 #include "LyraLogChannels.h"
+#include "Messages/LyraNotificationMessage.h"
+#include "Sound/SoundBase.h"
+#include "TimerManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAccoladeHostWidget)
+
+class UUserWidget;
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Lyra_ShooterGame_Accolade, "Lyra.ShooterGame.Accolade");
 
@@ -160,3 +163,4 @@ void ULyraAccoladeHostWidget::PopDisplayedAccolade()
 
 	DisplayNextAccolade();
 }
+

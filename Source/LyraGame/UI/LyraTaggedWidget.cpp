@@ -2,6 +2,8 @@
 
 #include "LyraTaggedWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTaggedWidget)
+
 //@TODO: The other TODOs in this file are all related to tag-based showing/hiding of widgets, see UE-142237
 
 ULyraTaggedWidget::ULyraTaggedWidget(const FObjectInitializer& ObjectInitializer)
@@ -76,3 +78,4 @@ void ULyraTaggedWidget::OnWatchedTagsChanged()
 		Super::SetVisibility(DesiredVisibility);
 	}
 }
+

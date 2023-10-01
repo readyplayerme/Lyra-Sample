@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CommonListView.h"
-#include "Components/ListView.h"
 
 #include "LyraListView.generated.h"
 

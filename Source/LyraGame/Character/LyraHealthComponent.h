@@ -2,21 +2,20 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/GameFrameworkComponent.h"
-#include "Character/LyraPawnComponent.h"
+
 #include "LyraHealthComponent.generated.h"
 
+class ULyraHealthComponent;
 
 class ULyraAbilitySystemComponent;
 class ULyraHealthSet;
+class UObject;
+struct FFrame;
 struct FGameplayEffectSpec;
-struct FOnAttributeChangeData;
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLyraHealth_DeathEvent, AActor*, OwningActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FLyraHealth_AttributeChanged, ULyraHealthComponent*, HealthComponent, float, OldValue, float, NewValue, AActor*, Instigator);
-
 
 /**
  * ELyraDeathState
@@ -87,11 +86,11 @@ public:
 
 public:
 
-	// Delegate fired when the health value has changed.
+	// Delegate fired when the health value has changed. This is called on the client but the instigator may not be valid
 	UPROPERTY(BlueprintAssignable)
 	FLyraHealth_AttributeChanged OnHealthChanged;
 
-	// Delegate fired when the max health value has changed.
+	// Delegate fired when the max health value has changed. This is called on the client but the instigator may not be valid
 	UPROPERTY(BlueprintAssignable)
 	FLyraHealth_AttributeChanged OnMaxHealthChanged;
 
@@ -109,9 +108,9 @@ protected:
 
 	void ClearGameplayTags();
 
-	virtual void HandleHealthChanged(const FOnAttributeChangeData& ChangeData);
-	virtual void HandleMaxHealthChanged(const FOnAttributeChangeData& ChangeData);
-	virtual void HandleOutOfHealth(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec& DamageEffectSpec, float DamageMagnitude);
+	virtual void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
+	virtual void HandleMaxHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
+	virtual void HandleOutOfHealth(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
 
 	UFUNCTION()
 	virtual void OnRep_DeathState(ELyraDeathState OldDeathState);
@@ -120,11 +119,11 @@ protected:
 
 	// Ability system used by this component.
 	UPROPERTY()
-	ULyraAbilitySystemComponent* AbilitySystemComponent;
+	TObjectPtr<ULyraAbilitySystemComponent> AbilitySystemComponent;
 
 	// Health set used by this component.
 	UPROPERTY()
-	const ULyraHealthSet* HealthSet;
+	TObjectPtr<const ULyraHealthSet> HealthSet;
 
 	// Replicated state used to handle dying.
 	UPROPERTY(ReplicatedUsing = OnRep_DeathState)

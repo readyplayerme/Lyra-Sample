@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameplayTagContainer.h"
 #include "GameSettingFilterState.h"
+#include "GameplayTagContainer.h"
 
 class ULocalPlayer;
 

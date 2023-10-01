@@ -1,7 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPerformanceSettings.h"
-#include "Engine/PlatformSettings.h"
+
+#include "Engine/PlatformSettingsManager.h"
+#include "Misc/EnumRange.h"
+#include "Performance/LyraPerformanceStatTypes.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPerformanceSettings)
 
 //////////////////////////////////////////////////////////////////////
 
@@ -34,3 +39,4 @@ ULyraPerformanceSettings::ULyraPerformanceSettings()
 		StatGroup.AllowedStats.Add(PerfStat);
 	}
 }
+

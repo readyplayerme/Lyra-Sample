@@ -24,7 +24,7 @@ public class LyraEditor : ModuleRules
                 "Core",
                 "CoreUObject",
                 "Engine",
-				"EditorFramework",
+                "EditorFramework",
                 "UnrealEd",
 				"PhysicsCore",
 				"GameplayTagsEditor",

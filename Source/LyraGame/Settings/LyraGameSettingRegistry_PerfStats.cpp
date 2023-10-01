@@ -1,22 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LyraGameSettingRegistry.h"
-
-#include "GameSetting.h"
-#include "GameSettingValueDiscreteDynamic.h"
-#include "GameSettingValueScalar.h"
-#include "GameSettingValueScalarDynamic.h"
-#include "GameSettingCollection.h"
-#include "GameSettingAction.h"
-
-#include "Player/LyraLocalPlayer.h"
-#include "LyraSettingsLocal.h"
-#include "LyraSettingsShared.h"
-
-#include "EditCondition/WhenPlayingAsPrimaryPlayer.h"
-#include "EditCondition/WhenPlatformHasTrait.h"
-#include "EditCondition/WhenCondition.h"
 #include "CustomSettings/LyraSettingValueDiscrete_PerfStat.h"
+#include "EditCondition/WhenPlayingAsPrimaryPlayer.h"
+#include "GameSettingCollection.h"
+#include "LyraGameSettingRegistry.h"
+#include "Performance/LyraPerformanceStatTypes.h"
+
+class ULyraLocalPlayer;
 
 #define LOCTEXT_NAMESPACE "Lyra"
 

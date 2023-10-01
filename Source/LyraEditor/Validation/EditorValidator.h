@@ -3,9 +3,10 @@
 #pragma once
 
 #include "EditorValidatorBase.h"
-#include "DataValidationModule.h"
 
 #include "EditorValidator.generated.h"
+
+class UObject;
 
 class FLyraValidationMessageGatherer : public FOutputDevice
 {

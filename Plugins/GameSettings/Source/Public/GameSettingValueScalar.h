@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSettingValue.h"
+#include "Math/Range.h"
 
 #include "GameSettingValueScalar.generated.h"
+
+class UObject;
 
 UCLASS(abstract)
 class GAMESETTINGS_API UGameSettingValueScalar : public UGameSettingValue

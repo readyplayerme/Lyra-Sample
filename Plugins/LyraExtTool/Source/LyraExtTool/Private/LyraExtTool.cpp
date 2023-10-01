@@ -2,6 +2,8 @@
 
 #include "LyraExtTool.h"
 
+#include "Modules/ModuleManager.h"
+
 #define LOCTEXT_NAMESPACE "FLyraExtToolModule"
 
 void FLyraExtToolModule::StartupModule()

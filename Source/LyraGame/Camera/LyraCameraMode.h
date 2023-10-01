@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Engine/World.h"
 #include "GameplayTagContainer.h"
+
 #include "LyraCameraMode.generated.h"
 
-
-class ULyraCameraComponent;
+class AActor;
 class UCanvas;
+class ULyraCameraComponent;
 
 /**
  * ELyraCameraModeBlendFunction
@@ -191,8 +192,8 @@ protected:
 	bool bIsActive;
 
 	UPROPERTY()
-	TArray<ULyraCameraMode*> CameraModeInstances;
+	TArray<TObjectPtr<ULyraCameraMode>> CameraModeInstances;
 
 	UPROPERTY()
-	TArray<ULyraCameraMode*> CameraModeStack;
+	TArray<TObjectPtr<ULyraCameraMode>> CameraModeStack;
 };

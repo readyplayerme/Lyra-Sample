@@ -1,10 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraCosmeticCheats.h"
-#include "Engine/World.h"
-#include "GameFramework/GameStateBase.h"
+#include "Cosmetics/LyraCharacterPartTypes.h"
 #include "LyraControllerComponent_CharacterParts.h"
+#include "GameFramework/CheatManagerDefines.h"
 #include "System/LyraDevelopmentStatics.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCosmeticCheats)
 
 //////////////////////////////////////////////////////////////////////
 // ULyraCosmeticCheats
@@ -65,3 +67,4 @@ ULyraControllerComponent_CharacterParts* ULyraCosmeticCheats::GetCosmeticCompone
 
 	return nullptr;
 }
+

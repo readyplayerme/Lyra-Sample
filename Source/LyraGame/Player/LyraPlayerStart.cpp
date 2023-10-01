@@ -1,10 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraPlayerStart.h"
-#include "GameFramework/GameModeBase.h"
-#include "GameFramework/Pawn.h"
+
 #include "Engine/World.h"
+#include "GameFramework/GameModeBase.h"
 #include "TimerManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraPlayerStart)
 
 ALyraPlayerStart::ALyraPlayerStart(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -68,3 +70,4 @@ void ALyraPlayerStart::CheckUnclaimed()
 		}
 	}
 }
+

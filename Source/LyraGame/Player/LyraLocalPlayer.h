@@ -2,15 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonLocalPlayer.h"
-#include "AudioMixerBlueprintLibrary.h"
 #include "Teams/LyraTeamAgentInterface.h"
+
 #include "LyraLocalPlayer.generated.h"
 
+struct FGenericTeamId;
+
+class APlayerController;
+class UInputMappingContext;
 class ULyraSettingsLocal;
 class ULyraSettingsShared;
-class UInputMappingContext;
+class UObject;
+class UWorld;
+struct FFrame;
+struct FSwapAudioOutputResult;
 
 /**
  * ULyraLocalPlayer
@@ -43,20 +49,25 @@ public:
 	virtual FOnLyraTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~End of ILyraTeamAgentInterface interface
 
-public:
+	/** Gets the local settings for this player, this is read from config files at process startup and is always valid */
 	UFUNCTION()
 	ULyraSettingsLocal* GetLocalSettings() const;
 
+	/** Gets the shared setting for this player, this is read using the save game system so may not be correct until after user login */
 	UFUNCTION()
 	ULyraSettingsShared* GetSharedSettings() const;
 
+	/** Starts an async request to load the shared settings, this will call OnSharedSettingsLoaded after loading or creating new ones */
+	void LoadSharedSettingsFromDisk(bool bForceLoad = false);
+
 protected:
+	void OnSharedSettingsLoaded(ULyraSettingsShared* LoadedOrCreatedSettings);
+
 	void OnAudioOutputDeviceChanged(const FString& InAudioOutputDeviceId);
 	
 	UFUNCTION()
 	void OnCompletedAudioDeviceSwap(const FSwapAudioOutputResult& SwapResult);
 
-private:
 	void OnPlayerControllerChanged(APlayerController* NewController);
 
 	UFUNCTION()
@@ -64,10 +75,12 @@ private:
 
 private:
 	UPROPERTY(Transient)
-	mutable ULyraSettingsShared* SharedSettings;
+	mutable TObjectPtr<ULyraSettingsShared> SharedSettings;
+
+	FUniqueNetIdRepl NetIdForSharedSettings;
 
 	UPROPERTY(Transient)
-	mutable const UInputMappingContext* InputMappingContext;
+	mutable TObjectPtr<const UInputMappingContext> InputMappingContext;
 
 	UPROPERTY()
 	FOnLyraTeamIndexChangedDelegate OnTeamChangedDelegate;

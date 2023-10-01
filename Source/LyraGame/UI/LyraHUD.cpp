@@ -1,9 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraHUD.h"
+
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "Async/TaskGraphInterfaces.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "UObject/UObjectIterator.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraHUD)
+
+class AActor;
+class UWorld;
 
 //////////////////////////////////////////////////////////////////////
 // ALyraHUD
@@ -63,3 +71,4 @@ void ALyraHUD::GetDebugActorList(TArray<AActor*>& InOutList)
 		}
 	}
 }
+

@@ -1,13 +1,19 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraInventoryManagerComponent.h"
-#include "LyraInventoryItemInstance.h"
-#include "LyraInventoryItemDefinition.h"
-#include "Net/UnrealNetwork.h"
-#include "Engine/ActorChannel.h"
 
-#include "NativeGameplayTags.h"
+#include "Engine/ActorChannel.h"
+#include "Engine/World.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
+#include "LyraInventoryItemDefinition.h"
+#include "LyraInventoryItemInstance.h"
+#include "NativeGameplayTags.h"
+#include "Net/UnrealNetwork.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraInventoryManagerComponent)
+
+class FLifetimeProperty;
+struct FReplicationFlags;
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Lyra_Inventory_Message_StackChanged, "Lyra.Inventory.Message.StackChanged");
 
@@ -162,6 +168,11 @@ ULyraInventoryItemInstance* ULyraInventoryManagerComponent::AddItemDefinition(TS
 	if (ItemDef != nullptr)
 	{
 		Result = InventoryList.AddEntry(ItemDef, StackCount);
+		
+		if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && Result)
+		{
+			AddReplicatedSubObject(Result);
+		}
 	}
 	return Result;
 }
@@ -169,11 +180,20 @@ ULyraInventoryItemInstance* ULyraInventoryManagerComponent::AddItemDefinition(TS
 void ULyraInventoryManagerComponent::AddItemInstance(ULyraInventoryItemInstance* ItemInstance)
 {
 	InventoryList.AddEntry(ItemInstance);
+	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
+	{
+		AddReplicatedSubObject(ItemInstance);
+	}
 }
 
 void ULyraInventoryManagerComponent::RemoveItemInstance(ULyraInventoryItemInstance* ItemInstance)
 {
 	InventoryList.RemoveEntry(ItemInstance);
+
+	if (ItemInstance && IsUsingRegisteredSubObjectList())
+	{
+		RemoveReplicatedSubObject(ItemInstance);
+	}
 }
 
 TArray<ULyraInventoryItemInstance*> ULyraInventoryManagerComponent::GetAllItems() const
@@ -244,6 +264,25 @@ bool ULyraInventoryManagerComponent::ConsumeItemsByDefinition(TSubclassOf<ULyraI
 	return TotalConsumed == NumToConsume;
 }
 
+void ULyraInventoryManagerComponent::ReadyForReplication()
+{
+	Super::ReadyForReplication();
+
+	// Register existing ULyraInventoryItemInstance
+	if (IsUsingRegisteredSubObjectList())
+	{
+		for (const FLyraInventoryEntry& Entry : InventoryList.Entries)
+		{
+			ULyraInventoryItemInstance* Instance = Entry.Instance;
+
+			if (IsValid(Instance))
+			{
+				AddReplicatedSubObject(Instance);
+			}
+		}
+	}
+}
+
 bool ULyraInventoryManagerComponent::ReplicateSubobjects(UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags)
 {
 	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
@@ -277,4 +316,5 @@ bool ULyraInventoryManagerComponent::ReplicateSubobjects(UActorChannel* Channel,
 // public:
 // 	virtual bool PassesFilter(ULyraInventoryItemInstance* Instance) const { return true; }
 // };
+
 

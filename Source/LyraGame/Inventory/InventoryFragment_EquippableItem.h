@@ -2,11 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Inventory/LyraInventoryItemDefinition.h"
-#include "Equipment/LyraEquipmentDefinition.h"
+#include "Templates/SubclassOf.h"
 
 #include "InventoryFragment_EquippableItem.generated.h"
+
+class ULyraEquipmentDefinition;
+class UObject;
 
 UCLASS()
 class UInventoryFragment_EquippableItem : public ULyraInventoryItemFragment

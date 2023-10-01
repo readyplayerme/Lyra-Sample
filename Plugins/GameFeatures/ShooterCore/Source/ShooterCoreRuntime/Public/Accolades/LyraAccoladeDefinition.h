@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Engine/DataTable.h"
 #include "Engine/DataAsset.h"
+#include "Engine/DataTable.h"
 #include "GameplayTagContainer.h"
 
 #include "LyraAccoladeDefinition.generated.h"
 
+class UObject;
 class USoundBase;
 
 USTRUCT(BlueprintType)
@@ -58,11 +58,11 @@ class ULyraAccoladeDefinition : public UDataAsset
 public:
 	// The sound to play
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	USoundBase* Sound;
+	TObjectPtr<USoundBase> Sound;
 
 	// The icon to display	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(DisplayThumbnail="true", AllowedClasses="Texture,MaterialInterface,SlateTextureAtlasInterface", DisallowedClasses="MediaTexture"))
-	UObject* Icon;
+	TObjectPtr<UObject> Icon;
 
 	// Tags associated with this accolade
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

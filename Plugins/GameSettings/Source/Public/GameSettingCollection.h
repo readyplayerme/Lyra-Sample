@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSetting.h"
 
 #include "GameSettingCollection.generated.h"
+
+struct FGameSettingFilterState;
 
 //--------------------------------------
 // UGameSettingCollection
@@ -31,7 +31,7 @@ public:
 protected:
 	/** The settings owned by this collection. */
 	UPROPERTY(Transient)
-	TArray<UGameSetting*> Settings;
+	TArray<TObjectPtr<UGameSetting>> Settings;
 };
 
 //--------------------------------------

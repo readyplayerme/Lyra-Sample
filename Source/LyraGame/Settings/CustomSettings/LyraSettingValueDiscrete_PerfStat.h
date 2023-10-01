@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSettingValueDiscrete.h"
-#include "Performance/LyraPerformanceStatTypes.h"
 
 #include "LyraSettingValueDiscrete_PerfStat.generated.h"
 
-struct FScreenOverallQualityRHI;
+enum class ELyraDisplayablePerformanceStat : uint8;
+enum class ELyraStatDisplayMode : uint8;
+
+class UObject;
 
 UCLASS()
 class ULyraSettingValueDiscrete_PerfStat : public UGameSettingValueDiscrete

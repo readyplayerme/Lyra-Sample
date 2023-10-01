@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "GameSetting.h"
-#include "GameplayTagContainer.h"
 
 #include "GameSettingAction.generated.h"
 

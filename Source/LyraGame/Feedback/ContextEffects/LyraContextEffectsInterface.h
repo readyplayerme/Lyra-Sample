@@ -2,22 +2,22 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "UObject/Interface.h"
+#include "Engine/HitResult.h"
 #include "GameplayTagContainer.h"
-#include "Engine/EngineTypes.h"
+#include "UObject/Interface.h"
+
 #include "LyraContextEffectsInterface.generated.h"
 
-class UStaticMeshComponent;
 class UAnimSequenceBase;
-class ULyraContextEffectsLibrary;
+class UObject;
+class USceneComponent;
+struct FFrame;
 
 /**
  *
  */
 UENUM()
-enum EEffectsContextMatchType
+enum EEffectsContextMatchType: int
 {
 	ExactMatch,
 	BestMatch

@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/CheatManager.h"
-#include "Logging/LogMacros.h"
 #include "LyraCheatManager.generated.h"
 
 class ULyraAbilitySystemComponent;

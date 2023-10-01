@@ -2,21 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "LyraIndicatorManagerComponent.h"
-#include "Widgets/SWidget.h"
-#include "Widgets/SNullWidget.h"
-#include "SceneView.h"
-#include "UObject/WeakInterfacePtr.h"
+#include "Components/SceneComponent.h"
+#include "Types/SlateEnums.h"
 
 #include "IndicatorDescriptor.generated.h"
 
+class SWidget;
 class UIndicatorDescriptor;
 class ULyraIndicatorManagerComponent;
+class UUserWidget;
+struct FFrame;
+struct FSceneViewProjectionData;
 
 struct FIndicatorProjection
 {
-	bool Project(const UIndicatorDescriptor& IndicatorDescriptor, const FSceneViewProjectionData& InProjectionData, const FVector2D& ScreenSize, FVector& ScreenPositionWithDepth);
+	bool Project(const UIndicatorDescriptor& IndicatorDescriptor, const FSceneViewProjectionData& InProjectionData, const FVector2f& ScreenSize, FVector& ScreenPositionWithDepth);
 };
 
 UENUM(BlueprintType)

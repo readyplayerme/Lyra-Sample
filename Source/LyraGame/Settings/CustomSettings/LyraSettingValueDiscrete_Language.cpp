@@ -1,12 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSettingValueDiscrete_Language.h"
-#include "Internationalization/Internationalization.h"
+
 #include "Internationalization/Culture.h"
+#include "Internationalization/TextLocalizationManager.h"
 #include "Messaging/CommonGameDialog.h"
 #include "Messaging/CommonMessagingSubsystem.h"
 #include "Player/LyraLocalPlayer.h"
 #include "Settings/LyraSettingsShared.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingValueDiscrete_Language)
 
 #define LOCTEXT_NAMESPACE "Lyra"
 

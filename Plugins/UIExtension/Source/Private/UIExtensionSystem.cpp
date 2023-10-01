@@ -1,12 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UIExtensionSystem.h"
-#include "LogUIExtension.h"
-#include "AssetRegistry/AssetData.h"
-#include "Engine/AssetManager.h"
+
 #include "Blueprint/UserWidget.h"
-#include "Engine/GameInstance.h"
-#include "GameFramework/PlayerState.h"
+#include "LogUIExtension.h"
+#include "UObject/Stack.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(UIExtensionSystem)
+
+class FSubsystemCollectionBase;
 
 //=========================================================
 

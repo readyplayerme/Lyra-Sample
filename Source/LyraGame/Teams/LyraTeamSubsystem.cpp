@@ -1,16 +1,21 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "LyraTeamSubsystem.h"
-#include "Net/UnrealNetwork.h"
-#include "LyraTeamPublicInfo.h"
-#include "LyraTeamPrivateInfo.h"
-#include "GameFramework/Controller.h"
-#include "Player/LyraPlayerState.h"
-#include "GameFramework/Pawn.h"
+#include "Teams/LyraTeamSubsystem.h"
+
 #include "AbilitySystemGlobals.h"
-#include "LyraTeamCheats.h"
-#include "LyraTeamAgentInterface.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/Pawn.h"
 #include "LyraLogChannels.h"
+#include "LyraTeamAgentInterface.h"
+#include "LyraTeamCheats.h"
+#include "LyraTeamPrivateInfo.h"
+#include "LyraTeamPublicInfo.h"
+#include "Player/LyraPlayerState.h"
+#include "Teams/LyraTeamInfoBase.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTeamSubsystem)
+
+class FSubsystemCollectionBase;
 
 //////////////////////////////////////////////////////////////////////
 // FLyraTeamTrackingInfo
@@ -83,24 +88,47 @@ void ULyraTeamSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void ULyraTeamSubsystem::RegisterTeamInfo(ALyraTeamInfoBase* TeamInfo)
+bool ULyraTeamSubsystem::RegisterTeamInfo(ALyraTeamInfoBase* TeamInfo)
 {
-	check(TeamInfo);
-	const int32 TeamId = TeamInfo->GetTeamId();
-	check(TeamId != INDEX_NONE);
+	if (!ensure(TeamInfo))
+	{
+		return false;
+	}
 
-	FLyraTeamTrackingInfo& Entry = TeamMap.FindOrAdd(TeamId);
-	Entry.SetTeamInfo(TeamInfo);
+	const int32 TeamId = TeamInfo->GetTeamId();
+	if (ensure(TeamId != INDEX_NONE))
+	{
+		FLyraTeamTrackingInfo& Entry = TeamMap.FindOrAdd(TeamId);
+		Entry.SetTeamInfo(TeamInfo);
+
+		return true;
+	}
+
+	return false;
 }
 
-void ULyraTeamSubsystem::UnregisterTeamInfo(ALyraTeamInfoBase* TeamInfo)
+bool ULyraTeamSubsystem::UnregisterTeamInfo(ALyraTeamInfoBase* TeamInfo)
 {
-	check(TeamInfo);
-	const int32 TeamId = TeamInfo->GetTeamId();
-	check(TeamId != INDEX_NONE);
+	if (!ensure(TeamInfo))
+	{
+		return false;
+	}
 
-	FLyraTeamTrackingInfo& Entry = TeamMap.FindChecked(TeamId);
-	Entry.RemoveTeamInfo(TeamInfo);
+	const int32 TeamId = TeamInfo->GetTeamId();
+	if (ensure(TeamId != INDEX_NONE))
+	{
+		FLyraTeamTrackingInfo* Entry = TeamMap.Find(TeamId);
+
+		// If it couldn't find the entry, this is probably a leftover actor from a previous world, ignore it
+		if (Entry)
+		{
+			Entry->RemoveTeamInfo(TeamInfo);
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool ULyraTeamSubsystem::ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamIndex)
@@ -136,6 +164,12 @@ int32 ULyraTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
 		if (const ILyraTeamAgentInterface* InstigatorWithTeamInterface = Cast<ILyraTeamAgentInterface>(TestActor->GetInstigator()))
 		{
 			return GenericTeamIdToInteger(InstigatorWithTeamInterface->GetGenericTeamId());
+		}
+
+		// TeamInfo actors don't actually have the team interface, so they need a special case
+		if (const ALyraTeamInfoBase* TeamInfo = Cast<ALyraTeamInfoBase>(TestActor))
+		{
+			return TeamInfo->GetTeamId();
 		}
 
 		// Fall back to finding the associated player state
@@ -368,3 +402,4 @@ FOnLyraTeamDisplayAssetChangedDelegate& ULyraTeamSubsystem::GetTeamDisplayAssetC
 {
 	return TeamMap.FindOrAdd(TeamId).OnTeamDisplayAssetChanged;
 }
+

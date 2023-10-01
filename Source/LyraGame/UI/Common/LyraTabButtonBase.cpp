@@ -1,8 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraTabButtonBase.h"
+
 #include "CommonLazyImage.h"
-#include "CommonTextBlock.h"
+#include "UI/Common/LyraTabListWidgetBase.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTabButtonBase)
+
+class UObject;
+struct FSlateBrush;
 
 void ULyraTabButtonBase::SetIconFromLazyObject(TSoftObjectPtr<UObject> LazyObject)
 {
@@ -25,3 +31,4 @@ void ULyraTabButtonBase::SetTabLabelInfo_Implementation(const FLyraTabDescriptor
 	SetButtonText(TabLabelInfo.TabText);
 	SetIconBrush(TabLabelInfo.IconBrush);
 }
+

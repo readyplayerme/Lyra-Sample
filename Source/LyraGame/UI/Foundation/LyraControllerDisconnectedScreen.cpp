@@ -3,7 +3,8 @@
 #include "LyraControllerDisconnectedScreen.h"
 
 #include "Components/HorizontalBox.h"
-#include "HAL/PlatformMisc.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraControllerDisconnectedScreen)
 
 void ULyraControllerDisconnectedScreen::NativeOnActivated()
 {
@@ -12,10 +13,11 @@ void ULyraControllerDisconnectedScreen::NativeOnActivated()
 	HBox_SwitchUser->SetVisibility(ESlateVisibility::Collapsed);
 
 //#if PLATFORM_HAS_STRICT_CONTROLLER_PAIRING
-//	if (FPlatformMisc::GetControllerIdForUnpairedControllers() != INDEX_NONE)
+//	if (FPlatformApplicationMisc::GetControllerIdForUnpairedControllers() != INDEX_NONE)
 //	{
 //		HBox_SwitchUser->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 //	}
 //#endif
 }
+
 

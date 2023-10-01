@@ -2,16 +2,22 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Subsystems/WorldSubsystem.h"
 #include "Engine/DeveloperSettings.h"
 #include "GameplayTagContainer.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Subsystems/WorldSubsystem.h"
 
 #include "LyraContextEffectsSubsystem.generated.h"
 
+enum EPhysicalSurface : int;
+
+class AActor;
+class UAudioComponent;
 class ULyraContextEffectsLibrary;
 class UNiagaraComponent;
+class USceneComponent;
+struct FFrame;
+struct FGameplayTag;
+struct FGameplayTagContainer;
 
 /**
  *
@@ -37,7 +43,7 @@ class LYRAGAME_API ULyraContextEffectsSet : public UObject
 
 public:
 	UPROPERTY(Transient)
-	TSet<ULyraContextEffectsLibrary*> LyraContextEffectsLibraries;
+	TSet<TObjectPtr<ULyraContextEffectsLibrary>> LyraContextEffectsLibraries;
 };
 
 
@@ -81,6 +87,6 @@ public:
 private:
 
 	UPROPERTY(Transient)
-	TMap<AActor*, ULyraContextEffectsSet*> ActiveActorEffectsMap;
+	TMap<TObjectPtr<AActor>, TObjectPtr<ULyraContextEffectsSet>> ActiveActorEffectsMap;
 
 };

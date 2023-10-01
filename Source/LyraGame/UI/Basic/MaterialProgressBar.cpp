@@ -6,6 +6,8 @@
 #include "Components/Image.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(MaterialProgressBar)
+
 void UMaterialProgressBar::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
@@ -257,3 +259,4 @@ UMaterialInstanceDynamic* UMaterialProgressBar::GetBarDynamicMaterial() const
 
 	return CachedMID;
 }
+

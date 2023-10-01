@@ -1,23 +1,22 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CommonPlayerInputKey.h"
-#include "Components/Image.h"
-#include "Components/WidgetSwitcher.h"
-#include "Components/SizeBox.h"
-#include "Components/Border.h"
+
 #include "CommonInputSubsystem.h"
-#include "CommonTextBlock.h"
-#include "CommonUISettings.h"
-#include "CommonUITypes.h"
-#include "Styling/SlateBrush.h"
-#include "Materials/MaterialInstanceDynamic.h"
-#include "TimerManager.h"
-#include "Rendering/DrawElements.h"
-#include "Framework/Application/SlateApplication.h"
-#include "Rendering/SlateRenderer.h"
-#include "Fonts/FontMeasure.h"
-#include "CommonPlayerController.h"
+#include "CommonInputTypeEnum.h"
 #include "CommonLocalPlayer.h"
+#include "CommonPlayerController.h"
+#include "Fonts/FontMeasure.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Rendering/SlateRenderer.h"
+#include "TimerManager.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(CommonPlayerInputKey)
+
+class FPaintArgs;
+class FSlateRect;
 
 #define LOCTEXT_NAMESPACE "CommonKeybindWidget"
 
@@ -68,7 +67,7 @@ struct FSlateDrawUtil
 		(
 			ElementList,
 			InLayer,
-			InAllottedGeometry.ToPaintGeometry(Offset, FinalSize),
+			InAllottedGeometry.ToPaintGeometry(FinalSize, FSlateLayoutTransform(Offset)),
 			InBrush,
 			ESlateDrawEffect::None,
 			InTint
@@ -196,7 +195,7 @@ int32 UCommonPlayerInputKey::NativePaint(const FPaintArgs& Args, const FGeometry
 		(
 			OutDrawElements,
 			++MaxLayer,
-			AllottedGeometry.ToPaintGeometry(FrameOffset, FrameSize),
+			AllottedGeometry.ToPaintGeometry(FrameSize, FSlateLayoutTransform(FrameOffset)),
 			&KeyBindTextBorder,
 			ESlateDrawEffect::None,
 			FLinearColor(InWidgetStyle.GetColorAndOpacityTint() * KeyBindTextBorder.GetTint(InWidgetStyle))
@@ -541,3 +540,4 @@ void UCommonPlayerInputKey::RecalculateDesiredSize()
 }
 
 #undef LOCTEXT_NAMESPACE
+

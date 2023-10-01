@@ -1,12 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EditorValidator_SourceControl.h"
-#include "AssetData.h"
-#include "AssetRegistryModule.h"
-#include "SourceControlOperations.h"
-#include "ISourceControlProvider.h"
+
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "ISourceControlModule.h"
+#include "Misc/PackageName.h"
 #include "SourceControlHelpers.h"
+#include "Validation/EditorValidator.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EditorValidator_SourceControl)
 
 #define LOCTEXT_NAMESPACE "EditorValidator"
 
@@ -45,9 +47,10 @@ EDataValidationResult UEditorValidator_SourceControl::ValidateLoadedAsset_Implem
 				if (!DependencyStr.StartsWith(ScriptPackagePrefix))
 				{
 					FSourceControlStatePtr DependencyState = SourceControlProvider.GetState(SourceControlHelpers::PackageFilename(DependencyStr), EStateCacheUsage::Use);
-					if (DependencyState.IsValid() && !DependencyState->IsSourceControlled())
+					if (DependencyState.IsValid() && !DependencyState->IsSourceControlled() && !DependencyState->IsUnknown())
 					{
-						AssetFails(InAsset, FText::Format(LOCTEXT("SourceControl_NotMarkedForAdd", "References {0} which is not marked for add in perforce"), FText::FromString(DependencyStr)), ValidationErrors);
+						// The editor doesn't sync state for all assets, so we only want to warn on assets that are known about
+						AssetFails(InAsset, FText::Format(LOCTEXT("SourceControl_NotMarkedForAdd", "References {0} which is not marked for add in source control"), FText::FromString(DependencyStr)), ValidationErrors);
 					}
 				}
 			}

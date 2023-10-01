@@ -2,13 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ControllerComponent.h"
 #include "LyraCharacterPartTypes.h"
 
 #include "LyraControllerComponent_CharacterParts.generated.h"
 
+class APawn;
 class ULyraPawnComponent_CharacterParts;
+class UObject;
+struct FFrame;
 
 enum class ECharacterPartSource : uint8
 {

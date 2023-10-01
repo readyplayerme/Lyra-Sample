@@ -1,10 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraSettingAction_SafeZoneEditor.h"
-#include "Settings/LyraGameSettingRegistry.h"
-#include "Settings/LyraSettingsLocal.h"
+
+#include "DataSource/GameSettingDataSource.h"
 #include "Player/LyraLocalPlayer.h"
+#include "Settings/LyraGameSettingRegistry.h"
 #include "Widgets/Layout/SSafeZone.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingAction_SafeZoneEditor)
+
+class UGameSetting;
 
 #define LOCTEXT_NAMESPACE "LyraSettings"
 

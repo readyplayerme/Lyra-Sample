@@ -1,7 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraBoundActionButton.h"
+
 #include "CommonInputSubsystem.h"
+#include "CommonInputTypeEnum.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraBoundActionButton)
+
+class UCommonButtonStyle;
 
 void ULyraBoundActionButton::NativeConstruct()
 {
@@ -36,3 +42,4 @@ void ULyraBoundActionButton::HandleInputMethodChanged(ECommonInputType NewInputM
 		SetStyle(NewStyle);
 	}
 }
+

@@ -5,6 +5,8 @@
 #include "CommonAnimatedSwitcher.h"
 #include "CommonButtonBase.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraTabListWidgetBase)
+
 void ULyraTabListWidgetBase::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -203,3 +205,4 @@ void ULyraTabListWidgetBase::SetupTabs()
 		}
 	}
 }
+

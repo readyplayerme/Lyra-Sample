@@ -2,14 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Misc/Paths.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/ObjectKey.h"
 #include "OnlineHotfixManager.h"
-#include "Engine/EngineTypes.h"
-#include "TimerManager.h"
-#include "Tickable.h"
 #include "Misc/CoreDelegates.h"
 #include "Containers/Ticker.h"
 #include "LyraHotfixManager.generated.h"
@@ -43,7 +36,6 @@ protected:
 	virtual bool ShouldWarnAboutMissingWhenPatchingFromIni(const FString& AssetPath) const override;
 	virtual void PatchAssetsFromIniFiles() override;
 
-	virtual bool PreProcessDownloadedFileData(TArray<uint8>& FileData) const override;
 	virtual void OnHotfixAvailablityCheck(const TArray<FCloudFileHeader>& PendingChangedFiles, const TArray<FCloudFileHeader>& PendingRemoveFiles) override;
 
 	virtual bool HotfixIniFile(const FString& FileName, const FString& IniData) override;

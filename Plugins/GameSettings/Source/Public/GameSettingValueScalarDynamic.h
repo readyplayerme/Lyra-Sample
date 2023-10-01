@@ -2,15 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "GameSettingValueDiscrete.h"
 #include "GameSettingValueScalar.h"
-#include "DataSource/GameSettingDataSource.h"
 
 #include "GameSettingValueScalarDynamic.generated.h"
 
 struct FNumberFormattingOptions;
+
+class FGameSettingDataSource;
+class UObject;
 
 //////////////////////////////////////////////////////////////////////////
 // UGameSettingValueScalarDynamic

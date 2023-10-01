@@ -2,10 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
-#include "Engine/EngineTypes.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+
 #include "InteractionStatics.generated.h"
+
+template <typename InterfaceType> class TScriptInterface;
+
+class AActor;
+class IInteractableTarget;
+class UObject;
+struct FFrame;
+struct FHitResult;
+struct FOverlapResult;
 
 /**  */
 UCLASS()

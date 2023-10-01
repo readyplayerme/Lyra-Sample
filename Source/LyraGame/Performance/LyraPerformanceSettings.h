@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
-#include "Engine/PlatformSettings.h"
 #include "Engine/DeveloperSettingsBackedByCVars.h"
-#include "Performance/LyraPerformanceStatTypes.h"
+#include "Engine/PlatformSettings.h"
 #include "GameplayTagContainer.h"
 
 #include "LyraPerformanceSettings.generated.h"
+
+enum class ELyraDisplayablePerformanceStat : uint8;
+
+class UObject;
 
 // Describes one platform-specific device profile variant that the user can choose from in the UI
 USTRUCT()

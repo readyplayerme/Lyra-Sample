@@ -1,14 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraGameplayCueManager.h"
+#include "Engine/AssetManager.h"
 #include "LyraLogChannels.h"
 #include "GameplayCueSet.h"
 #include "AbilitySystemGlobals.h"
-#include "HAL/IConsoleManager.h"
 #include "GameplayTagsManager.h"
 #include "UObject/UObjectThreadContext.h"
-#include "System/LyraAssetManager.h"
 #include "Async/Async.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameplayCueManager)
 
 //////////////////////////////////////////////////////////////////////
 
@@ -397,8 +398,9 @@ void ULyraGameplayCueManager::RefreshGameplayCuePrimaryAsset()
 	}
 
 	FAssetBundleData BundleData;
-	BundleData.AddBundleAssets(UFortAssetManager_LoadStateClient, CuePaths);
+	BundleData.AddBundleAssetsTruncated(UFortAssetManager_LoadStateClient, CuePaths);
 
 	FPrimaryAssetId PrimaryAssetId = FPrimaryAssetId(UFortAssetManager_GameplayCueRefsType, UFortAssetManager_GameplayCueRefsName);
 	UAssetManager::Get().AddDynamicAsset(PrimaryAssetId, FSoftObjectPath(), BundleData);
 }
+

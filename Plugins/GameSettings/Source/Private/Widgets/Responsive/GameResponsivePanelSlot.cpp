@@ -1,8 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GameResponsivePanelSlot.h"
-#include "GameResponsivePanel.h"
+
 #include "Components/Widget.h"
+#include "Widgets/Responsive/SGameResponsivePanel.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameResponsivePanelSlot)
 
 /////////////////////////////////////////////////////
 // UGameResponsivePanelSlot
@@ -31,3 +34,4 @@ void UGameResponsivePanelSlot::BuildSlot(TSharedRef<SGameResponsivePanel> GameRe
 void UGameResponsivePanelSlot::SynchronizeProperties()
 {
 }
+

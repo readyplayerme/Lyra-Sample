@@ -1,8 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraAbilityCost_InventoryItem.h"
-#include "LyraGameplayAbility.h"
-#include "Inventory/LyraInventoryManagerComponent.h"
+#include "GameplayAbilitySpec.h"
+#include "GameplayAbilitySpecHandle.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraAbilityCost_InventoryItem)
 
 ULyraAbilityCost_InventoryItem::ULyraAbilityCost_InventoryItem()
 {
@@ -48,3 +50,4 @@ void ULyraAbilityCost_InventoryItem::ApplyCost(const ULyraGameplayAbility* Abili
 	}
 #endif
 }
+

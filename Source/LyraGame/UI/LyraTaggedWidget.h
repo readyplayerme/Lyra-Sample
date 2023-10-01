@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonUserWidget.h"
 #include "GameplayTagContainer.h"
 
 #include "LyraTaggedWidget.generated.h"
+
+class UObject;
 
 /**
  * An widget in a layout that has been tagged (can be hidden or shown via tags on the owning player)

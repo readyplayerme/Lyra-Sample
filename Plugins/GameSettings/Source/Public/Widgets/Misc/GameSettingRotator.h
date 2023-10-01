@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonRotator.h"
+
 #include "GameSettingRotator.generated.h"
+
+class UObject;
 
 /**
  * 

@@ -1,12 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PocketLevelInstance.h"
-#include "PocketLevel.h"
-#include "Engine/LevelStreamingDynamic.h"
+
 #include "Engine/Level.h"
+#include "Engine/LevelStreaming.h"
+#include "Engine/LevelStreamingDynamic.h"
 #include "Engine/LocalPlayer.h"
-#include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
+#include "PocketLevel.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PocketLevelInstance)
 
 UPocketLevelInstance::UPocketLevelInstance()
 {
@@ -60,7 +63,7 @@ void UPocketLevelInstance::StreamOut()
 
 FDelegateHandle UPocketLevelInstance::AddReadyCallback(FPocketLevelInstanceEvent::FDelegate Callback)
 {
-	if (StreamingPocketLevel->GetCurrentState() == ULevelStreaming::ECurrentState::LoadedVisible)
+	if (StreamingPocketLevel->GetLevelStreamingState() == ELevelStreamingState::LoadedVisible)
 	{
 		Callback.ExecuteIfBound(this);
 	}
@@ -129,3 +132,4 @@ void UPocketLevelInstance::HandlePocketLevelShown()
 {
 	OnReadyEvent.Broadcast(this);
 }
+

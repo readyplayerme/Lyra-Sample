@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "System/GameplayTagStack.h"
-#include "GameFramework/Pawn.h"
+#include "Engine/World.h"
 
 #include "LyraEquipmentInstance.generated.h"
 
+class AActor;
+class APawn;
+struct FFrame;
 struct FLyraEquipmentActorToSpawn;
 
 /**
@@ -49,6 +50,11 @@ public:
 	virtual void OnUnequipped();
 
 protected:
+#if UE_WITH_IRIS
+	/** Register all replication fragments */
+	virtual void RegisterReplicationFragments(UE::Net::FFragmentRegistrationContext& Context, UE::Net::EFragmentRegistrationFlags RegistrationFlags) override;
+#endif // UE_WITH_IRIS
+
 	UFUNCTION(BlueprintImplementableEvent, Category=Equipment, meta=(DisplayName="OnEquipped"))
 	void K2_OnEquipped();
 
@@ -61,8 +67,8 @@ private:
 
 private:
 	UPROPERTY(ReplicatedUsing=OnRep_Instigator)
-	UObject* Instigator;
+	TObjectPtr<UObject> Instigator;
 
 	UPROPERTY(Replicated)
-	TArray<AActor*> SpawnedActors;
+	TArray<TObjectPtr<AActor>> SpawnedActors;
 };

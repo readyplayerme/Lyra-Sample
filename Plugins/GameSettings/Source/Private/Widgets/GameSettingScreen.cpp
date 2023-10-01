@@ -1,18 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Widgets/GameSettingScreen.h"
-#include "Widgets/GameSettingListView.h"
-#include "Widgets/GameSettingDetailView.h"
+
+#include "GameSettingCollection.h"
 #include "Widgets/GameSettingPanel.h"
 
-#include "GameSettingRegistry.h"
-#include "GameSettingValue.h"
-#include "GameSettingCollection.h"
-#include "GameSetting.h"
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingScreen)
 
-#include "CommonRichTextBlock.h"
-#include "CommonTextBlock.h"
-#include "GameFramework/GameUserSettings.h"
+class UWidget;
 
 #define LOCTEXT_NAMESPACE "GameSetting"
 

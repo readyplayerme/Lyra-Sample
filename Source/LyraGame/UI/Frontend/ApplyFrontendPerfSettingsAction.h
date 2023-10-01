@@ -2,10 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFeatureAction.h"
 
 #include "ApplyFrontendPerfSettingsAction.generated.h"
+
+class UObject;
+struct FGameFeatureActivatingContext;
+struct FGameFeatureDeactivatingContext;
 
 //////////////////////////////////////////////////////////////////////
 // UApplyFrontendPerfSettingsAction

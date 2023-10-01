@@ -2,6 +2,8 @@
 
 #include "ShooterCoreRuntimeModule.h"
 
+#include "Modules/ModuleManager.h"
+
 #define LOCTEXT_NAMESPACE "ShooterCoreRuntime"
 
 void FShooterCoreRuntimeModule::StartupModule()

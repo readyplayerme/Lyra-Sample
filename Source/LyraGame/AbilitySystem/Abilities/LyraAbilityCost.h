@@ -15,7 +15,7 @@ class ULyraGameplayAbility;
  * Base class for costs that a LyraGameplayAbility has (e.g., ammo or charges)
  */
 UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
-class ULyraAbilityCost : public UObject
+class LYRAGAME_API ULyraAbilityCost : public UObject
 {
 	GENERATED_BODY()
 

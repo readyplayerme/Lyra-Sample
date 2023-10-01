@@ -2,11 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CommonUserWidget.h"
 #include "Performance/LyraPerformanceStatTypes.h"
 
 #include "LyraPerfStatContainerBase.generated.h"
+
+class UObject;
+struct FFrame;
 
 /**
  * ULyraPerfStatsContainerBase

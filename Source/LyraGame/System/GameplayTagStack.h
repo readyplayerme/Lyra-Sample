@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Net/Serialization/FastArraySerializer.h"
 #include "GameplayTagContainer.h"
+#include "Net/Serialization/FastArraySerializer.h"
 
 #include "GameplayTagStack.generated.h"
 
 struct FGameplayTagStackContainer;
+struct FNetDeltaSerializeInfo;
 
 /**
  * Represents one stack of a gameplay tag (tag + count)

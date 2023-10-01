@@ -2,20 +2,17 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "NetworkReplayStreaming.h"
 
+#include "UObject/ObjectPtr.h"
 #include "AsyncAction_QueryReplays.generated.h"
 
-class AGameStateBase;
-class UGameInstance;
 class APlayerController;
-class ALyraPlayerState;
 class INetworkReplayStreamer;
 class ULyraReplayList;
-class ULyraReplayListEntry;
+class UObject;
+struct FEnumerateStreamsResult;
+struct FFrame;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQueryReplayAsyncDelegate, ULyraReplayList*, Results);
 
@@ -46,7 +43,7 @@ private:
 
 private:
 	UPROPERTY()
-	ULyraReplayList* ResultList;
+	TObjectPtr<ULyraReplayList> ResultList;
 
 	TWeakObjectPtr<APlayerController> PlayerController;
 

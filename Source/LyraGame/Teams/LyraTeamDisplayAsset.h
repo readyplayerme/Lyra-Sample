@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "LyraTeamDisplayAsset.generated.h"
+
+struct FPropertyChangedEvent;
 
 class UMaterialInstanceDynamic;
 class UMeshComponent;

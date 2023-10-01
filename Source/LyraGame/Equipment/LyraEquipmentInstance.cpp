@@ -1,10 +1,21 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraEquipmentInstance.h"
-#include "LyraEquipmentDefinition.h"
-#include "GameFramework/Character.h"
+
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/Character.h"
+#include "LyraEquipmentDefinition.h"
 #include "Net/UnrealNetwork.h"
+
+#if UE_WITH_IRIS
+#include "Iris/ReplicationSystem/ReplicationFragmentUtil.h"
+#endif // UE_WITH_IRIS
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(LyraEquipmentInstance)
+
+class FLifetimeProperty;
+class UClass;
+class USceneComponent;
 
 ULyraEquipmentInstance::ULyraEquipmentInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -30,6 +41,16 @@ void ULyraEquipmentInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(ThisClass, Instigator);
 	DOREPLIFETIME(ThisClass, SpawnedActors);
 }
+
+#if UE_WITH_IRIS
+void ULyraEquipmentInstance::RegisterReplicationFragments(UE::Net::FFragmentRegistrationContext& Context, UE::Net::EFragmentRegistrationFlags RegistrationFlags)
+{
+	using namespace UE::Net;
+
+	// Build descriptors and allocate PropertyReplicationFragments for this object
+	FReplicationFragmentUtil::CreateAndRegisterFragmentsForObject(this, Context, RegistrationFlags);
+}
+#endif // UE_WITH_IRIS
 
 APawn* ULyraEquipmentInstance::GetPawn() const
 {
@@ -95,3 +116,4 @@ void ULyraEquipmentInstance::OnUnequipped()
 void ULyraEquipmentInstance::OnRep_Instigator()
 {
 }
+
