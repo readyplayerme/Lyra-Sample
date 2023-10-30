@@ -2,8 +2,8 @@
 
 #include "ReadyPlayerMeEditor.h"
 
-#include "Analytics/ReadyPlayerMeAnalyticsSetup.h"
-#include "Analytics/ReadyPlayerMeAnalyticsEventLogger.h"
+#include "Analytics/AnalyticsSetup.h"
+#include "Analytics/AnalyticsEventLogger.h"
 #include "Settings/ProjectPackagingSettings.h"
 #include "Runtime/Launch/Resources/Version.h"
 
@@ -29,14 +29,14 @@ namespace
 void FReadyPlayerMeEditorModule::StartupModule()
 {
 	AddGLTFRuntimeToCookingDirectories();
-	FReadyPlayerMeAnalyticsSetup::Startup();
-	FReadyPlayerMeAnalyticsEventLogger::Get().LogProperties();
-	FReadyPlayerMeAnalyticsEventLogger::Get().LogEvent(ERpmAnalyticsEventType::OpenProject);
+	FAnalyticsSetup::Startup();
+	FAnalyticsEventLogger::Get().LogProperties();
+	FAnalyticsEventLogger::Get().LogEvent(ERpmAnalyticsEventType::OpenProject);
 }
 
 void FReadyPlayerMeEditorModule::ShutdownModule()
 {
-	FReadyPlayerMeAnalyticsEventLogger::Get().LogEvent(ERpmAnalyticsEventType::CloseProject);
+	FAnalyticsEventLogger::Get().LogEvent(ERpmAnalyticsEventType::CloseProject);
 }
 
 #undef LOCTEXT_NAMESPACE

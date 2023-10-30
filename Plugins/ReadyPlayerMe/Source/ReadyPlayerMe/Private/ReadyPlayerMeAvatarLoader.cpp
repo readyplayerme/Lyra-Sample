@@ -3,11 +3,11 @@
 
 #include "ReadyPlayerMeAvatarLoader.h"
 
-#include "Utils/ReadyPlayerMeUrlConvertor.h"
-#include "Storage/ReadyPlayerMeAvatarCacheHandler.h"
+#include "Utils/AvatarUrlConvertor.h"
+#include "Storage/AvatarCacheHandler.h"
 #include "ReadyPlayerMeGlbLoader.h"
-#include "Request/ReadyPlayerMeBaseRequest.h"
-#include "Utils/ReadyPlayerMeMetadataExtractor.h"
+#include "Request/AvatarRequest.h"
+#include "Utils/MetadataExtractor.h"
 
 //TODO: Move the timout to the RPMSettings to make it configurable
 constexpr float AVATAR_REQUEST_TIMEOUT = 60.f;
@@ -24,7 +24,7 @@ void UReadyPlayerMeAvatarLoader::LoadAvatar(const FString& UrlShortcode, UReadyP
 	USkeleton* TargetSkeleton, const FglTFRuntimeSkeletalMeshConfig& SkeletalMeshConfig,
 	const FAvatarDownloadCompleted& OnDownloadCompleted, const FAvatarLoadFailed& OnLoadFailed)
 {
-	const FString Url = FReadyPlayerMeUrlConvertor::GetValidatedUrlShortCode(UrlShortcode);
+	const FString Url = FAvatarUrlConvertor::GetValidatedUrlShortCode(UrlShortcode);
 	if (Url.IsEmpty())
 	{
 		(void)OnLoadFailed.ExecuteIfBound("Url invalid");
@@ -33,14 +33,14 @@ void UReadyPlayerMeAvatarLoader::LoadAvatar(const FString& UrlShortcode, UReadyP
 	Reset();
 	OnAvatarDownloadCompleted = OnDownloadCompleted;
 	OnAvatarLoadFailed = OnLoadFailed;
-	AvatarUri = FReadyPlayerMeUrlConvertor::CreateAvatarUri(Url, AvatarConfig);
-	CacheHandler = MakeShared<FReadyPlayerMeAvatarCacheHandler>(*AvatarUri);
+	AvatarUri = FAvatarUrlConvertor::CreateAvatarUri(Url, AvatarConfig);
+	CacheHandler = MakeShared<FAvatarCacheHandler>(*AvatarUri);
 
 	GlbLoader = NewObject<UReadyPlayerMeGlbLoader>(this,TEXT("GlbLoader"));
 	GlbLoader->SkeletalMeshConfig = SkeletalMeshConfig;
 	GlbLoader->TargetSkeleton = TargetSkeleton;
 
-	MetadataRequest = MakeShared<FReadyPlayerMeBaseRequest>();
+	MetadataRequest = MakeShared<FAvatarRequest>();
 	MetadataRequest->GetCompleteCallback().BindUObject(this, &UReadyPlayerMeAvatarLoader::OnMetadataDownloaded);
 	MetadataRequest->Download(AvatarUri->MetadataUrl, METADATA_REQUEST_TIMEOUT);
 	if (CacheHandler->ShouldLoadFromCache())
@@ -68,7 +68,7 @@ void UReadyPlayerMeAvatarLoader::CancelAvatarLoad()
 
 void UReadyPlayerMeAvatarLoader::ProcessReceivedMetadata()
 {
-	AvatarMetadata = FReadyPlayerMeMetadataExtractor::ExtractAvatarMetadata(MetadataRequest->GetContentAsString());
+	AvatarMetadata = FMetadataExtractor::ExtractAvatarMetadata(MetadataRequest->GetContentAsString());
 	CacheHandler->SetUpdatedMetadataStr(MetadataRequest->GetContentAsString(), AvatarMetadata->UpdatedAtDate);
 	// If we are not trying to update the avatar, the metadata and the model should be downloaded as the standard flow.
 	if (!bIsTryingToUpdate)
@@ -104,7 +104,7 @@ void UReadyPlayerMeAvatarLoader::TryLoadFromCache()
 	{
 		ModelRequest->GetCompleteCallback().Unbind();
 	}
-	CacheHandler = MakeShared<FReadyPlayerMeAvatarCacheHandler>(*AvatarUri);
+	CacheHandler = MakeShared<FAvatarCacheHandler>(*AvatarUri);
 	AvatarMetadata = CacheHandler->GetLocalMetadata();
 	if (AvatarMetadata.IsSet())
 	{
@@ -186,7 +186,7 @@ void UReadyPlayerMeAvatarLoader::OnModelDownloaded(bool bSuccess)
 
 void UReadyPlayerMeAvatarLoader::DownloadAvatarModel()
 {
-	ModelRequest = MakeShared<FReadyPlayerMeBaseRequest>();
+	ModelRequest = MakeShared<FAvatarRequest>();
 	ModelRequest->GetCompleteCallback().BindUObject(this, &UReadyPlayerMeAvatarLoader::OnModelDownloaded);
 	ModelRequest->Download(AvatarUri->ModelUrl, AVATAR_REQUEST_TIMEOUT);
 }

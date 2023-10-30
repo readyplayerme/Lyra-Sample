@@ -3,13 +3,13 @@
 
 #include "ReadyPlayerMeMemoryCache.h"
 #include "ReadyPlayerMeAvatarLoader.h"
-#include "Utils/ReadyPlayerMeAvatarConfigProcessor.h"
+#include "Utils/AvatarConfigProcessor.h"
 
 namespace
 {
 	FString MakeAvatarConfigHash(UReadyPlayerMeAvatarConfig* AvatarConfig)
 	{
-		const FString UrlQueryString = FReadyPlayerMeAvatarConfigProcessor::Process(AvatarConfig);
+		const FString UrlQueryString = FAvatarConfigProcessor::Process(AvatarConfig);
 		return UrlQueryString.IsEmpty() ? "" : FMD5::HashAnsiString(*UrlQueryString).Left(8);
 	}
 }

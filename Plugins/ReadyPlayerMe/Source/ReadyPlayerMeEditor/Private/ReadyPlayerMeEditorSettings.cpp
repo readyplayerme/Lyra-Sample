@@ -1,8 +1,8 @@
 // Copyright © 2021++ Ready Player Me
 
 #include "ReadyPlayerMeEditorSettings.h"
-#include "Analytics/ReadyPlayerMeAnalyticsSetup.h"
-#include "Analytics/ReadyPlayerMeAnalyticsEventLogger.h"
+#include "Analytics/AnalyticsSetup.h"
+#include "Analytics/AnalyticsEventLogger.h"
 
 UReadyPlayerMeEditorSettings::UReadyPlayerMeEditorSettings()
 	: bEnableAnalytics(false)
@@ -15,12 +15,12 @@ void UReadyPlayerMeEditorSettings::PostEditChangeProperty(FPropertyChangedEvent&
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 	if (bEnableAnalytics)
 	{
-		FReadyPlayerMeAnalyticsEventLogger::Get().EnableAnalytics();
-		FReadyPlayerMeAnalyticsSetup::RemoveWidget();
+		FAnalyticsEventLogger::Get().EnableAnalytics();
+		FAnalyticsSetup::RemoveWidget();
 	}
 	else
 	{
-		FReadyPlayerMeAnalyticsEventLogger::Get().SetEnabled(false);
+		FAnalyticsEventLogger::Get().SetEnabled(false);
 	}
 }
 #endif

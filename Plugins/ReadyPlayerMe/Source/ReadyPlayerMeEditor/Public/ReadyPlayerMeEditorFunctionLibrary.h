@@ -13,8 +13,8 @@ class READYPLAYERMEEDITOR_API UReadyPlayerMeEditorFunctionLibrary : public UBlue
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Set Subdomain"))
-	static void SetSubdomain(const FString& Subdomain);
+	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Set Rpm Settings"))
+	static void SetRpmSettings(const FString& Subdomain, const FString& AppId);
 
 	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Enable Analytics"))
 	static void EnableAnalytics();

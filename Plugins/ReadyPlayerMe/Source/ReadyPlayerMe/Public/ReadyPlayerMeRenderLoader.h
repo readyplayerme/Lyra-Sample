@@ -33,7 +33,7 @@ private:
 	UFUNCTION()
 	void OnImageDownloaded(bool bSuccess);
 
-	TSharedPtr<class FReadyPlayerMeBaseRequest> ImageRequest;
+	TSharedPtr<class FAvatarRequest> ImageRequest;
 
 	FDownloadImageCompleted OnDownloadImageCompleted;
 

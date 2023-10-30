@@ -2,35 +2,35 @@
 
 
 #include "ReadyPlayerMeFunctionLibrary.h"
-#include "Storage/ReadyPlayerMeAvatarStorage.h"
-#include "Utils/ReadyPlayerMeUrlConvertor.h"
+#include "Storage/AvatarStorage.h"
+#include "Utils/AvatarUrlConvertor.h"
 
 void UReadyPlayerMeFunctionLibrary::ClearAvatarCache()
 {
-	FReadyPlayerMeAvatarStorage::ClearCache();
+	FAvatarStorage::ClearCache();
 }
 
 void UReadyPlayerMeFunctionLibrary::ClearAvatar(const FString& Guid)
 {
-    FReadyPlayerMeAvatarStorage::ClearAvatar(Guid);
+    FAvatarStorage::ClearAvatar(Guid);
 }
 
 bool UReadyPlayerMeFunctionLibrary::IsAvatarCacheEmpty()
 {
-    return FReadyPlayerMeAvatarStorage::IsCacheEmpty();
+    return FAvatarStorage::IsCacheEmpty();
 }
 
 int32 UReadyPlayerMeFunctionLibrary::GetAvatarCount()
 {
-    return FReadyPlayerMeAvatarStorage::GetAvatarCount();
+    return FAvatarStorage::GetAvatarCount();
 }
 
 int64 UReadyPlayerMeFunctionLibrary::GetCacheSize()
 {
-    return FReadyPlayerMeAvatarStorage::GetCacheSize();
+    return FAvatarStorage::GetCacheSize();
 }
 
 FString UReadyPlayerMeFunctionLibrary::GetAvatarGuid(const FString& UrlShortcode)
 {
-    return FReadyPlayerMeUrlConvertor::GetAvatarGuid(UrlShortcode);
+    return FAvatarUrlConvertor::GetAvatarGuid(UrlShortcode);
 }

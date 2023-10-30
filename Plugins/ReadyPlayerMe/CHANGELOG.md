@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] 2023-11-01
+
+## Breaking
+
+- Removed complicated MorphTargetGroups data assets.
+  For fixing the existing custom morph target groups, open your custom avatar config and add the needed morph targets there.
+- AvatarCreator plugin is merged with the ReadyPlayerMe SDK.
+  The existing integrations of the avatar creator need to be added again, because the references in the blueprints would be broken.
+- Removed the ReadyPlayerMeActor redundant class. If you used BP_RPM_Actor blueprint class, use BP_RPM_SimpleActor blueprint class instead. 
+
+## Added
+
+- Merged the AvatarCreator plugin with the ReadyPlayerMe SDK.
+- Added App Id to setup guide.
+- Added AvatarCreator to the QuickStart map
+
+## Removed
+
+- Removed complicated MorphTargetGroups data assets.
+- Removed the ReadyPlayerMeActor redundant class.
+
+## [1.4.4] 2023-10-09
+
+## Fixed
+
+- Fixed the finger glitching issue for the loaded avatars.
+
 ## [1.4.3] 2023-10-02
 
 ## Fixed

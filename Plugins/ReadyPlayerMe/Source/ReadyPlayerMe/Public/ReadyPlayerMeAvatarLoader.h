@@ -78,9 +78,9 @@ private:
 	TOptional<FAvatarMetadata> AvatarMetadata;
 	TOptional<FAvatarUri> AvatarUri;
 
-	TSharedPtr<class FReadyPlayerMeAvatarCacheHandler> CacheHandler;
-	TSharedPtr<class FReadyPlayerMeBaseRequest> MetadataRequest;
-	TSharedPtr<class FReadyPlayerMeBaseRequest> ModelRequest;
+	TSharedPtr<class FAvatarCacheHandler> CacheHandler;
+	TSharedPtr<class FAvatarRequest> MetadataRequest;
+	TSharedPtr<class FAvatarRequest> ModelRequest;
 
 	FAvatarDownloadCompleted OnAvatarDownloadCompleted;
 	FAvatarLoadFailed OnAvatarLoadFailed;
