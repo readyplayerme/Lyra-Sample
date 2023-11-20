@@ -8,8 +8,5 @@
 class FRenderUrlConvertor
 {
 public:
-	static FString CreateRenderUrl(const FString& ModelUrl, const ERenderSceneType& SceneType, const TMap<EAvatarMorphTarget, float>& BlendShapes);
-
-private:
-	static FString SceneTypeToString(const ERenderSceneType& SceneType);
+	static FString CreateRenderUrl(const FString& Url, const FRpmAvatarRenderProperties& Properties);
 };

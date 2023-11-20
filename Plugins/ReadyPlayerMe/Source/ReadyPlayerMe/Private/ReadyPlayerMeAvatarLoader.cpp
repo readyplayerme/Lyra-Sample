@@ -3,11 +3,14 @@
 
 #include "ReadyPlayerMeAvatarLoader.h"
 
+#include "ReadyPlayerMeGameSubsystem.h"
 #include "Utils/AvatarUrlConvertor.h"
 #include "Storage/AvatarCacheHandler.h"
 #include "ReadyPlayerMeGlbLoader.h"
 #include "Request/AvatarRequest.h"
 #include "Utils/MetadataExtractor.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
 
 //TODO: Move the timout to the RPMSettings to make it configurable
 constexpr float AVATAR_REQUEST_TIMEOUT = 60.f;
@@ -24,7 +27,7 @@ void UReadyPlayerMeAvatarLoader::LoadAvatar(const FString& UrlShortcode, UReadyP
 	USkeleton* TargetSkeleton, const FglTFRuntimeSkeletalMeshConfig& SkeletalMeshConfig,
 	const FAvatarDownloadCompleted& OnDownloadCompleted, const FAvatarLoadFailed& OnLoadFailed)
 {
-	const FString Url = FAvatarUrlConvertor::GetValidatedUrlShortCode(UrlShortcode);
+	const FString Url = FAvatarUrlConvertor::GetValidatedUrl(UrlShortcode);
 	if (Url.IsEmpty())
 	{
 		(void)OnLoadFailed.ExecuteIfBound("Url invalid");
@@ -34,7 +37,9 @@ void UReadyPlayerMeAvatarLoader::LoadAvatar(const FString& UrlShortcode, UReadyP
 	OnAvatarDownloadCompleted = OnDownloadCompleted;
 	OnAvatarLoadFailed = OnLoadFailed;
 	AvatarUri = FAvatarUrlConvertor::CreateAvatarUri(Url, AvatarConfig);
-	CacheHandler = MakeShared<FAvatarCacheHandler>(*AvatarUri);
+	const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GetWorld()->GetGameInstance());
+	auto AvatarManifest = GameSubsystem ? GameSubsystem->AvatarManifest : nullptr;
+	CacheHandler = MakeShared<FAvatarCacheHandler>(*AvatarUri, AvatarManifest);
 
 	GlbLoader = NewObject<UReadyPlayerMeGlbLoader>(this,TEXT("GlbLoader"));
 	GlbLoader->SkeletalMeshConfig = SkeletalMeshConfig;
@@ -104,7 +109,8 @@ void UReadyPlayerMeAvatarLoader::TryLoadFromCache()
 	{
 		ModelRequest->GetCompleteCallback().Unbind();
 	}
-	CacheHandler = MakeShared<FAvatarCacheHandler>(*AvatarUri);
+	// We reset the cache handler state to prevent saving of incomplete data
+	CacheHandler->ResetState();
 	AvatarMetadata = CacheHandler->GetLocalMetadata();
 	if (AvatarMetadata.IsSet())
 	{

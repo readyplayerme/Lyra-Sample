@@ -19,4 +19,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category="Ready Player Me")
 	class UReadyPlayerMeMemoryCache* MemoryCache;
+
+	TSharedPtr<class FAvatarManifest> AvatarManifest;
 };

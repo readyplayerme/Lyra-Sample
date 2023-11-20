@@ -7,31 +7,31 @@
 #include "Internationalization/Regex.h"
 #include "Misc/Paths.h"
 
-static const FString SHORTCODE_URL_PREFIX = "https://models.readyplayer.me/";
+static const FString ID_URL_PREFIX = "https://models.readyplayer.me/";
 static const FString URL_PATTERN = "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
-static const FString SHORTCODE_PATTERN = "^[a-zA-Z0-9]*$";
+static const FString ID_PATTERN = "^[a-zA-Z0-9]*$";
 static const TCHAR* SUFFIX_GLB = TEXT(".glb");
 static const TCHAR* SUFFIX_JSON = TEXT(".json");
 static const TCHAR* AVATARS_FOLDER = TEXT("Avatars");
 static const TCHAR* DEFAULT_FOLDER = TEXT("Default");
 
-FString FAvatarUrlConvertor::GetValidatedUrlShortCode(const FString& UrlShortCode)
+FString FAvatarUrlConvertor::GetValidatedUrl(const FString& IdUrl)
 {
-	if (UrlShortCode.IsEmpty() || IsUrl(UrlShortCode))
+	if (IdUrl.IsEmpty() || IsUrl(IdUrl))
 	{
-		return UrlShortCode;
+		return IdUrl;
 	}
-	if (IsShortcode(UrlShortCode))
+	if (IsId(IdUrl))
 	{
-		return SHORTCODE_URL_PREFIX + UrlShortCode + SUFFIX_GLB;
+		return ID_URL_PREFIX + IdUrl + SUFFIX_GLB;
 	}
 	return "";
 }
 
-bool FAvatarUrlConvertor::IsShortcode(const FString& Shortcode)
+bool FAvatarUrlConvertor::IsId(const FString& Id)
 {
-	const FRegexPattern RegexPattern(SHORTCODE_PATTERN);
-	FRegexMatcher RegexMatcher(RegexPattern, Shortcode);
+	const FRegexPattern RegexPattern(ID_PATTERN);
+	FRegexMatcher RegexMatcher(RegexPattern, Id);
 	return RegexMatcher.FindNext();
 }
 
@@ -42,17 +42,17 @@ bool FAvatarUrlConvertor::IsUrl(const FString& Url)
 	return RegexMatcher.FindNext();
 }
 
-FString FAvatarUrlConvertor::GetAvatarGuid(const FString& UrlShortcode)
+FString FAvatarUrlConvertor::GetAvatarId(const FString& IdUrl)
 {
-	if (UrlShortcode.IsEmpty())
+	if (IdUrl.IsEmpty())
 	{
 		return "";
 	}
-	if (IsShortcode(UrlShortcode))
+	if (IsId(IdUrl))
 	{
-		return UrlShortcode;
+		return IdUrl;
 	}
-	const FAvatarUri Uri = CreateAvatarUri(UrlShortcode, nullptr);
+	const FAvatarUri Uri = CreateAvatarUri(IdUrl, nullptr);
 	return Uri.Guid;
 }
 

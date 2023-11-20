@@ -39,15 +39,15 @@ public:
 
 	UPROPERTY()
 	USkeletalMesh* Mesh;
-	
+
 	UPROPERTY()
 	class URpmImageDownloader* ImageDownloader;
-	
+
 	UPROPERTY()
 	FPreviewDownloadCompleted OnPreviewDownloaded;
 
 	FBaseRequestCompleted& GetAvatarPropertiesDownloadedCallback();
-	
+
 	FBaseRequestCompleted& GetAvatarPreviewDownloadedCallback();
 
 private:

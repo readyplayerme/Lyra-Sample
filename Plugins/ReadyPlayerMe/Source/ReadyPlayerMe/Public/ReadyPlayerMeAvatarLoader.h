@@ -12,7 +12,7 @@
  * Responsible for Loading the avatar from the url and storing it in the local storage.
  * ReadyPlayerMeAvatarLoader is used by ReadyPlayerMeComponent for loading the avatar.
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Meta = (ShowWorldContextPin))
 class READYPLAYERME_API UReadyPlayerMeAvatarLoader : public UObject
 {
 	GENERATED_BODY()
@@ -31,8 +31,8 @@ public:
 	 * @param OnDownloadCompleted Success callback. Called when the avatar asset is downloaded.
 	 * @param OnLoadFailed Failure callback. If the avatar fails to load, the failure callback will be called.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Load Avatar", AutoCreateRefTerm = "OnLoadFailed,SkeletalMeshConfig"))
-	void LoadAvatar(const FString& UrlShortcode, class UReadyPlayerMeAvatarConfig* AvatarConfig,
+	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Load Avatar", AutoCreateRefTerm = "OnLoadFailed,SkeletalMeshConfig", WorldContext = "WorldContextObject"))
+	void LoadAvatar(UPARAM(DisplayName="Url") const FString& UrlShortcode, class UReadyPlayerMeAvatarConfig* AvatarConfig,
 		USkeleton* TargetSkeleton, const FglTFRuntimeSkeletalMeshConfig& SkeletalMeshConfig,
 		const FAvatarDownloadCompleted& OnDownloadCompleted, const FAvatarLoadFailed& OnLoadFailed);
 

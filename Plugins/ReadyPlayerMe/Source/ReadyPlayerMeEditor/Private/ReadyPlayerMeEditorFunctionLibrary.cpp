@@ -10,6 +10,9 @@
 #include "Analytics/AnalyticsEventLogger.h"
 #include "Analytics/AnalyticsSetup.h"
 #include "Runtime/Launch/Resources/Version.h"
+#if ENGINE_MAJOR_VERSION > 4
+#include "LevelEditorSubsystem.h"
+#endif
 
 void UReadyPlayerMeEditorFunctionLibrary::SetRpmSettings(const FString& Subdomain, const FString& AppId)
 {
@@ -69,4 +72,14 @@ void UReadyPlayerMeEditorFunctionLibrary::CloseEditorWidget(const FString& Name)
 			EditorUtilitySubsystem->CloseTabByID(Found.begin()->Key);
 		}
 	}
+}
+
+void UReadyPlayerMeEditorFunctionLibrary::LoadQuickStartLevel(const FString& LevelPath)
+{
+#if ENGINE_MAJOR_VERSION > 4
+	if (ULevelEditorSubsystem* LevelEditorSubsystem = GEditor->GetEditorSubsystem<ULevelEditorSubsystem>())
+	{
+		LevelEditorSubsystem->LoadLevel(LevelPath);
+	}
+#endif
 }

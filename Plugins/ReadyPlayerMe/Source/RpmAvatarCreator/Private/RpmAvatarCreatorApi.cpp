@@ -18,25 +18,27 @@ URpmAvatarCreatorApi::URpmAvatarCreatorApi()
 	: FullBodySkeleton(nullptr)
 	, HalfBodySkeleton(nullptr)
 	, BodyType(EAvatarBodyType::FullBody)
+	, ImageDownloader(nullptr)
+	, AvatarRequestHandler(nullptr)
 {
-	RequestFactory = MakeShared<FRequestFactory>();
-	AuthManager = MakeShared<FRpmAuthManager>(RequestFactory);
-	AuthManager->BindTokenRefreshDelegate();
-	ImageDownloader = NewObject<URpmImageDownloader>();
-	ImageDownloader->SetRequestFactory(RequestFactory);
-	ColorDownloader = MakeShared<FRpmColorDownloader>(RequestFactory);
-	AssetDownloader = MakeShared<FRpmPartnerAssetDownloader>(RequestFactory);
-	AvatarTemplateDownloader = NewObject<URpmAvatarTemplateDownloader>();
-	AvatarTemplateDownloader->SetRequestFactory(RequestFactory);
-	UserAvatarDownloader = MakeShared<FRpmUserAvatarDownloader>(RequestFactory);
-	AvatarRequestHandler = NewObject<URpmAvatarRequestHandler>();
-	AvatarRequestHandler->SetRequestFactory(RequestFactory);
-	AvatarRequestHandler->SetUserAvatarDownloader(UserAvatarDownloader);
-	AvatarRequestHandler->ImageDownloader = ImageDownloader;
 }
 
 void URpmAvatarCreatorApi::Initialize()
 {
+	RequestFactory = MakeShared<FRequestFactory>();
+	AuthManager = MakeShared<FRpmAuthManager>(RequestFactory);
+	AuthManager->BindTokenRefreshDelegate();
+	ColorDownloader = MakeShared<FRpmColorDownloader>(RequestFactory);
+	AssetDownloader = MakeShared<FRpmPartnerAssetDownloader>(RequestFactory);
+	AvatarTemplateDownloader = MakeShared<FRpmAvatarTemplateDownloader>(RequestFactory);
+	UserAvatarDownloader = MakeShared<FRpmUserAvatarDownloader>(RequestFactory);
+	ImageDownloader = NewObject<URpmImageDownloader>();
+	ImageDownloader->SetRequestFactory(RequestFactory);
+	AvatarRequestHandler = NewObject<URpmAvatarRequestHandler>();
+	AvatarRequestHandler->SetRequestFactory(RequestFactory);
+	AvatarRequestHandler->SetUserAvatarDownloader(UserAvatarDownloader);
+	AvatarRequestHandler->ImageDownloader = ImageDownloader;
+
 	const UReadyPlayerMeSettings* Settings = GetDefault<UReadyPlayerMeSettings>();
 	if (!IsValid(Settings) || Settings->Subdomain.IsEmpty())
 	{
@@ -161,7 +163,7 @@ void URpmAvatarCreatorApi::ExecuteEditorReadyCallback(bool bSuccess, ERpmAvatarC
 
 void URpmAvatarCreatorApi::DownloadAvatarTemplates(const FAvatarTemplatesDownloadCompleted& DownloadCompleted, const FAvatarCreatorFailed& Failed)
 {
-	AvatarTemplateDownloader->DownloadTemplates(AvatarProperties.Gender, DownloadCompleted, Failed);
+	AvatarTemplateDownloader->DownloadTemplates(DownloadCompleted, Failed);
 }
 
 void URpmAvatarCreatorApi::DownloadUserAvatars(const FUserAvatarsDownloadCompleted& DownloadCompleted, const FAvatarCreatorFailed& Failed)
@@ -216,6 +218,9 @@ TArray<FRpmColorPalette> URpmAvatarCreatorApi::GetColorPalettes() const
 
 void URpmAvatarCreatorApi::BeginDestroy()
 {
-	RequestFactory->CancelRequests();
+	if (RequestFactory)
+	{
+		RequestFactory->CancelRequests();
+	}
 	Super::BeginDestroy();
 }

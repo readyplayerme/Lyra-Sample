@@ -27,4 +27,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Close Editor Widget"))
 	static void CloseEditorWidget(const FString& Name);
+
+	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Load Quick Start Level"))
+	static void LoadQuickStartLevel(const FString& LevelPath);
 };

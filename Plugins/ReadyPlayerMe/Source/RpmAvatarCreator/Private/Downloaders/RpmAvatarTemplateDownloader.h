@@ -3,43 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "RpmAvatarCreatorTypes.h"
-#include "RpmAvatarTemplateDownloader.generated.h"
 
-UCLASS()
-class URpmAvatarTemplateDownloader : public UObject
+class FRpmAvatarTemplateDownloader : public TSharedFromThis<FRpmAvatarTemplateDownloader>
 {
-	GENERATED_BODY()
-
 public:
-	void DownloadTemplates(EAvatarGender Gender, const FAvatarTemplatesDownloadCompleted& DownloadCompleted, const FAvatarCreatorFailed& Failed);
+	FRpmAvatarTemplateDownloader(TSharedPtr<class FRequestFactory> Factory);
 
-	void SetRequestFactory(TSharedPtr<class FRequestFactory> Factory);
-
-	TArray<FRpmAvatarTemplate> GetFilteredAvatarTemplates() const;
-
-	bool AreAvatarsReady() const;
+	void DownloadTemplates(const FAvatarTemplatesDownloadCompleted& DownloadCompleted, const FAvatarCreatorFailed& Failed);
+	TArray<FRpmAvatarTemplate> GetAvatarTemplates() const;
 
 private:
 	void OnTemplatesDownloadCompleted(bool bSuccess);
 
-	void OnImageDownloadCompleted(bool bSuccess, FString AvatarId);
-
-	void DownloadImages();
-	
-	bool IsValidAvatarTemplate(const FString& Id, EAvatarGender Gender) const;
-
-	UPROPERTY()
-	TMap<FString, UTexture2D*> ImageMap;
-
 	FAvatarTemplatesDownloadCompleted OnDownloadCompleted;
 	FAvatarCreatorFailed OnFailed;
-
-	EAvatarGender SelectedGender;
 
 	TSharedPtr<class FRequestFactory> RequestFactory;
 	TArray<FRpmAvatarTemplate> AvatarTemplates;
 	TSharedPtr<class IBaseRequest> AvatarTemplatesRequest;
-	TMap<FString, TSharedPtr<class IBaseRequest>> ImageRequests;
 };

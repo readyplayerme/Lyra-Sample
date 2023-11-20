@@ -2,17 +2,29 @@
 
 
 #include "ReadyPlayerMeFunctionLibrary.h"
+
+#include "ReadyPlayerMeGameSubsystem.h"
+#include "ReadyPlayerMeMemoryCache.h"
+#include "Engine/GameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "Storage/AvatarManifest.h"
 #include "Storage/AvatarStorage.h"
 #include "Utils/AvatarUrlConvertor.h"
 
-void UReadyPlayerMeFunctionLibrary::ClearAvatarCache()
+void UReadyPlayerMeFunctionLibrary::ClearAvatarCache(const UObject* WorldContextObject)
 {
 	FAvatarStorage::ClearCache();
+    const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(WorldContextObject);
+    const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GameInstance);
+    GameSubsystem->AvatarManifest->Clear();
 }
 
-void UReadyPlayerMeFunctionLibrary::ClearAvatar(const FString& Guid)
+void UReadyPlayerMeFunctionLibrary::ClearAvatarFromCache(const UObject* WorldContextObject, const FString& AvatarId)
 {
-    FAvatarStorage::ClearAvatar(Guid);
+    FAvatarStorage::ClearAvatar(AvatarId);
+    const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(WorldContextObject);
+    const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GameInstance);
+    GameSubsystem->AvatarManifest->ClearAvatar(AvatarId);
 }
 
 bool UReadyPlayerMeFunctionLibrary::IsAvatarCacheEmpty()
@@ -20,17 +32,31 @@ bool UReadyPlayerMeFunctionLibrary::IsAvatarCacheEmpty()
     return FAvatarStorage::IsCacheEmpty();
 }
 
-int32 UReadyPlayerMeFunctionLibrary::GetAvatarCount()
+int32 UReadyPlayerMeFunctionLibrary::GetCachedAvatarCount()
 {
-    return FAvatarStorage::GetAvatarCount();
+    return FAvatarStorage::GetSavedAvatars().Num();
 }
 
-int64 UReadyPlayerMeFunctionLibrary::GetCacheSize()
+int64 UReadyPlayerMeFunctionLibrary::GetAvatarCacheSize()
 {
     return FAvatarStorage::GetCacheSize();
 }
 
-FString UReadyPlayerMeFunctionLibrary::GetAvatarGuid(const FString& UrlShortcode)
+FString UReadyPlayerMeFunctionLibrary::GetAvatarId(const FString& Url)
 {
-    return FAvatarUrlConvertor::GetAvatarGuid(UrlShortcode);
+    return FAvatarUrlConvertor::GetAvatarId(Url);
+}
+
+void UReadyPlayerMeFunctionLibrary::ClearAvatarsFromMemory(const UObject* WorldContextObject)
+{
+    const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(WorldContextObject);
+    const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GameInstance);
+    GameSubsystem->MemoryCache->ClearAvatars();
+}
+
+void UReadyPlayerMeFunctionLibrary::ClearAvatarFromMemory(const UObject* WorldContextObject, const FString& AvatarId)
+{
+    const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(WorldContextObject);
+    const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GameInstance);
+    GameSubsystem->MemoryCache->ClearAvatar(FAvatarUrlConvertor::GetAvatarId(AvatarId));
 }

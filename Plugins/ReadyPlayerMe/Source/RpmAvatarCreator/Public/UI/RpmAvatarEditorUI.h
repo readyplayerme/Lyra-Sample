@@ -15,6 +15,9 @@ class RPMAVATARCREATOR_API URpmAvatarEditorUI : public UUserWidget
 	GENERATED_BODY()
 
 protected:
+	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Init"))
+	void Init(class URpmAvatarCreatorApi* Api);
+
 	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Setup Assets"))
 	void SetupAssets();
 
@@ -23,6 +26,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ready Player Me", meta = (DisplayName = "Color Selected"))
 	void ColorSelected();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ready Player Me", meta = (DisplayName = "Preview Downloaded"))
+	void PreviewDownloaded(const USkeletalMesh* SkeletalMesh);
 
 	UFUNCTION(BlueprintPure, Category = "Ready Player Me", meta = (DisplayName = "Is Customizable Asset Selected"))
 	bool IsCustomizableAssetSelected() const;
@@ -46,7 +52,7 @@ protected:
 	TSubclassOf<URpmColorButtonUI> ColorButtonClass;
 
 	UPROPERTY(BlueprintReadWrite, Category="Ready Player Me")
-	class URpmAvatarCreatorApi* AvatarCreatorApi;
+	class URpmAvatarCreatorApi* AvatarCreatorApi = nullptr;
 
 private:
 	UWrapBox* GetColorContainerByColor(ERpmPartnerAssetColor Color) const;

@@ -8,13 +8,13 @@
 class FAvatarUrlConvertor
 {
 public:
-	static FString GetValidatedUrlShortCode(const FString& UrlShortCode);
+	static FString GetValidatedUrl(const FString& IdUrl);
 
 	static bool IsUrl(const FString& Url);
 
-	static bool IsShortcode(const FString& Shortcode);
+	static bool IsId(const FString& Id);
 	
-	static FString GetAvatarGuid(const FString& UrlShortcode);
+	static FString GetAvatarId(const FString& IdUrl);
 
 	static FAvatarUri CreateAvatarUri(const FString& Url, class UReadyPlayerMeAvatarConfig* AvatarConfig);
 };

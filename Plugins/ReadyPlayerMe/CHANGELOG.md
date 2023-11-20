@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0] 2023-11-20
+
+## Breaking
+
+- Moved ReadyPlayerMeSettings.EnableAvatarCaching project property to ReadyPlayerMeSettings.AvatarCacheSettings.EnableAvatarCaching.
+- Removed Preload function from UReadyPlayerMeMemoryCache class. Use the PreloadAvatarsAsync sync node instead.
+- Removed bUseMemoryCache property from the ReadyPlayerMeComponent
+- Renamed ClearAvatar function to ClearAvatarFromCache
+- Renamed GetCacheSize function to GetAvatarCacheSize
+- Renamed GetAvatarCount function to GetCachedAvatarCount
+- Renamed GetAvatarGuid function to GetAvatarId
+
+## Added
+
+- Added AvatarCacheSettings property in the project settings and moved the EnableAvatarCaching property inside of it.
+- Added EnableAutomaticCacheCleaning and CachedAvatarLimit properties in AvatarCacheSettings. These properties enable the automatic cache management.
+- Added PreloadAvatarsAsync sync node to make avatar preloading easy to use.
+- Added ClearAvatarsFromMemory and ClearAvatarFromMemory functions. These functions clear preloaded avatars from the memory.
+- Added bKeepLoadedAvatarsInMemory property in the project settings. This property allows to keep all the loaded avatars in the memory without preloading them.
+
+## Updated
+
+- Moved ReadyPlayerMeSettings.EnableAvatarCaching project property to ReadyPlayerMeSettings.AvatarCacheSettings.EnableAvatarCaching.
+- Removed bUseMemoryCache property from the ReadyPlayerMeComponent
+- Renamed ClearAvatar function to ClearAvatarFromCache
+- Renamed GetCacheSize function to GetAvatarCacheSize
+- Renamed GetAvatarCount function to GetCachedAvatarCount
+- Renamed GetAvatarGuid function to GetAvatarId
+- Set the PhysicsAssetOverride property in the BP_RPM_Character to fix the shadow issues in UE5
+- UI fixes in AvatarCreator
+- Changed the background material of the avatar editor
+
+## Removed
+
+- Removed bUseMemoryCache property from the ReadyPlayerMeComponent
+- Removed Preload function from UReadyPlayerMeMemoryCache class. Use the PreloadAvatarsAsync sync node instead.
+- Broken blueprints in the Data folders
+
 ## [2.0.0] 2023-11-01
 
 ## Breaking

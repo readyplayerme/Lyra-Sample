@@ -3,7 +3,7 @@
 #include "ReadyPlayerMeSettings.h"
 
 UReadyPlayerMeSettings::UReadyPlayerMeSettings()
-	: bEnableAvatarCaching(false)
+	: bKeepLoadedAvatarsInMemory(false)
 {
 }
 
@@ -12,7 +12,7 @@ void UReadyPlayerMeSettings::SetAvatarCaching(bool bEnableCaching)
 	UReadyPlayerMeSettings* Settings = GetMutableDefault<UReadyPlayerMeSettings>();
 	if (Settings)
 	{
-		Settings->bEnableAvatarCaching = bEnableCaching;
+		Settings->AvatarCacheSettings.bEnableAvatarCaching = bEnableCaching;
 		Settings->SaveConfig();
 	}
 }

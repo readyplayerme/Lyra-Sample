@@ -4,16 +4,17 @@
 #include "ReadyPlayerMeAvatarLoader.h"
 #include "ReadyPlayerMeMemoryCache.h"
 #include "ReadyPlayerMeGameSubsystem.h"
+#include "ReadyPlayerMeSettings.h"
 #include "UObject/UObjectGlobals.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
+#include "Utils/AvatarUrlConvertor.h"
 
 UReadyPlayerMeComponent::UReadyPlayerMeComponent()
 	: TargetSkeleton(nullptr)
 	, AvatarConfig(nullptr)
 	, SkeletalMeshComponent(nullptr)
-	, bUseMemoryCache(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	OnAvatarDownloadCompleted.BindDynamic(this, &UReadyPlayerMeComponent::OnAvatarDownloaded);
@@ -34,17 +35,14 @@ void UReadyPlayerMeComponent::LoadAvatar(const FAvatarLoadCompleted& OnLoadCompl
 
 	OnAvatarLoadCompleted = OnLoadCompleted;
 
-	if (bUseMemoryCache)
+	const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GetWorld()->GetGameInstance());
+	if (IsValid(GameSubsystem))
 	{
-		const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GetWorld()->GetGameInstance());
-		if (IsValid(GameSubsystem))
+		const FAvatarMemoryCacheData CacheData = GameSubsystem->MemoryCache->GetAvatarCacheData(FAvatarUrlConvertor::GetAvatarId(UrlShortcode), AvatarConfig);
+		if (IsValid(CacheData.SkeletalMesh))
 		{
-			const FAvatarMemoryCacheData CacheData = GameSubsystem->MemoryCache->GetAvatarCacheData(UrlShortcode, AvatarConfig);
-			if (IsValid(CacheData.SkeletalMesh))
-			{
-				SetAvatarData(CacheData.SkeletalMesh, CacheData.Metadata);
-				return;
-			}
+			SetAvatarData(CacheData.SkeletalMesh, CacheData.Metadata);
+			return;
 		}
 	}
 
@@ -68,12 +66,13 @@ void UReadyPlayerMeComponent::CancelAvatarLoad()
 
 void UReadyPlayerMeComponent::OnAvatarDownloaded(USkeletalMesh* SkeletalMesh, const FAvatarMetadata& Metadata)
 {
-	if (bUseMemoryCache)
+	const UReadyPlayerMeSettings* Settings = GetDefault<UReadyPlayerMeSettings>();
+	if (IsValid(Settings) && Settings->bKeepLoadedAvatarsInMemory)
 	{
 		const UReadyPlayerMeGameSubsystem* GameSubsystem = UGameInstance::GetSubsystem<UReadyPlayerMeGameSubsystem>(GetWorld()->GetGameInstance());
 		if (IsValid(GameSubsystem))
 		{
-			GameSubsystem->MemoryCache->AddAvatar(UrlShortcode, AvatarConfig, SkeletalMesh, Metadata);
+			GameSubsystem->MemoryCache->AddAvatar(FAvatarUrlConvertor::GetAvatarId(UrlShortcode), AvatarConfig, SkeletalMesh, Metadata);
 		}
 	}
 	SetAvatarData(SkeletalMesh, Metadata);

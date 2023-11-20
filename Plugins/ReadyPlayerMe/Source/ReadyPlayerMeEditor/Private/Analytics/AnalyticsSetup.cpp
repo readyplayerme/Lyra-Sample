@@ -16,7 +16,7 @@ namespace
 	{
 		if (PropertyName == SETTINGS_ENABLE_CACHING)
 		{
-			FAnalyticsEventLogger::Get().LogEnableAvatarCaching(Settings->bEnableAvatarCaching);
+			FAnalyticsEventLogger::Get().LogEnableAvatarCaching(Settings->AvatarCacheSettings.bEnableAvatarCaching);
 		}
 	}
 }

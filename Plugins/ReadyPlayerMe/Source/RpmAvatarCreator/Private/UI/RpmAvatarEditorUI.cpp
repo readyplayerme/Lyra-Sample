@@ -15,6 +15,14 @@ static const TSet<ERpmPartnerAssetType> EXCLUDE_CLEAR_SELECTION_ASSETS =
 	ERpmPartnerAssetType::Footwear
 };
 
+void URpmAvatarEditorUI::Init(class URpmAvatarCreatorApi* Api)
+{
+	AvatarCreatorApi = Api;
+	FPreviewDownloadCompleted PreviewDownloadedDelegate;
+	PreviewDownloadedDelegate.BindDynamic(this, &URpmAvatarEditorUI::PreviewDownloaded);
+	AvatarCreatorApi->SetPreviewDownloadedDelegate(PreviewDownloadedDelegate);
+}
+
 void URpmAvatarEditorUI::SetupAssets()
 {
 	ClearContainers();

@@ -44,6 +44,7 @@ public class ReadyPlayerMeEditor : ModuleRules
 
 #if UE_5_0_OR_LATER
 		PrivateDependencyModuleNames.Add("DeveloperToolSettings");
+		PrivateDependencyModuleNames.Add("LevelEditor");
 #endif
 
 		DynamicallyLoadedModuleNames.AddRange(

@@ -180,14 +180,10 @@ struct FRpmAvatarTemplate
 	FString ImageUrl;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Ready Player Me")
-	UTexture2D* Image;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Ready Player Me")
 	EAvatarGender Gender;
 
 	FRpmAvatarTemplate()
 	{
-		Image = nullptr;
 		Gender = EAvatarGender::Undefined;
 	}
 };

@@ -134,29 +134,72 @@ enum class EAvatarMorphTarget : uint8
 	TongueOut UMETA(DisplayName = "TongueOut"),
 };
 
+UENUM(BlueprintType)
+enum class ERpmRenderExpression : uint8
+{
+	None,
+	Happy,
+	Lol,
+	Sad,
+	Scared,
+	Rage
+};
+
+UENUM(BlueprintType)
+enum class ERpmRenderPose : uint8
+{
+	PowerStance,
+	Relaxed,
+	Standing,
+	ThumbsUp
+};
+
+UENUM(BlueprintType)
+enum class ERpmRenderCamera : uint8
+{
+	Portrait,
+	FullBody
+};
+
+USTRUCT(BlueprintType)
+struct FRpmAvatarRenderProperties
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe")
+	ERpmRenderCamera Camera = ERpmRenderCamera::Portrait;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe")
+	ERpmRenderPose Pose = ERpmRenderPose::Relaxed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe")
+	ERpmRenderExpression Expression = ERpmRenderExpression::None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe")
+	bool bIsTransparent = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe", meta = (ToolTip = "Applies only to the non transparent images"))
+	FColor Background = FColor::White;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe", meta=(UIMin=0, UIMax=100, ClampMin=0, ClampMax=100, ToolTip = "Applies only to the non transparent images"))
+	int32 Quality = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe", meta=(UIMin=1, UIMax=1024, ClampMin=1, ClampMax=1024))
+	int32 Size = 800;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe")
+	TMap<EAvatarMorphTarget, float> BlendShapes;
+};
+
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FAvatarDownloadCompleted, class USkeletalMesh*, Mesh, const FAvatarMetadata&, Metadata);
 
 DECLARE_DYNAMIC_DELEGATE(FAvatarLoadCompleted);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FAvatarLoadFailed, const FString&, ErrorMessage);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FDownloadImageCompleted, class UTexture2D*, Texture);
-
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDownloadImageFailed, const FString&, ErrorMessage);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FGlbLoadCompleted, class USkeletalMesh*, SkeletalMesh);
-
-DECLARE_DYNAMIC_DELEGATE_OneParam(FAvatarPreloadCompleted, bool, bSuccess);
-
-UENUM(BlueprintType)
-enum class ERenderSceneType : uint8
-{
-	FullBodyPortrait UMETA(DisplayName = "Full Body Portrait"),
-	HalfBodyPortrait UMETA(DisplayName = "Half Body Portrait"),
-	FullBodyPortraitTransparent UMETA(DisplayName = "Full Body Portrait Transparent"),
-	HalfBodyPortraitTransparent UMETA(DisplayName = "Half Body Portrait Transparent"),
-	FullBodyPostureTransparent UMETA(DisplayName = "Full Body Posture Transparent")
-};
 
 struct FAvatarUri
 {

@@ -9,7 +9,6 @@ static const TCHAR* AVATAR_API_V1_ENDPOINT = TEXT("https://api.readyplayer.me/v1
 static const TCHAR* ASSET_ENDPOINT = TEXT("https://api.readyplayer.me/v1/assets?type={0}&limit={1}&page={2}&filter=viewable-by-user-and-app&filterUserId={3}&filterApplicationId={4}");
 static const TCHAR* REQUEST_OPTIMIZATION_PARAMS = TEXT("morphTargets=none&textureAtlas=none&textureSizeLimit=768&lod=0&useHands=false");
 static const TCHAR* MODELS_URL_PREFIX = TEXT("https://models.readyplayer.me");
-static const TCHAR* PRECOMPILE_ENDPOINT = TEXT("https://api.readyplayer.me/v2/avatars/{0}/precompile?{1}");
 
 FString FEndpoints::GetAuthAnonymousEndpoint(const FString& Subdomain)
 {
@@ -95,5 +94,5 @@ FString FEndpoints::GetDeleteAvatarEndpoint(const FString& AvatarId, bool bIsDra
 
 FString FEndpoints::GetPrecompileEndpoint(const FString& AvatarId)
 {
-	return FString::Format(PRECOMPILE_ENDPOINT, {AvatarId, REQUEST_OPTIMIZATION_PARAMS});
+	return FString::Format(TEXT("{0}/{1}/precompile?{2}"), {AVATAR_API_V2_ENDPOINT, AvatarId, REQUEST_OPTIMIZATION_PARAMS});
 }

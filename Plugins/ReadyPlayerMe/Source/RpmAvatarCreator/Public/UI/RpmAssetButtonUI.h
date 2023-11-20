@@ -28,5 +28,5 @@ public:
 	FRpmPartnerAsset Asset;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Ready Player Me")
-	class URpmAvatarCreatorApi* AvatarCreatorApi;
+	class URpmAvatarCreatorApi* AvatarCreatorApi = nullptr;
 };

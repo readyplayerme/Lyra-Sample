@@ -18,11 +18,17 @@ namespace
 {
 	FString GetAvatarCacheDir()
 	{
-		return FPaths::ProjectPersistentDownloadDir() + "/Avatars/";
+		return FPaths::Combine(FPaths::ProjectPersistentDownloadDir(), TEXT("Avatars"));
 	}
 }
 
-FString FAvatarStorage::LoadMetadata(const FString& Path)
+
+FString FAvatarStorage::GetManifestFilePath()
+{
+	return FPaths::Combine(GetAvatarCacheDir(), TEXT("AvatarManifest.json"));
+}
+
+FString FAvatarStorage::LoadJson(const FString& Path)
 {
 	if (!Path.IsEmpty() && FPaths::FileExists(*Path))
 	{
@@ -31,7 +37,7 @@ FString FAvatarStorage::LoadMetadata(const FString& Path)
 		{
 			return ResultStr;
 		}
-		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to load the metadata"));
+		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to load the json file"));
 	}
 	return "";
 }
@@ -59,53 +65,19 @@ void FAvatarStorage::DeleteDirectory(const FString& Path)
 	}
 }
 
-bool FAvatarStorage::CheckAndRemoveExistingFile(const FString& FilePath)
-{
-	if (FilePath.IsEmpty())
-	{
-		return false;
-	}
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-
-	FString Path;
-	FString Filename;
-	FString Extension;
-	FPaths::Split(FilePath, Path, Filename, Extension);
-	if (!PlatformFile.DirectoryExists(*Path) && !PlatformFile.CreateDirectoryTree(*Path))
-	{
-		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to create a directory to save the downloaded file"));
-		return false;
-	}
-
-	if (PlatformFile.FileExists(*FilePath) && !PlatformFile.DeleteFile(*FilePath))
-	{
-		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to delete the existing file"));
-		return false;
-	}
-	return true;
-}
-
 void FAvatarStorage::SaveAvatar(const FString& GlbFilePath, const TArray<uint8>& Data)
 {
-	if (!CheckAndRemoveExistingFile(GlbFilePath))
-	{
-		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to delete the cached avatar model"));
-	}
 	if (!FFileHelper::SaveArrayToFile(Data, *GlbFilePath))
 	{
 		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to save the downloaded file"));
 	}
 }
 
-void FAvatarStorage::SaveMetadata(const FString& MetadataFilePath, const FString& Content)
+void FAvatarStorage::SaveJson(const FString& Path, const FString& Content)
 {
-	if (!CheckAndRemoveExistingFile(MetadataFilePath))
+	if (!FFileHelper::SaveStringToFile(Content, *Path))
 	{
-		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to delete the cached avatar metadata"));
-	}
-	if (!FFileHelper::SaveStringToFile(Content, *MetadataFilePath))
-	{
-		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to save the downloaded file"));
+		UE_LOG(LogReadyPlayerMe, Warning, TEXT("Failed to save the json file"));
 	}
 }
 
@@ -116,20 +88,24 @@ void FAvatarStorage::ClearCache()
 
 bool FAvatarStorage::IsCacheEmpty()
 {
-	return GetAvatarCount() == 0;
+	return GetSavedAvatars().Num() == 0;
 }
 
 void FAvatarStorage::ClearAvatar(const FString& Guid)
 {
-	DeleteDirectory(GetAvatarCacheDir() + Guid);
+	DeleteDirectory(FPaths::Combine(GetAvatarCacheDir(), Guid));
 }
 
-int32 FAvatarStorage::GetAvatarCount()
+TArray<FString> FAvatarStorage::GetSavedAvatars()
 {
-	const FString Path = GetAvatarCacheDir() + "*";
+	const FString Path = FPaths::Combine(GetAvatarCacheDir(), "*");
 	TArray<FString> FoundDirs;
 	IFileManager::Get().FindFiles(FoundDirs, *Path, false, true);
-	return FoundDirs.Num();
+	for (auto& Dir : FoundDirs)
+	{
+		Dir = FPaths::GetBaseFilename(Dir);
+	}
+	return FoundDirs;
 }
 
 int64 FAvatarStorage::GetCacheSize()

@@ -104,12 +104,10 @@ private:
 	TSharedPtr<class FRpmColorDownloader> ColorDownloader;
 	TSharedPtr<class FRpmPartnerAssetDownloader> AssetDownloader;
 	TSharedPtr<class FRpmUserAvatarDownloader> UserAvatarDownloader;
+	TSharedPtr<class FRpmAvatarTemplateDownloader> AvatarTemplateDownloader;
 
 	UPROPERTY()
 	class URpmImageDownloader* ImageDownloader;
-
-	UPROPERTY()
-	class URpmAvatarTemplateDownloader* AvatarTemplateDownloader;
 
 	UPROPERTY()
 	class URpmAvatarRequestHandler* AvatarRequestHandler;
