@@ -1,4 +1,4 @@
-// Copyright © 2021++ Ready Player Me
+// Copyright © 2024 Ready Player Me
 #pragma once
 
 #include "ReadyPlayerMeTypes.generated.h"
@@ -205,7 +205,9 @@ struct FAvatarUri
 {
 	FString Guid;
 	FString ModelUrl;
+	TArray<FString> ModelLodUrls;
 	FString LocalModelPath;
+	TArray<FString> LocalModelLodPaths;
 	FString MetadataUrl;
 	FString LocalMetadataPath;
 	FString LocalAvatarDirectory;

@@ -99,7 +99,7 @@ struct FRpmPartnerAsset
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Ready Player Me")
-	int64 Id;
+	FString Id;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Ready Player Me")
 	FString Name;
@@ -156,7 +156,7 @@ struct FRpmAvatarProperties
 	TMap<ERpmPartnerAssetColor, int32> Colors;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ready Player Me")
-	TMap<ERpmPartnerAssetType, int64> Assets;
+	TMap<ERpmPartnerAssetType, FString> Assets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ready Player Me")
 	FString Base64Image;
@@ -235,7 +235,7 @@ DECLARE_DYNAMIC_DELEGATE(FUpdateLockedAssetsCompleted);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FUserAvatarsDownloadCompleted, const TArray<FRpmUserAvatar>&, UserAvatars);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FImageDownloadCompleted, UTexture2D*, Image);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FImageDownloadCompleted, UTexture2D*, Image, const FString&, Url);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FAvatarTemplatesDownloadCompleted, const TArray<FRpmAvatarTemplate>&, AvatarTemplates);
 
