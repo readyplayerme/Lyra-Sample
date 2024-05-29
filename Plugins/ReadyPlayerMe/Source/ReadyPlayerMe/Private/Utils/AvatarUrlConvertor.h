@@ -1,4 +1,4 @@
-// Copyright © 2021++ Ready Player Me
+// Copyright © 2024 Ready Player Me
 
 #pragma once
 
@@ -16,5 +16,5 @@ public:
 	
 	static FString GetAvatarId(const FString& IdUrl);
 
-	static FAvatarUri CreateAvatarUri(const FString& Url, class UReadyPlayerMeAvatarConfig* AvatarConfig);
+	static FAvatarUri CreateAvatarUri(const FString& Url, class UReadyPlayerMeAvatarConfig* AvatarConfig = nullptr, class UReadyPlayerMeAutoLodConfig* AutoLodConfig = nullptr);
 };

@@ -1,4 +1,4 @@
-// Copyright © 2021++ Ready Player Me
+// Copyright © 2024 Ready Player Me
 
 #include "ReadyPlayerMePreloadAction.h"
 
@@ -42,6 +42,7 @@ void UReadyPlayerMePreloadAction::Preload()
 			FAvatarLoadFailed OnLoadFailed;
 			OnAvatarDownloadCompleted.BindDynamic(this, &UReadyPlayerMePreloadAction::OnAvatarDownloaded);
 			OnLoadFailed.BindDynamic(this, &UReadyPlayerMePreloadAction::OnAvatarLoadFailed);
+			AvatarLoader->AutoLodConfig = PreloadData.AutoLodConfig;
 			AvatarLoader->LoadAvatar(AvatarId, PreloadData.AvatarConfig, PreloadData.TargetSkeleton,
 				PreloadData.SkeletalMeshConfig, OnAvatarDownloadCompleted, OnLoadFailed);
 			AvatarLoaders.Add(AvatarId, AvatarLoader);

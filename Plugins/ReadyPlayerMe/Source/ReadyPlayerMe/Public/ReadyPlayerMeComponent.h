@@ -1,4 +1,4 @@
-// Copyright © 2021++ Ready Player Me
+// Copyright © 2024 Ready Player Me
 
 #pragma once
 
@@ -62,6 +62,9 @@ public:
 	 * If no config is set, the partner specific configs will be used for loading the avatar. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ready Player Me")
 	class UReadyPlayerMeAvatarConfig* AvatarConfig;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ready Player Me")
+	class UReadyPlayerMeAutoLodConfig* AutoLodConfig;
 
 	/**
 	 * Skeletal mesh component used for setting the skeletal mesh of the loaded avatar.

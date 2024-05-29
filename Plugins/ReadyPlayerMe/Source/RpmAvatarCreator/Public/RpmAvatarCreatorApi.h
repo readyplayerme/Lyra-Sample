@@ -43,7 +43,7 @@ public:
 	void PrepareEditor(const FAvatarEditorReady& EditorReady, const FAvatarCreatorFailed& Failed);
 
 	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Update Avatar Asset"))
-	void UpdateAvatarAsset(ERpmPartnerAssetType AssetType, int64 AssetId);
+	void UpdateAvatarAsset(ERpmPartnerAssetType AssetType, const FString& AssetId);
 
 	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Update Avatar Color"))
 	void UpdateAvatarColor(ERpmPartnerAssetColor AssetColor, int32 ColorIndex);
@@ -67,10 +67,7 @@ public:
 	void UpdateLockedAssets(const FUpdateLockedAssetsCompleted& UpdateLockedAssetsCompleted, const FAvatarCreatorFailed& Failed);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ready Player Me", Meta = (ExposeOnSpawn="true"))
-	class USkeleton* FullBodySkeleton;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ready Player Me", Meta = (ExposeOnSpawn="true"))
-	class USkeleton* HalfBodySkeleton;
+	class USkeleton* TargetSkeleton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ready Player Me")
 	FRpmAvatarProperties AvatarProperties;
@@ -78,7 +75,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ready Player Me")
 	FString SelectedAvatarTemplateId;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ready Player Me")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ready Player Me", Meta = (ExposeOnSpawn="true"))
 	EAvatarBodyType BodyType;
 
 	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Download Image"))
@@ -90,7 +87,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Get Color Palettes"))
 	TArray<FRpmColorPalette> GetColorPalettes() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Ready Player Me", meta = (DisplayName = "Get Avatar Templates"))
+	TArray<FRpmAvatarTemplate> GetAvatarTemplates() const;
+
 	virtual void BeginDestroy() override;
+
+	void Reset();
 
 private:
 	UFUNCTION()

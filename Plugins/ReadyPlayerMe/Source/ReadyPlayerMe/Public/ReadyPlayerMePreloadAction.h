@@ -1,4 +1,4 @@
-// Copyright © 2021++ Ready Player Me
+// Copyright © 2024 Ready Player Me
 
 #pragma once
 
@@ -24,6 +24,9 @@ struct FAvatarPreloadData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReadyPlayerMe")
 	FglTFRuntimeSkeletalMeshConfig SkeletalMeshConfig;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ready Player Me")
+	class UReadyPlayerMeAutoLodConfig* AutoLodConfig = nullptr;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAvatarPreloadCompleted);
